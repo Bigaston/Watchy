@@ -8,6 +8,8 @@ export default class Zone {
   left: number;
   top: number;
 
+  isEnabled: boolean = false;
+
   constructor(
     id: string,
     image: File,

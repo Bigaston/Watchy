@@ -3,7 +3,7 @@ import Zone from '../../entity/Zone';
 import './dropZone.css';
 
 let dragTimeout: NodeJS.Timeout = undefined;
-let dropZone = document.getElementById('dropZone');
+let dropZone = document.body;
 
 function onDragOver(e: DragEvent) {
   e.preventDefault();
