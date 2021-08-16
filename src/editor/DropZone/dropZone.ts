@@ -1,5 +1,6 @@
-import { GameState } from '../../entity/GameState';
+import EditorState from '../../entity/EditorState';
 import Zone from '../../entity/Zone';
+import { toBase64 } from '../utils';
 import './dropZone.css';
 
 let dragTimeout: NodeJS.Timeout = undefined;
@@ -42,17 +43,19 @@ function addFile(file: File) {
 
   let id = file.name.split('.')[0].replace(/ /g, '-');
 
-  if (!GameState.isAvailableIdZone(id)) {
+  if (!EditorState.isAvailableIdZone(id)) {
     let i = 0;
 
-    while (!GameState.isAvailableIdZone(id + '-' + i)) {
+    while (!EditorState.isAvailableIdZone(id + '-' + i)) {
       i++;
     }
 
     id = id + '-' + i;
   }
 
-  GameState.addZone(new Zone(id, file, 0, 0, 50, undefined));
+  toBase64(file).then((b64: string) => {
+    EditorState.addZone(new Zone(id, file, b64, 0, 0, 50, undefined));
+  });
 }
 
 dropZone.addEventListener('dragover', onDragOver);
