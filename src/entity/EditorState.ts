@@ -20,19 +20,10 @@ export default class EditorState {
   }
 
   static updateScreen() {
-    let screen = document.getElementById('consoleScreen') as HTMLCanvasElement;
+    let screen = document.getElementById('consoleScreen') as HTMLDivElement;
 
-    let width = window.innerWidth / 2;
-    let height = window.innerWidth * 0.75;
-
-    screen.width = width;
-    screen.height = height;
-
-    let ctx = screen.getContext('2d');
-
-    ctx.fillStyle = '#edb4a1';
-    ctx.fillRect(0, 0, height, width);
-
-    EditorState.zonesId.forEach((z) => {});
+    EditorState.zonesId.forEach((id) => {
+      EditorState.zones[id].draw();
+    });
   }
 }

@@ -1,0 +1,14 @@
+#consoleScreen {
+  background-color: #edb4a1;
+  width: 800px;
+  height: 600px;
+}
+
+.zone {
+  position: relative;
+  fill: #a96868;
+}
+
+.zone * {
+  fill: #a96868 !important;
+}

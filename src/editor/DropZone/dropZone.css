@@ -1,16 +1,19 @@
+#dropZone {
+	background-color: red;
+	height: 300px;
+	width: 800px;
+}
+
 #dropText {
 	display: flex;
 	flex-direction: column;
-	width: 100vw;
-	height: 100vh;
 	padding: 0;
 	margin: 0;
 	justify-content: center;
 	z-index: 100;
 	position: absolute;
-	left: 0;
-	top: 0;
-	pointer-events: none;
+	height: 300px;
+	width: 800px;
 }
 
 #dropText > * {

@@ -1,13 +1,16 @@
 import EditorState from '../../entity/EditorState';
 import Zone from '../../entity/Zone';
-import { toBase64 } from '../utils';
+import { readContent } from '../utils';
 import './dropZone.css';
 
 let dragTimeout: NodeJS.Timeout = undefined;
-let dropZone = document.body;
+let dropZone = document.getElementById('dropZone');
 
 function onDragOver(e: DragEvent) {
   e.preventDefault();
+
+  console.log(e);
+
   dropZone.classList.add('currentDrop');
 
   if (dragTimeout) {
@@ -53,7 +56,7 @@ function addFile(file: File) {
     id = id + '-' + i;
   }
 
-  toBase64(file).then((b64: string) => {
+  readContent(file).then((b64: string) => {
     EditorState.addZone(new Zone(id, file, b64, 0, 0, 50, undefined));
   });
 }

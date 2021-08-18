@@ -1,10 +1,8 @@
-import { toBase64 } from '../editor/utils';
-
 export default class Zone {
   readonly id: string;
 
   private _image: File;
-  private _imageUrl: string;
+  private _component: SVGElement;
 
   width: number;
   height?: number;
@@ -16,7 +14,7 @@ export default class Zone {
   constructor(
     id: string,
     image: File,
-    imageUrl: string,
+    svgContent: string,
     left: number,
     top: number,
     width: number,
@@ -29,14 +27,29 @@ export default class Zone {
     this.height = height;
 
     this._image = image;
-    this._imageUrl = imageUrl;
+
+    let template = document.createElement('template');
+    svgContent = svgContent.trim();
+    template.innerHTML = svgContent;
+
+    let svg = template.content.firstChild as SVGElement;
+    console.log(svg);
+
+    svg.classList.add('zone');
+
+    svg.style.width = width + '%';
+    svg.style.height = '100%';
+    svg.style.top = top + '%';
+    svg.style.left = left + '%';
+
+    this._component = svg;
+
+    document.getElementById('consoleScreen').appendChild(svg);
   }
 
   public get image() {
     return this._image;
   }
 
-  public get imageUrl() {
-    return this._imageUrl;
-  }
+  draw() {}
 }
