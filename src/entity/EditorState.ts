@@ -11,19 +11,9 @@ export default class EditorState {
       EditorState.zones[zone.id] = zone;
       EditorState.zonesId.push(zone.id);
     }
-
-    EditorState.updateScreen();
   }
 
   static isAvailableIdZone(id: string) {
     return !EditorState.zonesId.includes(id);
-  }
-
-  static updateScreen() {
-    let screen = document.getElementById('consoleScreen') as HTMLDivElement;
-
-    EditorState.zonesId.forEach((id) => {
-      EditorState.zones[id].draw();
-    });
   }
 }

@@ -50,6 +50,4 @@ export default class Zone {
   public get image() {
     return this._image;
   }
-
-  draw() {}
 }
