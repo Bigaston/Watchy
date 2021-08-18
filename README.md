@@ -11,3 +11,9 @@ A fantasy console based on Game&amp;Watch
 - export dans un HTML mais aussi comme une PWA (donc html mais avec du cache)
 - Support du mobile a la PICO-8
 - et peut-être plus tard, export natif pour les os et tout
+
+# Palette
+On 2c2137
+764462
+Back edb4a1
+Off a96868
