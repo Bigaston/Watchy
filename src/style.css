@@ -9,3 +9,13 @@ html, body {
   overflow: hidden;
 	font-family: 'Roboto', sans-serif;
 }
+
+#editor {
+  display: flex;
+  flex-direction: row;
+}
+
+#leftPart {
+  width: 50%;
+  padding: 10px;
+}

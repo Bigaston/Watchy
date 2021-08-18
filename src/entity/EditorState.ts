@@ -11,6 +11,8 @@ export default class EditorState {
       EditorState.zones[zone.id] = zone;
       EditorState.zonesId.push(zone.id);
     }
+
+    EditorState.updateAssets();
   }
 
   static isAvailableIdZone(id: string) {
@@ -20,4 +22,6 @@ export default class EditorState {
   static getZoneById(id: string): Zone | undefined {
     return EditorState.zones[id];
   }
+
+  static updateAssets() {}
 }
