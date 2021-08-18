@@ -56,8 +56,8 @@ function addFile(file: File) {
     id = id + '-' + i;
   }
 
-  readContent(file).then((b64: string) => {
-    EditorState.addZone(new Zone(id, file, b64, 0, 0, 50, undefined));
+  readContent(file).then((content: string) => {
+    EditorState.addZone(new Zone(id, file, content));
   });
 }
 

@@ -7,6 +7,8 @@
 .zone {
   position: relative;
   fill: #a96868;
+  resize: both;
+  border: dotted 3px #764462;
 }
 
 .zone * {

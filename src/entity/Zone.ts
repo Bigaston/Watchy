@@ -1,3 +1,5 @@
+let screen = document.getElementById('consoleScreen') as HTMLDivElement;
+
 export default class Zone {
   readonly id: string;
 
@@ -6,25 +8,16 @@ export default class Zone {
 
   width: number;
   height?: number;
-  left: number;
-  top: number;
+  x: number;
+  y: number;
 
   isEnabled: boolean = false;
 
-  constructor(
-    id: string,
-    image: File,
-    svgContent: string,
-    left: number,
-    top: number,
-    width: number,
-    height?: number
-  ) {
+  constructor(id: string, image: File, svgContent: string) {
     this.id = id;
-    this.left = left;
-    this.top = top;
-    this.width = width;
-    this.height = height;
+    this.x = 0;
+    this.y = 0;
+    this.width = 50;
 
     this._image = image;
 
@@ -35,13 +28,14 @@ export default class Zone {
     let svg = template.content.firstChild as SVGElement;
     console.log(svg);
 
+    svg.id = 'zone-' + id;
     svg.classList.add('zone');
 
-    svg.style.width = width + '%';
-    svg.style.height = '100%';
-    svg.style.top = top + '%';
-    svg.style.left = left + '%';
+    svg.setAttribute('preserveAspectRatio', 'none');
 
+    svg.style.width = '50%';
+
+    this.height = (svg.clientHeight / screen.clientHeight) * 100;
     this._component = svg;
 
     document.getElementById('consoleScreen').appendChild(svg);

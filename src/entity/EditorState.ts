@@ -16,4 +16,8 @@ export default class EditorState {
   static isAvailableIdZone(id: string) {
     return !EditorState.zonesId.includes(id);
   }
+
+  static getZoneById(id: string): Zone | undefined {
+    return EditorState.zones[id];
+  }
 }
