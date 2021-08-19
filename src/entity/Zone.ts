@@ -44,4 +44,8 @@ export default class Zone {
   public get image() {
     return this._image;
   }
+
+  public get component() {
+    return this._component;
+  }
 }
