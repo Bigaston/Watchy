@@ -1,9 +1,10 @@
 import './style.css';
 import './Console/ConsoleScreen';
 
-import Game from '../projects/Train/Train';
 import Zone from './entity/Zone';
 import GameState from './entity/EditorState';
+
+import Game from '../projects/Train/Train';
 
 // Préparation du jeu
 document.title = Game.name + ' - Watchy';
