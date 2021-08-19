@@ -7,7 +7,7 @@ export interface Zone {
   id: string;
 }
 
-export default interface Game {
+export default interface GameConfig {
   name: string;
   zones: Zone[];
 }

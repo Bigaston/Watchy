@@ -51,4 +51,30 @@ export default class Zone {
   public get component() {
     return this._component;
   }
+
+  public on() {
+    this._component.classList.add('zone-enabled');
+  }
+
+  public off() {
+    this._component.classList.remove('zone-enabled');
+  }
+
+  public setStatus(status: 'ON' | 'OFF') {
+    if (status === 'ON') {
+      this._component.classList.add('zone-enabled');
+    } else {
+      this._component.classList.remove('zone-enabled');
+    }
+  }
+
+  public getStatus(): 'ON' | 'OFF' {
+    return this._component.classList.contains('zone-enabled') ? 'ON' : 'OFF';
+  }
+
+  public toggleStatus(): 'ON' | 'OFF' {
+    this._component.classList.toggle('zone-enabled');
+
+    return this._component.classList.contains('zone-enabled') ? 'ON' : 'OFF';
+  }
 }

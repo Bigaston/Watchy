@@ -18,3 +18,11 @@
 .zone * {
   fill: #a96868 !important;
 }
+
+.zone.zone-enabled {
+  fill: #2c2137;
+}
+
+.zone.zone-enabled * {
+  fill: #2c2137 !important;
+}
