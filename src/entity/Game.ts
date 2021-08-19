@@ -5,6 +5,7 @@ export interface Zone {
   y: number;
   svg: string;
   id: string;
+  default?: 'ON' | 'OFF';
 }
 
 export default interface GameConfig {

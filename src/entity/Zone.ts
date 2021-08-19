@@ -4,6 +4,7 @@ export default class Zone {
   readonly id: string;
 
   private _component: SVGElement;
+  private _data: { [key: string]: any } = {};
 
   width: number;
   height: number;
@@ -31,7 +32,6 @@ export default class Zone {
     template.innerHTML = svgContent;
 
     let svg = template.content.firstChild as SVGElement;
-    console.log(svg);
 
     svg.id = 'zone-' + id;
     svg.classList.add('zone');
@@ -76,5 +76,13 @@ export default class Zone {
     this._component.classList.toggle('zone-enabled');
 
     return this._component.classList.contains('zone-enabled') ? 'ON' : 'OFF';
+  }
+
+  public setData(key: string, value: any) {
+    this._data[key] = value;
+  }
+
+  public getData(key: string) {
+    return this._data[key];
   }
 }

@@ -7,7 +7,7 @@ let KeyDown: string[] = [];
 window.addEventListener('keydown', (e) => {
   if (!KeyDown.includes(e.key)) KeyDown.push(e.key);
 
-  KeyListener[KeyAssociationInverted[e.key]].forEach((func) => {
+  KeyListener[KeyAssociationInverted[e.key]]?.forEach((func) => {
     func(KeyAssociationInverted[e.key] as Key);
   });
 });
@@ -66,6 +66,10 @@ export default class Watchy {
 
   static getZoneById(id: string): Zone | undefined {
     return Watchy.zones[id];
+  }
+
+  static getAllZone(): Zone[] {
+    return Object.keys(Watchy.zones).map((k) => Watchy.zones[k]);
   }
 
   static isKeyDown(key: Key): boolean {

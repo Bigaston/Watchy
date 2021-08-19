@@ -4,8 +4,8 @@ import './Console/ConsoleScreen';
 import Zone from './entity/Zone';
 import Watchy from './entity/Watchy';
 
-import GameConfig from '../projects/Train/config';
-import '../projects/Train/train';
+import GameConfig from '../projects/Haie/config';
+import '../projects/Haie/haie';
 
 // Préparation du jeu
 document.title = GameConfig.name + ' - Watchy';
@@ -14,6 +14,10 @@ GameConfig.zones.forEach((z) => {
   let zone = new Zone(z.id, z.x, z.y, z.width, z.height, z.svg);
 
   Watchy.addZone(zone);
+
+  if (z.default === 'ON') {
+    zone.on();
+  }
 });
 
 if (Watchy.init !== undefined) {
