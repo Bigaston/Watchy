@@ -23,11 +23,5 @@ export default class EditorState {
     return EditorState.zones[id];
   }
 
-  static forEachZone(func: (zone: Zone) => void) {
-    EditorState.zonesId.forEach((z) => {
-      func(EditorState.zones[z]);
-    });
-  }
-
   static updateAssets() {}
 }
