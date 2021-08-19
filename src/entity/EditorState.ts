@@ -1,26 +1,26 @@
 import Zone from './Zone';
 
-export default class EditorState {
+export default class GameState {
   private static zones: { [key: string]: Zone } = {};
   private static zonesId: string[] = [];
 
   static addZone(zone: Zone) {
-    if (EditorState.zonesId.includes(zone.id)) {
+    if (GameState.zonesId.includes(zone.id)) {
       throw new Error('Id is already in GameState');
     } else {
-      EditorState.zones[zone.id] = zone;
-      EditorState.zonesId.push(zone.id);
+      GameState.zones[zone.id] = zone;
+      GameState.zonesId.push(zone.id);
     }
 
-    EditorState.updateAssets();
+    GameState.updateAssets();
   }
 
   static isAvailableIdZone(id: string) {
-    return !EditorState.zonesId.includes(id);
+    return !GameState.zonesId.includes(id);
   }
 
   static getZoneById(id: string): Zone | undefined {
-    return EditorState.zones[id];
+    return GameState.zones[id];
   }
 
   static updateAssets() {}
