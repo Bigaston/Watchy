@@ -2,6 +2,7 @@ import { LuaFactory } from "wasmoon";
 import * as PIXI from "pixi.js";
 import { WGameDescription, WImage, WImageStatus } from "./types";
 import { PALETTE } from "./colorPalette";
+import { initInput } from "./input";
 
 const factory = new LuaFactory();
 
@@ -14,6 +15,8 @@ export async function initEngine(
   let lua = await factory.createEngine();
 
   lua.global.set("SET_ENABLED", setEnabled);
+
+  initInput(lua);
 
   // PIXIJS
   const app = new PIXI.Application({

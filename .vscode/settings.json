@@ -1,0 +1,7 @@
+{
+  "Lua.diagnostics.globals": [
+    "SET_ENABLED",
+    "BUTTON_PRESSED",
+    "BUTTON_JUST_PRESSED"
+  ]
+}
