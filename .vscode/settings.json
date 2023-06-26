@@ -3,5 +3,12 @@
     "SET_ENABLED",
     "BUTTON_PRESSED",
     "BUTTON_JUST_PRESSED"
+  ],
+  "spellright.language": [
+    "fr"
+  ],
+  "spellright.documentTypes": [
+    "latex",
+    "plaintext"
   ]
 }
