@@ -1,15 +1,13 @@
 import { initEngine } from "./engine/engine";
+import { WGameDescription } from "./engine/types";
+import { isOk, isOkText } from "./utils";
 
 fetch("/code.lua")
-  .then((res) => {
-    if (res.ok) {
-      return res.text();
-    } else {
-      throw new Error("Failed to fetch code.lua");
-    }
-  })
+  .then(isOkText)
   .then((code) => {
-    console.log(code);
-
-    initEngine(code);
+    fetch("/game.json")
+      .then(isOk)
+      .then((game: WGameDescription) => {
+        initEngine(code, game);
+      });
   });
