@@ -1,8 +1,5 @@
 function INIT()
-  print("Engine Init")
 
-  -- print(SET_ENABLED)
-  -- SET_ENABLED(1, true)
 end
 
 function UPDATE(dt)
@@ -20,4 +17,5 @@ function UPDATE(dt)
 end
 
 function DRAW()
+  
 end

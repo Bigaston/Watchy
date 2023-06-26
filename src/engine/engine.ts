@@ -1,22 +1,16 @@
 import { LuaFactory } from "wasmoon";
 import * as PIXI from "pixi.js";
-import { WGameDescription, WImage, WImageStatus } from "./types";
-import { PALETTE } from "./colorPalette";
+import { WGameDescription } from "./types/types";
 import { initInput } from "./input";
+import { initDisplay } from "./display";
 
 const factory = new LuaFactory();
-
-const sprites: WImage[] = [];
 
 export async function initEngine(
   code: string,
   gameDescription: WGameDescription
 ) {
   let lua = await factory.createEngine();
-
-  lua.global.set("SET_ENABLED", setEnabled);
-
-  initInput(lua);
 
   // PIXIJS
   const app = new PIXI.Application({
@@ -27,26 +21,8 @@ export async function initEngine(
 
   document.body.appendChild(app.view as any as Node);
 
-  // Create All Sprites
-  gameDescription.images.forEach((image) => {
-    let spr = new PIXI.Sprite(PIXI.Texture.from(image.path));
-
-    spr.x = image.x;
-    spr.y = image.y;
-    spr.width = image.width;
-    spr.height = image.height;
-
-    spr.tint = PALETTE.OFF;
-
-    sprites.push({
-      id: image.id,
-      name: image.name,
-      sprite: spr,
-      status: WImageStatus.OFF,
-    });
-
-    app.stage.addChild(spr);
-  });
+  initInput(lua);
+  initDisplay(lua, app, gameDescription);
 
   // Execute Lua Code
   await lua.doString(code);
@@ -65,15 +41,4 @@ export async function initEngine(
     update(delta);
     draw();
   });
-}
-
-function setEnabled(idOrName: number | string, status: boolean) {
-  const sprite = sprites.find((s) => {
-    return s.id === idOrName || s.name === idOrName;
-  });
-
-  if (sprite != null) {
-    sprite.status = status ? WImageStatus.ON : WImageStatus.OFF;
-    sprite.sprite.tint = status ? PALETTE.ON : PALETTE.OFF;
-  }
 }
