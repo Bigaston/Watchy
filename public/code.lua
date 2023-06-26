@@ -2,7 +2,7 @@ function INIT()
   print("Engine Init")
 end
 
-function UPDATE()
+function UPDATE(dt)
 end
 
 function DRAW()
