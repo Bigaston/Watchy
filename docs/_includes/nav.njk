@@ -1,6 +1,6 @@
 <nav>
   <ul>
-    <li><a href="/">Home</a></li>
+    <li><a href="{{ '/' | absoluteUrl }}">Home</a></li>
     {% for post in collections.nav %}
       <li><a href="{{ post.url | absoluteUrl }}">{{ post.data.title }}</a></li>
     {% endfor %}
