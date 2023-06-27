@@ -30,31 +30,39 @@ const KEY_BINDING: { [key: string]: string } = {
 const hasBeenRelease: { [key: string]: boolean } = {};
 
 export function initInput(lua: LuaEngine) {
-  document.addEventListener("keydown", (e) => {
-    if (KEY_BINDING["Keyboard_" + e.code] != null) {
-      if (
-        hasBeenRelease[KEY_BINDING["Keyboard_" + e.code]] ||
-        hasBeenRelease[KEY_BINDING["Keyboard_" + e.code]] == undefined
-      ) {
-        hasBeenRelease[KEY_BINDING["Keyboard_" + e.code]] = false;
-
-        inputStatus[KEY_BINDING["Keyboard_" + e.code]] = true;
-        inputStatusInstant[KEY_BINDING["Keyboard_" + e.code]] = true;
-      }
-    }
-  });
-
-  document.addEventListener("keyup", (e) => {
-    if (KEY_BINDING["Keyboard_" + e.code] != null) {
-      inputStatus[KEY_BINDING["Keyboard_" + e.code]] = false;
-      inputStatusInstant[KEY_BINDING["Keyboard_" + e.code]] = false;
-
-      hasBeenRelease[KEY_BINDING["Keyboard_" + e.code]] = true;
-    }
-  });
+  document.addEventListener("keydown", keyDown);
+  document.addEventListener("keyup", keyUp);
 
   lua.global.set("BUTTON_PRESSED", buttonPressed);
   lua.global.set("BUTTON_JUST_PRESSED", buttonJustPressed);
+}
+
+export function stopInput() {
+  document.removeEventListener("keydown", keyDown);
+  document.removeEventListener("keyup", keyUp);
+}
+
+function keyDown(e: KeyboardEvent) {
+  if (KEY_BINDING["Keyboard_" + e.code] != null) {
+    if (
+      hasBeenRelease[KEY_BINDING["Keyboard_" + e.code]] ||
+      hasBeenRelease[KEY_BINDING["Keyboard_" + e.code]] == undefined
+    ) {
+      hasBeenRelease[KEY_BINDING["Keyboard_" + e.code]] = false;
+
+      inputStatus[KEY_BINDING["Keyboard_" + e.code]] = true;
+      inputStatusInstant[KEY_BINDING["Keyboard_" + e.code]] = true;
+    }
+  }
+}
+
+function keyUp(e: KeyboardEvent) {
+  if (KEY_BINDING["Keyboard_" + e.code] != null) {
+    inputStatus[KEY_BINDING["Keyboard_" + e.code]] = false;
+    inputStatusInstant[KEY_BINDING["Keyboard_" + e.code]] = false;
+
+    hasBeenRelease[KEY_BINDING["Keyboard_" + e.code]] = true;
+  }
 }
 
 function buttonPressed(buttonId: string) {

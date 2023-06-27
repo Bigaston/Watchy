@@ -34,6 +34,10 @@ export function initDisplay(
   });
 }
 
+export function stopDisplay() {
+  sprites.splice(0, sprites.length);
+}
+
 // FUNCTIONS
 function setEnabled(idOrName: number | string, status: boolean) {
   const sprite = sprites.find((s) => {

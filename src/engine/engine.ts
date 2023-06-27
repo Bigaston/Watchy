@@ -1,8 +1,8 @@
-import { LuaFactory } from "wasmoon";
+import { LuaEngine, LuaFactory } from "wasmoon";
 import * as PIXI from "pixi.js";
 import { WGameDescription } from "./types/types";
-import { initInput } from "./input";
-import { initDisplay } from "./display";
+import { initInput, stopInput } from "./input";
+import { initDisplay, stopDisplay } from "./display";
 import { initSystem, isPaused } from "./system";
 
 const factory = new LuaFactory();
@@ -10,15 +10,29 @@ const factory = new LuaFactory();
 const width = 900;
 const height = 600;
 
+let hasBeenInitialized = false;
+
+let lua: LuaEngine;
+let app: PIXI.Application;
+let renderElement: HTMLElement;
+
+let gameFunction: { [key: string]: undefined | Function } = {
+  init: undefined,
+  update: undefined,
+  gameUpdate: undefined,
+  draw: undefined,
+};
+
 export async function initEngine(
   code: string,
   gameDescription: WGameDescription,
-  renderElement: HTMLElement
+  _renderElement: HTMLElement
 ) {
-  let lua = await factory.createEngine();
+  lua = await factory.createEngine();
+  renderElement = _renderElement;
 
   // PIXIJS
-  const app = new PIXI.Application({
+  app = new PIXI.Application({
     width: width,
     height: height,
     background: 0xedb4a1,
@@ -39,27 +53,52 @@ export async function initEngine(
   await lua.doString(code);
 
   // Get the three main functions we need here in TypeScript
-  const init = lua.global.get("INIT");
-  const update = lua.global.get("UPDATE");
-  const gameUpdate = lua.global.get("GAME_UPDATE");
-  const draw = lua.global.get("DRAW");
+  gameFunction.init = lua.global.get("INIT");
+  gameFunction.update = lua.global.get("UPDATE");
+  gameFunction.gameUpdate = lua.global.get("GAME_UPDATE");
+  gameFunction.draw = lua.global.get("DRAW");
 
   // If init is a function, call it
-  if (init != null && typeof init === "function") {
-    init();
+  if (gameFunction.init != null && typeof gameFunction.init === "function") {
+    gameFunction.init();
   }
 
   app.ticker.add(ticker);
 
-  function ticker(delta: number) {
-    if (update) update(delta);
+  hasBeenInitialized = true;
+}
 
-    if (!isPaused) {
-      if (gameUpdate) gameUpdate(delta);
-    }
+function ticker(delta: number) {
+  if (gameFunction.update) gameFunction.update(delta);
 
-    if (draw) draw();
+  if (!isPaused) {
+    if (gameFunction.gameUpdate) gameFunction.gameUpdate(delta);
   }
+
+  if (gameFunction.draw) gameFunction.draw();
+}
+
+export function stopEngine() {
+  if (!hasBeenInitialized) return;
+
+  app.ticker.remove(ticker);
+  app.destroy();
+
+  lua.global.close();
+
+  stopDisplay();
+  stopInput();
+
+  renderElement.innerHTML = "";
+
+  gameFunction = {
+    init: undefined,
+    update: undefined,
+    gameUpdate: undefined,
+    draw: undefined,
+  };
+
+  hasBeenInitialized = false;
 }
 
 function resize(app: PIXI.Application, renderElement: HTMLElement) {

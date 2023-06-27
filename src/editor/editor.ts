@@ -3,7 +3,7 @@ import * as lua from "monaco-editor/esm/vs/basic-languages/lua/lua";
 import defaultCode from "./default.lua?raw";
 import { isOk } from "../utils";
 import { WGameDescription } from "../engine/types/types";
-import { initEngine } from "../engine/engine";
+import { initEngine, stopEngine } from "../engine/engine";
 
 export function initEditor(editorContainer: HTMLElement) {
   monaco.languages.register({ id: "lua" });
@@ -27,8 +27,13 @@ export function initEditor(editorContainer: HTMLElement) {
     fetch("/game.json")
       .then(isOk)
       .then((game: WGameDescription) => {
+        stopEngine();
         initEngine(code, game, document.getElementById("renderer")!);
       });
+  });
+
+  document.getElementById("stop")!.addEventListener("click", () => {
+    stopEngine();
   });
 }
 
