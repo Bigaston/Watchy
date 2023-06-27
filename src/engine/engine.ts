@@ -3,6 +3,7 @@ import * as PIXI from "pixi.js";
 import { WGameDescription } from "./types/types";
 import { initInput } from "./input";
 import { initDisplay } from "./display";
+import { initSystem, isPaused } from "./system";
 
 const factory = new LuaFactory();
 
@@ -32,6 +33,7 @@ export async function initEngine(
 
   initInput(lua);
   initDisplay(lua, app, gameDescription);
+  initSystem(lua);
 
   // Execute Lua Code
   await lua.doString(code);
@@ -39,6 +41,7 @@ export async function initEngine(
   // Get the three main functions we need here in TypeScript
   const init = lua.global.get("INIT");
   const update = lua.global.get("UPDATE");
+  const gameUpdate = lua.global.get("GAME_UPDATE");
   const draw = lua.global.get("DRAW");
 
   // If init is a function, call it
@@ -46,10 +49,17 @@ export async function initEngine(
     init();
   }
 
-  app.ticker.add((delta) => {
-    update(delta);
-    draw();
-  });
+  app.ticker.add(ticker);
+
+  function ticker(delta: number) {
+    if (update) update(delta);
+
+    if (!isPaused) {
+      if (gameUpdate) gameUpdate(delta);
+    }
+
+    if (draw) draw();
+  }
 }
 
 function resize(app: PIXI.Application, renderElement: HTMLElement) {
