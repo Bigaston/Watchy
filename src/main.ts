@@ -1,3 +1,5 @@
+import "./styles.css";
+
 import { initEngine } from "./engine/engine";
 import { WGameDescription } from "./engine/types/types";
 import { isOk, isOkText } from "./utils";
