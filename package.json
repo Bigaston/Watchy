@@ -16,6 +16,7 @@
     "vite": "^4.3.9"
   },
   "dependencies": {
+    "monaco-editor": "^0.39.0",
     "pixi.js": "^7.2.4",
     "wasmoon": "^1.15.0"
   }
