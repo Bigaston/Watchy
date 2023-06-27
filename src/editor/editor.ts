@@ -24,7 +24,7 @@ export function initEditor(editorContainer: HTMLElement) {
   document.getElementById("run")!.addEventListener("click", () => {
     let code = editor.getValue();
 
-    fetch("/game.json")
+    fetch("./game.json")
       .then(isOk)
       .then((game: WGameDescription) => {
         stopEngine();
