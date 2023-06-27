@@ -11,7 +11,8 @@ const height = 600;
 
 export async function initEngine(
   code: string,
-  gameDescription: WGameDescription
+  gameDescription: WGameDescription,
+  renderElement: HTMLElement
 ) {
   let lua = await factory.createEngine();
 
@@ -24,10 +25,10 @@ export async function initEngine(
     autoDensity: true,
   });
 
-  document.body.appendChild(app.view as any as Node);
+  renderElement.appendChild(app.view as any as Node);
 
-  window.addEventListener("resize", () => resize(app));
-  resize(app);
+  window.addEventListener("resize", () => resize(app, renderElement));
+  resize(app, renderElement);
 
   initInput(lua);
   initDisplay(lua, app, gameDescription);
@@ -51,16 +52,10 @@ export async function initEngine(
   });
 }
 
-function resize(app: PIXI.Application) {
+function resize(app: PIXI.Application, renderElement: HTMLElement) {
   // current screen size
-  const screenWidth = Math.max(
-    document.documentElement.clientWidth,
-    window.innerWidth || 0
-  );
-  const screenHeight = Math.max(
-    document.documentElement.clientHeight,
-    window.innerHeight || 0
-  );
+  const screenWidth = renderElement.clientWidth;
+  const screenHeight = renderElement.clientHeight;
 
   // uniform scale for our game
   const scale = Math.min(screenWidth / width, screenHeight / height);

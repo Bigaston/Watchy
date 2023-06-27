@@ -10,6 +10,7 @@ fetch("/game.json")
     fetch(game.code)
       .then(isOkText)
       .then((code) => {
-        initEngine(code, game);
+        let rendererElement = document.getElementById("renderer");
+        initEngine(code, game, rendererElement!);
       });
   });
