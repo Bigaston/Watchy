@@ -2,7 +2,7 @@ module.exports = function (eleventyConfig) {
   // Return your Object options:
   eleventyConfig.addPassthroughCopy("docs/public");
 
-  eleventyConfig.addPlugin(UrlPlugin, { base: process.env.URL_BASE || "" });
+  eleventyConfig.addPlugin(UrlPlugin, { base: process.env.URL_BASE_DOC || "" });
 
   return {
     dir: {
