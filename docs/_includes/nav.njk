@@ -2,7 +2,7 @@
   <ul>
     <li><a href="/">Home</a></li>
     {% for post in collections.nav %}
-      <li><a href="{{ post.url }}">{{ post.data.title }}</a></li>
+      <li><a href="{{ post.url | absoluteUrl }}">{{ post.data.title }}</a></li>
     {% endfor %}
   </ul>
 </nav>

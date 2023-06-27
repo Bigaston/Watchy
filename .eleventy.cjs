@@ -2,6 +2,8 @@ module.exports = function (eleventyConfig) {
   // Return your Object options:
   eleventyConfig.addPassthroughCopy("docs/public");
 
+  eleventyConfig.addPlugin(UrlPlugin, { base: process.env.URL_BASE || "" });
+
   return {
     dir: {
       input: "docs",
@@ -10,3 +12,17 @@ module.exports = function (eleventyConfig) {
     },
   };
 };
+
+function UrlPlugin(eleventyConfig = {}, pluginConfig = {}) {
+  eleventyConfig.addFilter(
+    "absoluteUrl",
+    function (url = "", base = pluginConfig.base) {
+      try {
+        return base + url;
+      } catch (err) {
+        console.error(err);
+        return url;
+      }
+    }
+  );
+}
