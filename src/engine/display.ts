@@ -1,7 +1,7 @@
 import * as PIXI from "pixi.js";
 import { LuaEngine } from "wasmoon";
-import { WGameDescription, WImage, WImageStatus } from "./types/types";
-import { PALETTE } from "./types/colorPalette";
+import { WGameDescription, WImage, WImageStatus } from "../types/types";
+import { PALETTE } from "../types/colorPalette";
 
 export const sprites: WImage[] = [];
 

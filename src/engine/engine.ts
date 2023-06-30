@@ -1,6 +1,6 @@
 import { LuaEngine, LuaFactory } from "wasmoon";
 import * as PIXI from "pixi.js";
-import { WGameDescription } from "./types/types";
+import { WGameDescription } from "../types/types";
 import { initInput, stopInput } from "./input";
 import { initDisplay, stopDisplay } from "./display";
 import { initSystem, isPaused } from "./system";

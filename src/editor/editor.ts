@@ -1,9 +1,12 @@
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 import * as lua from "monaco-editor/esm/vs/basic-languages/lua/lua";
-import defaultCode from "./default.lua?raw";
 import { isOk } from "../utils";
-import { WGameDescription } from "../engine/types/types";
+import { WGameDescription } from "../types/types";
 import { initEngine, stopEngine } from "../engine/engine";
+import { initEditorView } from "./editorView";
+import { loadCode, saveCode } from "./storage";
+
+const rendererElement = document.getElementById("renderer")!;
 
 export function initEditor(editorContainer: HTMLElement) {
   monaco.languages.register({ id: "lua" });
@@ -21,6 +24,9 @@ export function initEditor(editorContainer: HTMLElement) {
     saveCode(editor.getValue());
   });
 
+  initEditorView();
+
+  // Lauch game
   document.getElementById("run")!.addEventListener("click", () => {
     let code = editor.getValue();
 
@@ -28,19 +34,11 @@ export function initEditor(editorContainer: HTMLElement) {
       .then(isOk)
       .then((game: WGameDescription) => {
         stopEngine();
-        initEngine(code, game, document.getElementById("renderer")!);
+        initEngine(code, game, rendererElement);
       });
   });
 
   document.getElementById("stop")!.addEventListener("click", () => {
     stopEngine();
   });
-}
-
-function saveCode(code: string) {
-  localStorage.setItem("code", code);
-}
-
-function loadCode() {
-  return localStorage.getItem("code") || defaultCode;
 }
