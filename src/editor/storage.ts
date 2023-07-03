@@ -85,7 +85,7 @@ export function buildGame() {
   let game = loadGame();
   let gameString = btoa(JSON.stringify(game));
 
-  fetch("/watchy.html")
+  fetch("./watchy.html")
     .then(isOkText)
     .then((engine) => {
       let outDoc = engine.replace("{{GAME_DATA}}", gameString);
