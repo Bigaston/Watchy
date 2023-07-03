@@ -24,7 +24,6 @@ let gameFunction: { [key: string]: undefined | Function } = {
 };
 
 export async function initEngine(
-  code: string,
   gameDescription: WGameDescription,
   _renderElement: HTMLElement
 ) {
@@ -50,7 +49,7 @@ export async function initEngine(
   initSystem(lua);
 
   // Execute Lua Code
-  await lua.doString(code);
+  await lua.doString(gameDescription.code);
 
   // Get the three main functions we need here in TypeScript
   gameFunction.init = lua.global.get("INIT");

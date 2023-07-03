@@ -3,6 +3,7 @@ import * as lua from "monaco-editor/esm/vs/basic-languages/lua/lua";
 import { initEngine, stopEngine } from "../engine/engine";
 import { addSprite, initEditorView } from "./editorView";
 import {
+  buildGame,
   loadCode,
   loadGame,
   loadGameLocal,
@@ -34,12 +35,11 @@ export function initEditor(editorContainer: HTMLElement) {
 
   // Lauch game
   document.getElementById("run")!.addEventListener("click", () => {
-    let code = editor.getValue();
     let game = loadGame();
 
     rendererElement.innerHTML = "";
     stopEngine();
-    initEngine(code, game, rendererElement);
+    initEngine(game, rendererElement);
   });
 
   document.getElementById("stop")!.addEventListener("click", () => {
@@ -66,4 +66,6 @@ export function initEditor(editorContainer: HTMLElement) {
   document.getElementById("save")!.addEventListener("click", saveGameLocal);
 
   document.getElementById("load")!.addEventListener("click", loadGameLocal);
+
+  document.getElementById("build")!.addEventListener("click", buildGame);
 }

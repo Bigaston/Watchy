@@ -1,4 +1,5 @@
 import { WGameDescription } from "../types/types";
+import { isOkText } from "../utils";
 import defaultGame from "./defaultGame.json?raw";
 
 const OFFUSCATE = true;
@@ -78,4 +79,24 @@ export function saveGameLocal() {
   link.href = `data:text/text;charset=utf-8,${gameString}`;
 
   link.click();
+}
+
+export function buildGame() {
+  let game = loadGame();
+  let gameString = btoa(JSON.stringify(game));
+
+  fetch("/watchy.html")
+    .then(isOkText)
+    .then((engine) => {
+      let outDoc = engine.replace("{{GAME_DATA}}", gameString);
+
+      console.log(outDoc);
+
+      let link = document.createElement("a");
+      link.download = `Watchy-${Date.now()}.html`;
+
+      link.href = `data:text/html;charset=utf-8,${encodeURIComponent(outDoc)}`;
+
+      link.click();
+    });
 }
