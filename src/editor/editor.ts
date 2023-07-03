@@ -1,10 +1,8 @@
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 import * as lua from "monaco-editor/esm/vs/basic-languages/lua/lua";
-import { isOk } from "../utils";
-import { WGameDescription } from "../types/types";
 import { initEngine, stopEngine } from "../engine/engine";
-import { initEditorView } from "./editorView";
-import { loadCode, loadGame, saveCode } from "./storage";
+import { addSprite, initEditorView } from "./editorView";
+import { destroyStorage, loadCode, loadGame, saveCode } from "./storage";
 
 const rendererElement = document.getElementById("renderer")!;
 
@@ -41,5 +39,23 @@ export function initEditor(editorContainer: HTMLElement) {
     rendererElement.innerHTML = "";
 
     initEditorView();
+  });
+
+  document.getElementById("addImage")!.addEventListener("click", () => {
+    let input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/svg+xml";
+
+    input.addEventListener("change", () => {
+      if (!input.files) return;
+
+      addSprite(input.files![0]);
+    });
+
+    input.click();
+  });
+
+  document.getElementById("resetCache")!.addEventListener("click", () => {
+    destroyStorage();
   });
 }

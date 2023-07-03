@@ -1,5 +1,10 @@
 import * as PIXI from "pixi.js";
-import { WGameDescription, WImage, WImageStatus } from "../types/types";
+import {
+  WGameDescription,
+  WImage,
+  WImageDescription,
+  WImageStatus,
+} from "../types/types";
 import { loadGame, saveGame } from "./storage";
 import { PALETTE } from "../types/colorPalette";
 
@@ -32,6 +37,8 @@ export function initEditorView() {
     autoDensity: true,
   });
 
+  PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
+
   rendererElement.appendChild(app.view as any as Node);
 
   window.addEventListener("resize", resize);
@@ -55,58 +62,7 @@ export function initEditorView() {
   // Load Game Sprites
   game = loadGame();
 
-  game.images.forEach((image) => {
-    let spr = new PIXI.Sprite(PIXI.Texture.from(image.path));
-
-    spr.x = image.x;
-    spr.y = image.y;
-    spr.width = image.width;
-    spr.height = image.height;
-
-    spr.tint = PALETTE.OFF;
-    spr.eventMode = "static";
-
-    let wImage = {
-      id: image.id,
-      name: image.name,
-      sprite: spr,
-      status: WImageStatus.OFF,
-    };
-
-    sprites.push(wImage);
-
-    spr.on("pointerdown", (event) => {
-      onSelectSprite(wImage);
-      isSelectedSpriteDragged = true;
-
-      mouseOffset.x = event.data.global.x - spr.x;
-      mouseOffset.y = event.data.global.y - spr.y;
-
-      spr.cursor = "move";
-
-      initSelectionBox(spr, wImage);
-    });
-
-    spr.on("pointerup", (event) => {
-      isSelectedSpriteDragged = false;
-
-      game.images = game.images.map((image) => {
-        if (image.id === wImage.id) {
-          image.x = spr.x;
-          image.y = spr.y;
-        }
-        return image;
-      });
-
-      saveGame(game);
-
-      spr.cursor = "pointer";
-    });
-
-    spr.cursor = "pointer";
-
-    app.stage.addChild(spr);
-  });
+  game.images.forEach(createSprite);
 
   // Handle Mouse Position
   (app.view as unknown as HTMLElement).addEventListener(
@@ -124,11 +80,72 @@ export function initEditorView() {
   app.stage.addChild(hoverSelector);
 }
 
+async function createSprite(image: WImageDescription) {
+  let texture = PIXI.Texture.from(image.path, {
+    scaleMode: PIXI.SCALE_MODES.NEAREST,
+    resourceOptions: {
+      scale: 3,
+    },
+  });
+  console.log(texture);
+
+  let spr = new PIXI.Sprite(texture);
+
+  spr.x = image.x;
+  spr.y = image.y;
+  spr.width = image.width;
+  spr.height = image.height;
+
+  spr.tint = PALETTE.OFF;
+  spr.eventMode = "static";
+
+  let wImage = {
+    id: image.id,
+    name: image.name,
+    sprite: spr,
+    status: WImageStatus.OFF,
+  };
+
+  sprites.push(wImage);
+
+  spr.onpointerdown = (event) => {
+    onSelectSprite(wImage);
+    isSelectedSpriteDragged = true;
+
+    mouseOffset.x = event.data.global.x - spr.x;
+    mouseOffset.y = event.data.global.y - spr.y;
+
+    spr.cursor = "move";
+
+    initSelectionBox(spr, wImage);
+  };
+
+  spr.on("pointerup", (_event) => {
+    isSelectedSpriteDragged = false;
+
+    game.images = game.images.map((image) => {
+      if (image.id === wImage.id) {
+        image.x = spr.x;
+        image.y = spr.y;
+      }
+      return image;
+    });
+
+    saveGame(game);
+
+    spr.cursor = "pointer";
+  });
+
+  spr.cursor = "pointer";
+
+  app.stage.addChild(spr);
+}
+
 function onSelectSprite(sprite: WImage) {
   selectedSprite = sprite;
 }
 
-function ticker(delta: number) {
+function ticker(_delta: number) {
   if (selectedSprite) {
     hoverSelector.x = selectedSprite.sprite.x;
     hoverSelector.y = selectedSprite.sprite.y;
@@ -229,4 +246,47 @@ function resize() {
   (app.view as unknown as HTMLCanvasElement).style.marginTop = (
     app.view as unknown as HTMLCanvasElement
   ).style.marginBottom = `${verticalMargin}px`;
+}
+
+export function addSprite(file: File) {
+  const reader = new FileReader();
+  reader.onloadend = () => {
+    let xmlString = reader.result?.toString() as string;
+
+    // Check if XML has height and width
+    let height = xmlString.match(/height="(\d+)(|px)"/);
+    let width = xmlString.match(/width="(\d+)(|px)"/);
+
+    if (!height || !width) {
+      alert("Invalid SVG file, you need to have an height and width attribute");
+      return;
+    }
+
+    let fillRegex = new RegExp(`fill="#.{6}"`, "g");
+    xmlString = xmlString.replace(fillRegex, `fill="#ffffff"`);
+
+    let strokeRegex = new RegExp(`stroke="#.{6}"`, "g");
+    xmlString = xmlString.replace(strokeRegex, `stroke="#000000"`);
+
+    let dataURL = `data:image/svg+xml;base64,${btoa(xmlString)}`;
+
+    let img: WImageDescription = {
+      id: game.nextAvailableImageId,
+      name: file.name,
+      path: dataURL,
+      x: 0,
+      y: 0,
+      width: 100,
+      height: 100,
+    };
+
+    game.images.push(img);
+
+    game.nextAvailableImageId++;
+
+    saveGame(game);
+
+    createSprite(img);
+  };
+  reader.readAsText(file);
 }

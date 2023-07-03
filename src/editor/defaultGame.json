@@ -1,13 +1,4 @@
 {
-  "images": [
-    {
-      "x": 0,
-      "y": 0,
-      "width": 500,
-      "height": 100,
-      "path": "./img/Cat.svg",
-      "name": "Cat",
-      "id": 1
-    }
-  ]
+  "nextAvailableImageId": 0,
+  "images": []
 }
