@@ -2,7 +2,13 @@ import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 import * as lua from "monaco-editor/esm/vs/basic-languages/lua/lua";
 import { initEngine, stopEngine } from "../engine/engine";
 import { addSprite, initEditorView } from "./editorView";
-import { destroyStorage, loadCode, loadGame, saveCode } from "./storage";
+import {
+  loadCode,
+  loadGame,
+  loadGameLocal,
+  saveCode,
+  saveGameLocal,
+} from "./storage";
 
 import "../styles/editor.css";
 
@@ -57,7 +63,7 @@ export function initEditor(editorContainer: HTMLElement) {
     input.click();
   });
 
-  document.getElementById("resetCache")!.addEventListener("click", () => {
-    destroyStorage();
-  });
+  document.getElementById("save")!.addEventListener("click", saveGameLocal);
+
+  document.getElementById("load")!.addEventListener("click", loadGameLocal);
 }

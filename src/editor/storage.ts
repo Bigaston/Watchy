@@ -1,6 +1,8 @@
 import { WGameDescription } from "../types/types";
 import defaultGame from "./defaultGame.json?raw";
 
+const OFFUSCATE = true;
+
 export function saveCode(code: string) {
   let game = loadGame();
 
@@ -27,4 +29,53 @@ export function destroyStorage() {
   localStorage.setItem("game", defaultGame);
 
   window.location.reload();
+}
+
+export function loadGameLocal() {
+  let input = document.createElement("input");
+  input.type = "file";
+  input.accept = OFFUSCATE ? ".watchy" : ".json";
+
+  input.addEventListener("change", () => {
+    if (!input.files) return;
+
+    let file = input.files![0];
+
+    let reader = new FileReader();
+
+    reader.onload = () => {
+      let gameString = reader.result as string;
+
+      let game: WGameDescription;
+
+      if (OFFUSCATE) {
+        game = JSON.parse(atob(gameString));
+      } else {
+        game = JSON.parse(gameString);
+      }
+
+      saveGame(game);
+      window.location.reload();
+    };
+
+    reader.readAsText(file);
+  });
+
+  input.click();
+}
+
+export function saveGameLocal() {
+  let game = loadGame();
+  let gameString = OFFUSCATE
+    ? btoa(JSON.stringify(game))
+    : JSON.stringify(game);
+
+  let link = document.createElement("a");
+  link.download = OFFUSCATE
+    ? `game-${Date.now()}.watchy`
+    : `game-${Date.now()}.json`;
+
+  link.href = `data:text/text;charset=utf-8,${gameString}`;
+
+  link.click();
 }
