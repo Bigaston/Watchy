@@ -1,6 +1,7 @@
 import { Sprite } from "pixi.js";
 
 export interface WGameDescription {
+  nextAvailableImageId: number;
   images: WImageDescription[];
   code: string;
 }
@@ -14,6 +15,8 @@ export interface WImageDescription {
   width: number;
   height: number;
 }
+
+export interface WImageDescriptionUpdate extends Partial<WImageDescription> {}
 
 export enum WImageStatus {
   ON,

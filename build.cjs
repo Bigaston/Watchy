@@ -3,6 +3,12 @@ const path = require("path");
 const fs = require("fs");
 
 execSync("npm run engine:build", { stdio: "inherit" });
+fs.cpSync(
+  path.join(__dirname, "./dist_engine/engine.html"),
+  path.join(__dirname, "./public/watchy.html")
+);
+
+execSync("npm run editor:build", { stdio: "inherit" });
 execSync("npm run doc:build:prod", { stdio: "inherit" });
 
 fs.cpSync(

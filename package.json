@@ -6,17 +6,19 @@
   "scripts": {
     "dev": "vite",
     "build": "node ./build.cjs",
-    "engine:build": "tsc && vite build",
+    "editor:build": "tsc && vite build",
     "preview": "vite preview",
     "doc:build": "eleventy --config .eleventy.cjs",
     "doc:build:prod": "cross-env URL_BASE_DOC=/Watchy/docs eleventy --config .eleventy.cjs",
-    "doc:serve": "eleventy --config .eleventy.cjs --serve"
+    "doc:serve": "eleventy --config .eleventy.cjs --serve",
+    "engine:build": "tsc && vite build --config ./viteEngine.config.js"
   },
   "devDependencies": {
     "@11ty/eleventy": "^2.0.1",
     "cross-env": "^7.0.3",
     "typescript": "^5.0.2",
-    "vite": "^4.3.9"
+    "vite": "^4.3.9",
+    "vite-plugin-singlefile": "^0.13.5"
   },
   "dependencies": {
     "monaco-editor": "^0.39.0",

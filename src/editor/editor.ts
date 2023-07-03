@@ -1,9 +1,19 @@
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 import * as lua from "monaco-editor/esm/vs/basic-languages/lua/lua";
-import defaultCode from "./default.lua?raw";
-import { isOk } from "../utils";
-import { WGameDescription } from "../engine/types/types";
 import { initEngine, stopEngine } from "../engine/engine";
+import { addSprite, initEditorView } from "./editorView";
+import {
+  buildGame,
+  loadCode,
+  loadGame,
+  loadGameLocal,
+  saveCode,
+  saveGameLocal,
+} from "./storage";
+
+import "../styles/editor.css";
+
+const rendererElement = document.getElementById("renderer")!;
 
 export function initEditor(editorContainer: HTMLElement) {
   monaco.languages.register({ id: "lua" });
@@ -21,26 +31,41 @@ export function initEditor(editorContainer: HTMLElement) {
     saveCode(editor.getValue());
   });
 
-  document.getElementById("run")!.addEventListener("click", () => {
-    let code = editor.getValue();
+  initEditorView();
 
-    fetch("./game.json")
-      .then(isOk)
-      .then((game: WGameDescription) => {
-        stopEngine();
-        initEngine(code, game, document.getElementById("renderer")!);
-      });
+  // Lauch game
+  document.getElementById("run")!.addEventListener("click", () => {
+    let game = loadGame();
+
+    rendererElement.innerHTML = "";
+    stopEngine();
+    initEngine(game, rendererElement);
   });
 
   document.getElementById("stop")!.addEventListener("click", () => {
     stopEngine();
+    rendererElement.innerHTML = "";
+
+    initEditorView();
   });
-}
 
-function saveCode(code: string) {
-  localStorage.setItem("code", code);
-}
+  document.getElementById("addImage")!.addEventListener("click", () => {
+    let input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/svg+xml";
 
-function loadCode() {
-  return localStorage.getItem("code") || defaultCode;
+    input.addEventListener("change", () => {
+      if (!input.files) return;
+
+      addSprite(input.files![0]);
+    });
+
+    input.click();
+  });
+
+  document.getElementById("save")!.addEventListener("click", saveGameLocal);
+
+  document.getElementById("load")!.addEventListener("click", loadGameLocal);
+
+  document.getElementById("build")!.addEventListener("click", buildGame);
 }
