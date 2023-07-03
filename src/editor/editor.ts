@@ -4,7 +4,7 @@ import { isOk } from "../utils";
 import { WGameDescription } from "../types/types";
 import { initEngine, stopEngine } from "../engine/engine";
 import { initEditorView } from "./editorView";
-import { loadCode, saveCode } from "./storage";
+import { loadCode, loadGame, saveCode } from "./storage";
 
 const rendererElement = document.getElementById("renderer")!;
 
@@ -29,16 +29,17 @@ export function initEditor(editorContainer: HTMLElement) {
   // Lauch game
   document.getElementById("run")!.addEventListener("click", () => {
     let code = editor.getValue();
+    let game = loadGame();
 
-    fetch("./game.json")
-      .then(isOk)
-      .then((game: WGameDescription) => {
-        stopEngine();
-        initEngine(code, game, rendererElement);
-      });
+    rendererElement.innerHTML = "";
+    stopEngine();
+    initEngine(code, game, rendererElement);
   });
 
   document.getElementById("stop")!.addEventListener("click", () => {
     stopEngine();
+    rendererElement.innerHTML = "";
+
+    initEditorView();
   });
 }
