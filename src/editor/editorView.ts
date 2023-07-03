@@ -11,6 +11,7 @@ const rendererElement = document.getElementById("renderer")!;
 let app: PIXI.Application;
 
 let selectedSprite: WImage | undefined;
+let selectSquare: PIXI.Graphics;
 
 export const sprites: WImage[] = [];
 
@@ -29,6 +30,18 @@ export function initEditorView() {
   resize();
 
   app.ticker.add(ticker);
+
+  // Add image background
+  let background = new PIXI.Sprite(PIXI.Texture.EMPTY);
+  background.width = width;
+  background.height = height;
+  background.eventMode = "static";
+
+  background.on("pointerdown", (_event) => {
+    selectedSprite = undefined;
+  });
+
+  app.stage.addChild(background);
 
   // Load Game Sprites
   let game = loadGame();
@@ -53,21 +66,38 @@ export function initEditorView() {
 
     sprites.push(wImage);
 
-    spr.onclick = () => {
+    spr.on("pointerdown", (event) => {
       onSelectSprite(wImage);
-    };
+    });
 
     spr.cursor = "pointer";
 
     app.stage.addChild(spr);
   });
+
+  // Initialize Select Square
+  selectSquare = new PIXI.Graphics();
+
+  app.stage.addChild(selectSquare);
 }
 
 function onSelectSprite(sprite: WImage) {
   selectedSprite = sprite;
 }
 
-function ticker(delta: number) {}
+function ticker(delta: number) {
+  if (selectedSprite) {
+    selectSquare.lineStyle(2, 0x000000, 1);
+    selectSquare.drawRect(
+      selectedSprite.sprite.x,
+      selectedSprite.sprite.y,
+      selectedSprite.sprite.width,
+      selectedSprite.sprite.height
+    );
+  } else {
+    selectSquare.clear();
+  }
+}
 
 function resize() {
   // current screen size
