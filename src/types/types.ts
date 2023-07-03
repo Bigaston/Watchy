@@ -16,6 +16,8 @@ export interface WImageDescription {
   height: number;
 }
 
+export interface WImageDescriptionUpdate extends Partial<WImageDescription> {}
+
 export enum WImageStatus {
   ON,
   OFF,

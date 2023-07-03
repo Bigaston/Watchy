@@ -1,5 +1,4 @@
 import { initEditor } from "./editor/editor";
-import "./styles/editor.css";
 import "./styles/styles.css";
 
 // import { initEngine } from "./engine/engine";

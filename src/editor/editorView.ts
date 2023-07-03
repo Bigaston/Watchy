@@ -3,10 +3,12 @@ import {
   WGameDescription,
   WImage,
   WImageDescription,
+  WImageDescriptionUpdate,
   WImageStatus,
 } from "../types/types";
 import { loadGame, saveGame } from "./storage";
 import { PALETTE } from "../types/colorPalette";
+import { clearInfo, displaySpriteInfo } from "./contextualInfo";
 
 const width = 900;
 const height = 600;
@@ -37,8 +39,6 @@ export function initEditorView() {
     autoDensity: true,
   });
 
-  PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
-
   rendererElement.appendChild(app.view as any as Node);
 
   window.addEventListener("resize", resize);
@@ -54,7 +54,8 @@ export function initEditorView() {
 
   background.on("pointerdown", (_event) => {
     selectedSprite = undefined;
-    hoverSelector.removeChildren();
+    clearInfo();
+    stopSelection();
   });
 
   app.stage.addChild(background);
@@ -108,7 +109,7 @@ async function createSprite(image: WImageDescription) {
 
   sprites.push(wImage);
 
-  spr.onpointerdown = (event) => {
+  spr.on("pointerdown", (event) => {
     onSelectSprite(wImage);
     isSelectedSpriteDragged = true;
 
@@ -118,7 +119,24 @@ async function createSprite(image: WImageDescription) {
     spr.cursor = "move";
 
     initSelectionBox(spr, wImage);
-  };
+    displaySpriteInfo(wImage, {
+      onChange: (key, value) => {
+        if (key === "name") {
+          updateImage(wImage.id, { name: value });
+          wImage.name = value;
+          saveGame(game);
+        }
+      },
+      onDelete: () => {
+        spr.removeFromParent();
+        sprites.splice(sprites.indexOf(wImage), 1);
+        game.images = game.images.filter((image) => image.id !== wImage.id);
+        saveGame(game);
+
+        stopSelection();
+      },
+    });
+  });
 
   spr.on("pointerup", (_event) => {
     isSelectedSpriteDragged = false;
@@ -143,6 +161,15 @@ async function createSprite(image: WImageDescription) {
 
 function onSelectSprite(sprite: WImage) {
   selectedSprite = sprite;
+}
+
+function stopSelection() {
+  selectedSprite = undefined;
+  isSelectedSpriteDragged = false;
+  isSelectedResized = false;
+
+  hoverSelector.removeChildren();
+  clearInfo();
 }
 
 function ticker(_delta: number) {
@@ -289,4 +316,13 @@ export function addSprite(file: File) {
     createSprite(img);
   };
   reader.readAsText(file);
+}
+
+function updateImage(id: number, img: WImageDescriptionUpdate) {
+  game.images = game.images.map((image) => {
+    if (image.id === id) {
+      image = { ...image, ...img };
+    }
+    return image;
+  });
 }

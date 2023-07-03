@@ -4,6 +4,8 @@ import { initEngine, stopEngine } from "../engine/engine";
 import { addSprite, initEditorView } from "./editorView";
 import { destroyStorage, loadCode, loadGame, saveCode } from "./storage";
 
+import "../styles/editor.css";
+
 const rendererElement = document.getElementById("renderer")!;
 
 export function initEditor(editorContainer: HTMLElement) {
