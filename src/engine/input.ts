@@ -31,8 +31,8 @@ export function initInput(functionObject: { [key: string]: Function }) {
   document.addEventListener("keydown", keyDown);
   document.addEventListener("keyup", keyUp);
 
-  functionObject["btn_pressed"] = buttonPressed;
-  functionObject["btn_just_pressed"] = buttonJustPressed;
+  functionObject["btnPressed"] = buttonPressed;
+  functionObject["btnJustPressed"] = buttonJustPressed;
 }
 
 export function stopInput() {

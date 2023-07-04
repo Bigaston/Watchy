@@ -9,7 +9,7 @@ export function initDisplay(
   gameDescription: WGameDescription,
   functionObject: { [key: string]: undefined | Function }
 ) {
-  functionObject["set_status"] = setEnabled;
+  functionObject["setStatus"] = setEnabled;
 
   // Create All Sprites
   gameDescription.images.forEach((image) => {

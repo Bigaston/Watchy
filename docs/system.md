@@ -19,5 +19,5 @@ Pause the game. If the game is paused, the GAME_UPDATE function will not be call
 Resume the game. If the game is paused, the GAME_UPDATE function will be called.
 
 ### Global Variables
-#### IS_PAUSED
+#### isPaused
 True if the game is paused, false otherwise.

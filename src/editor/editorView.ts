@@ -1,10 +1,5 @@
 import * as PIXI from "pixi.js";
-import {
-  WImage,
-  WImageDescription,
-  WImageDescriptionUpdate,
-  WImageStatus,
-} from "../types/types";
+import { WImage, WImageDescription, WImageStatus } from "../types/types";
 import { loadGame, saveGame } from "./storage";
 import { PALETTE } from "../types/colorPalette";
 import { clearInfo, displaySpriteInfo } from "./contextualInfo";
@@ -345,7 +340,7 @@ export function addSprite(file: File) {
   reader.readAsText(file);
 }
 
-function updateImage(id: number, img: WImageDescriptionUpdate) {
+function updateImage(id: number, img: Partial<WImageDescription>) {
   let game = loadGame();
 
   game.images = game.images.map((image) => {

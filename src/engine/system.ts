@@ -9,14 +9,14 @@ export function initSystem(
   functionObject["pause"] = pause;
   functionObject["resume"] = resume;
 
-  lua.global.set("is_paused", false);
+  lua.global.set("isPaused", false);
 
   function pause() {
     isPaused = true;
-    lua.global.set("is_paused", true);
+    lua.global.set("isPaused", true);
   }
   function resume() {
     isPaused = false;
-    lua.global.set("is_paused", false);
+    lua.global.set("isPaused", false);
   }
 }
