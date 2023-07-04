@@ -1,5 +1,3 @@
-import { LuaEngine } from "wasmoon";
-
 const inputStatus: { [key: string]: boolean } = {
   LEFT: false,
   RIGHT: false,
@@ -29,12 +27,12 @@ const KEY_BINDING: { [key: string]: string } = {
 
 const hasBeenRelease: { [key: string]: boolean } = {};
 
-export function initInput(lua: LuaEngine) {
+export function initInput(functionObject: { [key: string]: Function }) {
   document.addEventListener("keydown", keyDown);
   document.addEventListener("keyup", keyUp);
 
-  lua.global.set("BUTTON_PRESSED", buttonPressed);
-  lua.global.set("BUTTON_JUST_PRESSED", buttonJustPressed);
+  functionObject["btn_pressed"] = buttonPressed;
+  functionObject["btn_just_pressed"] = buttonJustPressed;
 }
 
 export function stopInput() {

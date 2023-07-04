@@ -12,10 +12,10 @@ The game loop rely on 4 functions that you can define in your game:
 You can control the GAME_UPDATE function with the PAUSE() and RESUME() functions (see below).
 
 ### Functions
-#### PAUSE()
+#### watchy.pause()
 Pause the game. If the game is paused, the GAME_UPDATE function will not be called.
 
-#### RESUME()
+#### watchy.resume()
 Resume the game. If the game is paused, the GAME_UPDATE function will be called.
 
 ### Global Variables

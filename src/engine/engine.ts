@@ -56,9 +56,13 @@ export async function initEngine(
 
   app.stage.addChild(background);
 
-  initInput(lua);
-  initDisplay(lua, app, gameDescription);
-  initSystem(lua);
+  let functionObject = {};
+
+  initInput(functionObject);
+  initDisplay(app, gameDescription, functionObject);
+  initSystem(lua, functionObject);
+
+  lua.global.set("watchy", functionObject);
 
   // Execute Lua Code
   await lua.doString(gameDescription.code);

@@ -1,16 +1,15 @@
 import * as PIXI from "pixi.js";
-import { LuaEngine } from "wasmoon";
 import { WGameDescription, WImage, WImageStatus } from "../types/types";
 import { PALETTE } from "../types/colorPalette";
 
 export const sprites: WImage[] = [];
 
 export function initDisplay(
-  lua: LuaEngine,
   app: PIXI.Application,
-  gameDescription: WGameDescription
+  gameDescription: WGameDescription,
+  functionObject: { [key: string]: undefined | Function }
 ) {
-  lua.global.set("SET_ENABLED", setEnabled);
+  functionObject["set_status"] = setEnabled;
 
   // Create All Sprites
   gameDescription.images.forEach((image) => {
