@@ -1,6 +1,7 @@
 import { WImage } from "../types/types";
 import { onSelectSpriteFromDescription, updateBackground } from "./editorView";
 import { loadGame, saveGame } from "./storage";
+import crel from "crel";
 
 const DEBOUNCE_TIME = 300;
 
@@ -94,6 +95,7 @@ export function clearInfo() {
     },
   });
 
+  // Sprite List
   let spritesTitle = document.createElement("h3");
   spritesTitle.innerHTML = `Sprites`;
 
@@ -116,6 +118,16 @@ export function clearInfo() {
 
     spriteList.appendChild(spriteItem);
   });
+
+  // Sound List
+  crel(
+    infoDiv,
+    crel("h3", "Sounds"),
+    crel(
+      "ul",
+      loadGame().sounds.map((sound) => crel("li", sound.name))
+    )
+  );
 }
 
 // Helper Function

@@ -2,6 +2,7 @@ import { Sprite } from "pixi.js";
 
 export interface WGameDescription {
   nextAvailableImageId: number;
+  nextAvailableSoundId: number;
   images: WImageDescription[];
   sounds: WSoundDescription[];
   code: string;

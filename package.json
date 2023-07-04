@@ -21,6 +21,7 @@
     "vite-plugin-singlefile": "^0.13.5"
   },
   "dependencies": {
+    "crel": "^4.2.1",
     "monaco-editor": "^0.39.0",
     "pixi.js": "^7.2.4",
     "wasmoon": "^1.15.0"
