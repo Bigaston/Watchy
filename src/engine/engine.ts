@@ -45,6 +45,17 @@ export async function initEngine(
   window.addEventListener("resize", () => resize(app, renderElement));
   resize(app, renderElement);
 
+  // Init Background
+  let background = new PIXI.Sprite(
+    gameDescription.background
+      ? PIXI.Texture.from(gameDescription.background)
+      : PIXI.Texture.EMPTY
+  );
+  background.width = width;
+  background.height = height;
+
+  app.stage.addChild(background);
+
   initInput(lua);
   initDisplay(lua, app, gameDescription);
   initSystem(lua);

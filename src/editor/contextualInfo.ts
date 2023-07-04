@@ -1,5 +1,5 @@
 import { WImage } from "../types/types";
-import { onSelectSpriteFromDescription } from "./editorView";
+import { onSelectSpriteFromDescription, updateBackground } from "./editorView";
 import { loadGame, saveGame } from "./storage";
 
 const DEBOUNCE_TIME = 300;
@@ -56,6 +56,41 @@ export function clearInfo() {
     value: loadGame().title,
     onChange: (value) => {
       saveGame({ ...loadGame(), title: value });
+    },
+  });
+
+  createButton({
+    label: "🖼️ Update Wallpaper",
+    type: "button-primary",
+    onClick: () => {
+      let input = document.createElement("input");
+      input.type = "file";
+      input.accept = "image/png, image/jpg, image/jpeg";
+
+      input.addEventListener("change", () => {
+        if (!input.files) return;
+
+        console.log(input.files[0]);
+
+        let reader = new FileReader();
+        reader.onload = () => {
+          saveGame({ ...loadGame(), background: reader.result as string });
+
+          updateBackground();
+        };
+        reader.readAsDataURL(input.files[0]);
+      });
+
+      input.click();
+    },
+  });
+
+  createButton({
+    label: "🖼️🚮 Delete Background",
+    type: "button-error",
+    onClick: () => {
+      saveGame({ ...loadGame(), background: undefined });
+      updateBackground();
     },
   });
 

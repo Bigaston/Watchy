@@ -5,6 +5,7 @@ export interface WGameDescription {
   images: WImageDescription[];
   code: string;
   title: string;
+  background?: string;
 }
 
 export interface WImageDescription {

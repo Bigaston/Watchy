@@ -1,6 +1,5 @@
 import * as PIXI from "pixi.js";
 import {
-  WGameDescription,
   WImage,
   WImageDescription,
   WImageDescriptionUpdate,
@@ -26,11 +25,11 @@ let mousePosition = { x: 0, y: 0 };
 
 let hoverSelector = new PIXI.Container();
 
-let game: WGameDescription;
-
 export const sprites: WImage[] = [];
 
 export function initEditorView() {
+  let game = loadGame();
+
   app = new PIXI.Application({
     width: width,
     height: height,
@@ -47,7 +46,9 @@ export function initEditorView() {
   app.ticker.add(ticker);
 
   // Add image background
-  let background = new PIXI.Sprite(PIXI.Texture.EMPTY);
+  let background = new PIXI.Sprite(
+    game.background ? PIXI.Texture.from(game.background) : PIXI.Texture.EMPTY
+  );
   background.width = width;
   background.height = height;
   background.eventMode = "static";
@@ -60,8 +61,7 @@ export function initEditorView() {
 
   app.stage.addChild(background);
 
-  // Load Game Sprites
-  game = loadGame();
+  // Load Game Sprite
 
   game.images.forEach(createSprite);
 
@@ -119,6 +119,8 @@ async function createSprite(image: WImageDescription) {
     spr.cursor = "move";
   });
 
+  let game = loadGame();
+
   spr.on("pointerup", (_event) => {
     isSelectedSpriteDragged = false;
 
@@ -141,6 +143,8 @@ async function createSprite(image: WImageDescription) {
 }
 
 function onSelectSprite(sprite: WImage) {
+  let game = loadGame();
+
   selectedSprite = sprite;
 
   initSelectionBox(sprite.sprite, sprite);
@@ -170,6 +174,17 @@ export function onSelectSpriteFromDescription(sprite: WImageDescription) {
   if (spr) {
     onSelectSprite(spr);
   }
+}
+
+export function updateBackground() {
+  let game = loadGame();
+  let background = app.stage.getChildAt(0) as PIXI.Sprite;
+
+  background.texture = game.background
+    ? PIXI.Texture.from(game.background)
+    : PIXI.Texture.EMPTY;
+
+  background.texture.update();
 }
 
 function stopSelection() {
@@ -214,6 +229,7 @@ function ticker(_delta: number) {
 }
 
 function initSelectionBox(spr: PIXI.Sprite, wSpr: WImage) {
+  let game = loadGame();
   hoverSelector.removeChildren();
 
   let square = new PIXI.Graphics();
@@ -285,6 +301,8 @@ function resize() {
 }
 
 export function addSprite(file: File) {
+  let game = loadGame();
+
   const reader = new FileReader();
   reader.onloadend = () => {
     let xmlString = reader.result?.toString() as string;
@@ -328,6 +346,8 @@ export function addSprite(file: File) {
 }
 
 function updateImage(id: number, img: WImageDescriptionUpdate) {
+  let game = loadGame();
+
   game.images = game.images.map((image) => {
     if (image.id === id) {
       image = { ...image, ...img };
