@@ -125,7 +125,9 @@ export function clearInfo() {
     crel("h3", "Sounds"),
     crel(
       "ul",
-      loadGame().sounds.map((sound) => crel("li", sound.name))
+      loadGame().sounds.map((sound) =>
+        crel("li", sound.name + " (id: " + sound.id + ")")
+      )
     )
   );
 }

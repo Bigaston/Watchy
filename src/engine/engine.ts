@@ -62,7 +62,7 @@ export async function initEngine(
   initInput(functionObject);
   initDisplay(app, gameDescription, functionObject);
   initSystem(lua, functionObject);
-  initSound(functionObject);
+  initSound(functionObject, gameDescription);
 
   lua.global.set("watchy", functionObject);
 
