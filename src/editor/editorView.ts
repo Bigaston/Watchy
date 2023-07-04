@@ -117,25 +117,6 @@ async function createSprite(image: WImageDescription) {
     mouseOffset.y = event.data.global.y - spr.y;
 
     spr.cursor = "move";
-
-    initSelectionBox(spr, wImage);
-    displaySpriteInfo(wImage, {
-      onChange: (key, value) => {
-        if (key === "name") {
-          updateImage(wImage.id, { name: value });
-          wImage.name = value;
-          saveGame(game);
-        }
-      },
-      onDelete: () => {
-        spr.removeFromParent();
-        sprites.splice(sprites.indexOf(wImage), 1);
-        game.images = game.images.filter((image) => image.id !== wImage.id);
-        saveGame(game);
-
-        stopSelection();
-      },
-    });
   });
 
   spr.on("pointerup", (_event) => {
@@ -161,6 +142,34 @@ async function createSprite(image: WImageDescription) {
 
 function onSelectSprite(sprite: WImage) {
   selectedSprite = sprite;
+
+  initSelectionBox(sprite.sprite, sprite);
+
+  displaySpriteInfo(sprite, {
+    onChange: (key, value) => {
+      if (key === "name") {
+        updateImage(sprite.id, { name: value });
+        sprite.name = value;
+        saveGame(game);
+      }
+    },
+    onDelete: () => {
+      sprite.sprite.removeFromParent();
+      sprites.splice(sprites.indexOf(sprite), 1);
+      game.images = game.images.filter((image) => image.id !== sprite.id);
+      saveGame(game);
+
+      stopSelection();
+    },
+  });
+}
+
+export function onSelectSpriteFromDescription(sprite: WImageDescription) {
+  let spr = sprites.find((spr) => spr.id === sprite.id);
+
+  if (spr) {
+    onSelectSprite(spr);
+  }
 }
 
 function stopSelection() {

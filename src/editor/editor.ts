@@ -12,6 +12,7 @@ import {
 } from "./storage";
 
 import "../styles/editor.css";
+import { clearInfo } from "./contextualInfo";
 
 const rendererElement = document.getElementById("renderer")!;
 
@@ -32,6 +33,7 @@ export function initEditor(editorContainer: HTMLElement) {
   });
 
   initEditorView();
+  clearInfo();
 
   // Lauch game
   document.getElementById("run")!.addEventListener("click", () => {
@@ -39,7 +41,7 @@ export function initEditor(editorContainer: HTMLElement) {
 
     rendererElement.innerHTML = "";
     stopEngine();
-    initEngine(game, rendererElement);
+    initEngine(game, rendererElement, true);
   });
 
   document.getElementById("stop")!.addEventListener("click", () => {

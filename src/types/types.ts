@@ -4,6 +4,7 @@ export interface WGameDescription {
   nextAvailableImageId: number;
   images: WImageDescription[];
   code: string;
+  title: string;
 }
 
 export interface WImageDescription {

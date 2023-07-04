@@ -25,7 +25,8 @@ let gameFunction: { [key: string]: undefined | Function } = {
 
 export async function initEngine(
   gameDescription: WGameDescription,
-  _renderElement: HTMLElement
+  _renderElement: HTMLElement,
+  embed: boolean = false
 ) {
   lua = await factory.createEngine();
   renderElement = _renderElement;
@@ -65,6 +66,10 @@ export async function initEngine(
   app.ticker.add(ticker);
 
   hasBeenInitialized = true;
+
+  if (!embed) {
+    document.title = gameDescription.title + " - Watchy";
+  }
 }
 
 function ticker(delta: number) {
