@@ -7,6 +7,7 @@ fs.cpSync(
   path.join(__dirname, "./dist_engine/engine.html"),
   path.join(__dirname, "./public/watchy.html")
 );
+fs.rmSync(path.join(__dirname, "./dist_engine"), { recursive: true });
 
 execSync("npm run editor:build", { stdio: "inherit" });
 execSync("npm run doc:build:prod", { stdio: "inherit" });

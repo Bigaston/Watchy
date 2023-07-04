@@ -4,6 +4,7 @@ import { WGameDescription } from "../types/types";
 import { initInput, stopInput } from "./input";
 import { initDisplay, stopDisplay } from "./display";
 import { initSystem, isPaused } from "./system";
+import { initSound } from "./sound";
 
 const factory = new LuaFactory();
 
@@ -61,6 +62,7 @@ export async function initEngine(
   initInput(functionObject);
   initDisplay(app, gameDescription, functionObject);
   initSystem(lua, functionObject);
+  initSound();
 
   lua.global.set("watchy", functionObject);
 
