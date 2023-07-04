@@ -1,11 +1,5 @@
 import * as PIXI from "pixi.js";
-import {
-  WGameDescription,
-  WImage,
-  WImageDescription,
-  WImageDescriptionUpdate,
-  WImageStatus,
-} from "../types/types";
+import { WImage, WImageDescription, WImageStatus } from "../types/types";
 import { loadGame, saveGame } from "./storage";
 import { PALETTE } from "../types/colorPalette";
 import { clearInfo, displaySpriteInfo } from "./contextualInfo";
@@ -26,11 +20,11 @@ let mousePosition = { x: 0, y: 0 };
 
 let hoverSelector = new PIXI.Container();
 
-let game: WGameDescription;
-
 export const sprites: WImage[] = [];
 
 export function initEditorView() {
+  let game = loadGame();
+
   app = new PIXI.Application({
     width: width,
     height: height,
@@ -47,7 +41,9 @@ export function initEditorView() {
   app.ticker.add(ticker);
 
   // Add image background
-  let background = new PIXI.Sprite(PIXI.Texture.EMPTY);
+  let background = new PIXI.Sprite(
+    game.background ? PIXI.Texture.from(game.background) : PIXI.Texture.EMPTY
+  );
   background.width = width;
   background.height = height;
   background.eventMode = "static";
@@ -60,8 +56,7 @@ export function initEditorView() {
 
   app.stage.addChild(background);
 
-  // Load Game Sprites
-  game = loadGame();
+  // Load Game Sprite
 
   game.images.forEach(createSprite);
 
@@ -88,7 +83,6 @@ async function createSprite(image: WImageDescription) {
       scale: 3,
     },
   });
-  console.log(texture);
 
   let spr = new PIXI.Sprite(texture);
 
@@ -117,26 +111,9 @@ async function createSprite(image: WImageDescription) {
     mouseOffset.y = event.data.global.y - spr.y;
 
     spr.cursor = "move";
-
-    initSelectionBox(spr, wImage);
-    displaySpriteInfo(wImage, {
-      onChange: (key, value) => {
-        if (key === "name") {
-          updateImage(wImage.id, { name: value });
-          wImage.name = value;
-          saveGame(game);
-        }
-      },
-      onDelete: () => {
-        spr.removeFromParent();
-        sprites.splice(sprites.indexOf(wImage), 1);
-        game.images = game.images.filter((image) => image.id !== wImage.id);
-        saveGame(game);
-
-        stopSelection();
-      },
-    });
   });
+
+  let game = loadGame();
 
   spr.on("pointerup", (_event) => {
     isSelectedSpriteDragged = false;
@@ -160,7 +137,48 @@ async function createSprite(image: WImageDescription) {
 }
 
 function onSelectSprite(sprite: WImage) {
+  let game = loadGame();
+
   selectedSprite = sprite;
+
+  initSelectionBox(sprite.sprite, sprite);
+
+  displaySpriteInfo(sprite, {
+    onChange: (key, value) => {
+      if (key === "name") {
+        updateImage(sprite.id, { name: value });
+        sprite.name = value;
+        saveGame(game);
+      }
+    },
+    onDelete: () => {
+      sprite.sprite.removeFromParent();
+      sprites.splice(sprites.indexOf(sprite), 1);
+      game.images = game.images.filter((image) => image.id !== sprite.id);
+      saveGame(game);
+
+      stopSelection();
+    },
+  });
+}
+
+export function onSelectSpriteFromDescription(sprite: WImageDescription) {
+  let spr = sprites.find((spr) => spr.id === sprite.id);
+
+  if (spr) {
+    onSelectSprite(spr);
+  }
+}
+
+export function updateBackground() {
+  let game = loadGame();
+  let background = app.stage.getChildAt(0) as PIXI.Sprite;
+
+  background.texture = game.background
+    ? PIXI.Texture.from(game.background)
+    : PIXI.Texture.EMPTY;
+
+  background.texture.update();
 }
 
 function stopSelection() {
@@ -205,6 +223,7 @@ function ticker(_delta: number) {
 }
 
 function initSelectionBox(spr: PIXI.Sprite, wSpr: WImage) {
+  let game = loadGame();
   hoverSelector.removeChildren();
 
   let square = new PIXI.Graphics();
@@ -276,6 +295,8 @@ function resize() {
 }
 
 export function addSprite(file: File) {
+  let game = loadGame();
+
   const reader = new FileReader();
   reader.onloadend = () => {
     let xmlString = reader.result?.toString() as string;
@@ -313,12 +334,15 @@ export function addSprite(file: File) {
 
     saveGame(game);
 
+    clearInfo();
     createSprite(img);
   };
   reader.readAsText(file);
 }
 
-function updateImage(id: number, img: WImageDescriptionUpdate) {
+function updateImage(id: number, img: Partial<WImageDescription>) {
+  let game = loadGame();
+
   game.images = game.images.map((image) => {
     if (image.id === id) {
       image = { ...image, ...img };

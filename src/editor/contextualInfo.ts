@@ -1,6 +1,15 @@
-import { WImage } from "../types/types";
+import {
+  WImage,
+  WSoundDescription,
+  WSoundDescriptionJSFXR,
+} from "../types/types";
+import { onSelectSpriteFromDescription, updateBackground } from "./editorView";
+import { loadGame, saveGame } from "./storage";
+import crel from "crel";
 
-const debounceTime = 500;
+const sfxr = (window as any).sfxr;
+
+const DEBOUNCE_TIME = 300;
 
 let infoDiv = document.getElementById("infoContainer")!;
 
@@ -43,6 +52,114 @@ export function displaySpriteInfo(
 
 export function clearInfo() {
   infoDiv.innerHTML = "";
+
+  let title = document.createElement("h2");
+  title.innerHTML = `Game Info`;
+
+  infoDiv.appendChild(title);
+
+  createInput({
+    label: "Title",
+    value: loadGame().title,
+    onChange: (value) => {
+      saveGame({ ...loadGame(), title: value });
+    },
+  });
+
+  createButton({
+    label: "🖼️ Update Wallpaper",
+    type: "button-primary",
+    onClick: () => {
+      let input = document.createElement("input");
+      input.type = "file";
+      input.accept = "image/png, image/jpg, image/jpeg";
+
+      input.addEventListener("change", () => {
+        if (!input.files) return;
+
+        console.log(input.files[0]);
+
+        let reader = new FileReader();
+        reader.onload = () => {
+          saveGame({ ...loadGame(), background: reader.result as string });
+
+          updateBackground();
+        };
+        reader.readAsDataURL(input.files[0]);
+      });
+
+      input.click();
+    },
+  });
+
+  createButton({
+    label: "🖼️🚮 Delete Background",
+    type: "button-error",
+    onClick: () => {
+      saveGame({ ...loadGame(), background: undefined });
+      updateBackground();
+    },
+  });
+
+  // Sprite List
+  let spritesTitle = document.createElement("h3");
+  spritesTitle.innerHTML = `Sprites`;
+
+  infoDiv.appendChild(spritesTitle);
+
+  let sprites = loadGame().images;
+
+  let spriteList = document.createElement("ul");
+  infoDiv.appendChild(spriteList);
+
+  sprites.forEach((sprite) => {
+    let spriteItem = document.createElement("li");
+    spriteItem.innerHTML = sprite.name + " (id: " + sprite.id + ")";
+
+    spriteItem.classList.add("spriteItem");
+
+    spriteItem.addEventListener("click", () => {
+      onSelectSpriteFromDescription(sprite);
+    });
+
+    spriteList.appendChild(spriteItem);
+  });
+
+  // Sound List
+  crel(
+    infoDiv,
+    crel("h3", "Sounds"),
+    crel(
+      "ul",
+      loadGame().sounds.map((sound) =>
+        crel(
+          "li",
+          sound.name + " (id: " + sound.id + ")",
+          crel("button", { onclick: () => playSound(sound) }, "▶️"),
+          crel(
+            "button",
+            { class: "button-error", onclick: () => onDeleteSound(sound) },
+            "🚮"
+          )
+        )
+      )
+    )
+  );
+}
+
+function playSound(sound: WSoundDescription) {
+  if (sound.type === "jsfxr") {
+    sfxr.toAudio((sound as WSoundDescriptionJSFXR).content).play();
+  }
+}
+
+function onDeleteSound(sound: WSoundDescription) {
+  saveGame({
+    ...loadGame(),
+    sounds: loadGame().sounds.filter((s) => s.id !== sound.id),
+  });
+
+  clearInfo();
 }
 
 // Helper Function
@@ -71,7 +188,7 @@ function createInput(
 
     timeout = setTimeout(() => {
       options.onChange?.(input.value);
-    }, debounceTime);
+    }, DEBOUNCE_TIME);
   });
 
   infoDiv.appendChild(input);

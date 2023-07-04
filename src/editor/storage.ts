@@ -1,8 +1,10 @@
 import { WGameDescription } from "../types/types";
 import { isOkText } from "../utils";
-import defaultGame from "./defaultGame.json?raw";
+import { defaultGame } from "./defaultGame";
 
 const OFFUSCATE = true;
+
+let GAME: WGameDescription;
 
 export function saveCode(code: string) {
   let game = loadGame();
@@ -13,21 +15,25 @@ export function saveCode(code: string) {
 }
 
 export function loadCode() {
-  return JSON.parse(localStorage.getItem("game") || defaultGame).code;
+  return JSON.parse(localStorage.getItem("game") || JSON.stringify(defaultGame))
+    .code;
 }
 
 export function saveGame(game: WGameDescription) {
+  GAME = game;
   localStorage.setItem("game", JSON.stringify(game));
-
-  console.log(game);
 }
 
 export function loadGame(): WGameDescription {
-  return JSON.parse(localStorage.getItem("game") || defaultGame);
+  if (GAME) return GAME;
+
+  return JSON.parse(
+    localStorage.getItem("game") || JSON.stringify(defaultGame)
+  );
 }
 
 export function destroyStorage() {
-  localStorage.setItem("game", defaultGame);
+  localStorage.setItem("game", JSON.stringify(defaultGame));
 
   window.location.reload();
 }

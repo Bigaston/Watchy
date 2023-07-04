@@ -5,6 +5,9 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Whatchy</title>
+
+    <script src="https://sfxr.me/riffwave.js"></script>
+    <script src="https://sfxr.me/sfxr.js"></script>
   </head>
   <body>
     <div class="editor">
@@ -13,13 +16,16 @@
         <div class="row" id="renderer"></div>
         <div class="buttonContainer">
           <button id="run" class="button-primary">▶️ Run</button>
-          <button id="stop" class="button-warning">🔴 Stop</button>
-          <button id="addImage">➕ Add Image</button>
+          <button id="stop" class="button-warning" disabled>🔴 Stop</button>
+          <button id="addResource">➕ Add Resource</button>
           <button id="save">💾 Save</button>
           <button id="load">📂 Load</button>
           <button id="build">📦 Build</button>
         </div>
         <div id="infoContainer"></div>
+        <p style="text-align: center">
+          Documentation available <a href="./docs/" target="_blank">HERE</a>
+        </p>
       </div>
     </div>
     <script type="module" src="/src/main.ts"></script>

@@ -4,6 +4,7 @@ import { WGameDescription } from "../types/types";
 import { initInput, stopInput } from "./input";
 import { initDisplay, stopDisplay } from "./display";
 import { initSystem, isPaused } from "./system";
+import { initSound } from "./sound";
 
 const factory = new LuaFactory();
 
@@ -25,7 +26,8 @@ let gameFunction: { [key: string]: undefined | Function } = {
 
 export async function initEngine(
   gameDescription: WGameDescription,
-  _renderElement: HTMLElement
+  _renderElement: HTMLElement,
+  embed: boolean = false
 ) {
   lua = await factory.createEngine();
   renderElement = _renderElement;
@@ -44,9 +46,25 @@ export async function initEngine(
   window.addEventListener("resize", () => resize(app, renderElement));
   resize(app, renderElement);
 
-  initInput(lua);
-  initDisplay(lua, app, gameDescription);
-  initSystem(lua);
+  // Init Background
+  let background = new PIXI.Sprite(
+    gameDescription.background
+      ? PIXI.Texture.from(gameDescription.background)
+      : PIXI.Texture.EMPTY
+  );
+  background.width = width;
+  background.height = height;
+
+  app.stage.addChild(background);
+
+  let functionObject = {};
+
+  initInput(functionObject);
+  initDisplay(app, gameDescription, functionObject);
+  initSystem(lua, functionObject);
+  initSound(functionObject, gameDescription);
+
+  lua.global.set("watchy", functionObject);
 
   // Execute Lua Code
   await lua.doString(gameDescription.code);
@@ -65,6 +83,10 @@ export async function initEngine(
   app.ticker.add(ticker);
 
   hasBeenInitialized = true;
+
+  if (!embed) {
+    document.title = gameDescription.title + " - Watchy";
+  }
 }
 
 function ticker(delta: number) {

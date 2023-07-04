@@ -4,7 +4,7 @@ tags: nav
 ---
 
 ### Functions
-#### SET_ENABLED(zoneId, isEnabled)
+#### watchy.setStatus(zoneId, isEnabled)
 Set if the given zone is enabled or not.
 
 ##### Parameters

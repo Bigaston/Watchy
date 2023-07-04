@@ -48,6 +48,10 @@
   box-shadow: 0 5px 5px 0 rgba(0, 0, 0, 0.1);
 }
 
+.spriteItem:hover {
+  cursor: pointer;
+}
+
 .spriteId {
   font-style: italic;
   color: gray;
@@ -104,6 +108,16 @@ input[type="button"]:focus {
   border-color: #888;
   outline: 0;
 }
+
+.button:disabled,
+button:disabled,
+input[type="submit"]:disabled,
+input[type="reset"]:disabled,
+input[type="button"]:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
 .button.button-primary,
 button.button-primary,
 input[type="submit"].button-primary,
