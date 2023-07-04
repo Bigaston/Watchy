@@ -39,12 +39,18 @@ export function initEditor(editorContainer: HTMLElement) {
   document.getElementById("run")!.addEventListener("click", () => {
     let game = loadGame();
 
+    (document.getElementById("run")! as HTMLButtonElement).disabled = true;
+    (document.getElementById("stop")! as HTMLButtonElement).disabled = false;
+
     rendererElement.innerHTML = "";
     stopEngine();
     initEngine(game, rendererElement, true);
   });
 
   document.getElementById("stop")!.addEventListener("click", () => {
+    (document.getElementById("run")! as HTMLButtonElement).disabled = false;
+    (document.getElementById("stop")! as HTMLButtonElement).disabled = true;
+
     stopEngine();
     rendererElement.innerHTML = "";
 
