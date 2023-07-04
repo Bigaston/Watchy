@@ -83,7 +83,6 @@ async function createSprite(image: WImageDescription) {
       scale: 3,
     },
   });
-  console.log(texture);
 
   let spr = new PIXI.Sprite(texture);
 

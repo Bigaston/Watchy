@@ -13,7 +13,14 @@ export function initDisplay(
 
   // Create All Sprites
   gameDescription.images.forEach((image) => {
-    let spr = new PIXI.Sprite(PIXI.Texture.from(image.path));
+    let texture = PIXI.Texture.from(image.path, {
+      scaleMode: PIXI.SCALE_MODES.NEAREST,
+      resourceOptions: {
+        scale: 3,
+      },
+    });
+
+    let spr = new PIXI.Sprite(texture);
 
     spr.x = image.x;
     spr.y = image.y;
