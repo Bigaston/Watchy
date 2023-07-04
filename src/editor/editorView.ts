@@ -334,6 +334,7 @@ export function addSprite(file: File) {
 
     saveGame(game);
 
+    clearInfo();
     createSprite(img);
   };
   reader.readAsText(file);

@@ -1,7 +1,13 @@
-import { WImage } from "../types/types";
+import {
+  WImage,
+  WSoundDescription,
+  WSoundDescriptionJSFXR,
+} from "../types/types";
 import { onSelectSpriteFromDescription, updateBackground } from "./editorView";
 import { loadGame, saveGame } from "./storage";
 import crel from "crel";
+
+const sfxr = (window as any).sfxr;
 
 const DEBOUNCE_TIME = 300;
 
@@ -126,10 +132,34 @@ export function clearInfo() {
     crel(
       "ul",
       loadGame().sounds.map((sound) =>
-        crel("li", sound.name + " (id: " + sound.id + ")")
+        crel(
+          "li",
+          sound.name + " (id: " + sound.id + ")",
+          crel("button", { onclick: () => playSound(sound) }, "▶️"),
+          crel(
+            "button",
+            { class: "button-error", onclick: () => onDeleteSound(sound) },
+            "🚮"
+          )
+        )
       )
     )
   );
+}
+
+function playSound(sound: WSoundDescription) {
+  if (sound.type === "jsfxr") {
+    sfxr.toAudio((sound as WSoundDescriptionJSFXR).content).play();
+  }
+}
+
+function onDeleteSound(sound: WSoundDescription) {
+  saveGame({
+    ...loadGame(),
+    sounds: loadGame().sounds.filter((s) => s.id !== sound.id),
+  });
+
+  clearInfo();
 }
 
 // Helper Function
