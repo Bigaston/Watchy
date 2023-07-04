@@ -1,8 +1,9 @@
 import { WGameDescription } from "../types/types";
+import defaultCode from "./defaultCode.lua?raw";
 
 export let defaultGame: WGameDescription = {
   nextAvailableImageId: 0,
   images: [],
-  code: "function INIT()\n\nend\n\nfunction UPDATE(dt)\n\nend\n\nfunction GAME_UPDATE(dt)\n\nend\n\nfunction DRAW()\n\nend",
+  code: defaultCode,
   title: "My Watchy Game",
 };
