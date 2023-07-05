@@ -14,10 +14,12 @@ import {
   buildGame,
   loadCode,
   loadGame,
+  loadGameList,
   loadGameLocal,
   saveCode,
   saveGame,
   saveGameLocal,
+  setCurrentGameId,
 } from "./storage";
 
 import "../styles/editor.css";
@@ -103,6 +105,20 @@ export function initEditor(editorContainer: HTMLElement) {
   document.getElementById("load")!.addEventListener("click", loadGameLocal);
 
   document.getElementById("build")!.addEventListener("click", buildGame);
+
+  // Setup game selector
+  let gameSelector = document.getElementById("gameSelector")!;
+
+  crel(
+    gameSelector,
+    {
+      onchange: (e: any) => {
+        console.log(e.target.value);
+        setCurrentGameId(parseInt(e.target.value));
+      },
+    },
+    loadGameList().map((game) => crel("option", { value: game.id }, game.name))
+  );
 }
 
 function addImage(modal: Modal) {

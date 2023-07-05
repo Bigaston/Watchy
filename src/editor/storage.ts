@@ -1,4 +1,4 @@
-import { WGameDescription } from "../types/types";
+import { WGameDescription, WGameList } from "../types/types";
 import { isOkText } from "../utils";
 import { defaultGame } from "./defaultGame";
 
@@ -15,25 +15,26 @@ export function saveCode(code: string) {
 }
 
 export function loadCode() {
-  return JSON.parse(localStorage.getItem("game") || JSON.stringify(defaultGame))
-    .code;
+  return JSON.parse(
+    localStorage.getItem(`game-${currentGameId}`) || JSON.stringify(defaultGame)
+  ).code;
 }
 
 export function saveGame(game: WGameDescription) {
   GAME = game;
-  localStorage.setItem("game", JSON.stringify(game));
+  localStorage.setItem(`game-${currentGameId}`, JSON.stringify(game));
 }
 
 export function loadGame(): WGameDescription {
   if (GAME) return GAME;
 
   return JSON.parse(
-    localStorage.getItem("game") || JSON.stringify(defaultGame)
+    localStorage.getItem(`game-${currentGameId}`) || JSON.stringify(defaultGame)
   );
 }
 
 export function destroyStorage() {
-  localStorage.setItem("game", JSON.stringify(defaultGame));
+  localStorage.setItem(`game-${currentGameId}`, JSON.stringify(defaultGame));
 
   window.location.reload();
 }
@@ -105,4 +106,21 @@ export function buildGame() {
 
       link.click();
     });
+}
+
+export let nextAvailableGameId = 1;
+let currentGameId = 0;
+
+export function setCurrentGameId(id: number) {
+  currentGameId = id;
+}
+
+export function loadGameList(): WGameList[] {
+  nextAvailableGameId = parseInt(
+    localStorage.getItem("nextAvailableGameId") || "1"
+  );
+
+  return JSON.parse(
+    localStorage.getItem("gameList") || `[{"id": 0, "name": "My Watchy Game"}]`
+  );
 }

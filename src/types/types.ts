@@ -47,3 +47,8 @@ export interface WImage {
   sprite: Sprite;
   status: WImageStatus;
 }
+
+export interface WGameList {
+  id: number;
+  name: string;
+}
