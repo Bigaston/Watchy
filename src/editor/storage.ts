@@ -23,6 +23,7 @@ export function loadCode() {
 export function saveGame(game: WGameDescription) {
   GAME = game;
   localStorage.setItem(`game`, JSON.stringify(game));
+  setHasNotBeenSaved();
 }
 
 export function loadGame(): WGameDescription {
@@ -58,6 +59,7 @@ export function loadGameLocal() {
           }
 
           usedFileHandle = fileHandle[0];
+          updateGameTitle(fileHandle[0].name);
 
           fileHandle[0].getFile().then((file) => {
             loadContentFromFile(file).then(() => {
@@ -137,6 +139,7 @@ export function saveGameLocal() {
       })
       .then(() => {
         console.log("Saved");
+        setHasBeenSaved();
       });
   } else {
     if (window.showSaveFilePicker !== undefined) {
@@ -150,6 +153,7 @@ export function saveGameLocal() {
       link.href = `data:text/text;charset=utf-8,${gameString}`;
 
       link.click();
+      setHasBeenSaved();
     }
   }
 }
@@ -173,6 +177,8 @@ function openSaveAsPicker(gameString: string) {
     .then((fileHandle) => {
       usedFileHandle = fileHandle;
 
+      updateGameTitle(fileHandle.name);
+
       fileHandle
         .createWritable()
         .then((writer) => {
@@ -180,6 +186,7 @@ function openSaveAsPicker(gameString: string) {
           writer.close();
         })
         .then(() => {
+          setHasBeenSaved();
           console.log("Saved");
         });
     });
@@ -203,4 +210,27 @@ export function buildGame() {
 
       link.click();
     });
+}
+
+function updateGameTitle(gameTitle: string) {
+  document.getElementById("gameTitle")!.innerText = gameTitle;
+}
+
+let hasBeenSaved = true;
+
+function setHasNotBeenSaved() {
+  if (!hasBeenSaved) return;
+
+  document.getElementById("gameTitle")!.innerText += "*";
+  hasBeenSaved = false;
+}
+
+function setHasBeenSaved() {
+  if (!hasBeenSaved) {
+    document.getElementById("gameTitle")!.innerText = document
+      .getElementById("gameTitle")!
+      .innerText.replace("*", "");
+
+    hasBeenSaved = true;
+  }
 }
