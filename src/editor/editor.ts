@@ -14,12 +14,10 @@ import {
   buildGame,
   loadCode,
   loadGame,
-  loadGameList,
   loadGameLocal,
   saveCode,
   saveGame,
   saveGameLocal,
-  setCurrentGameId,
 } from "./storage";
 
 import "../styles/editor.css";
@@ -30,12 +28,14 @@ import { WSoundDescriptionJSFXR } from "../types/types";
 
 const rendererElement = document.getElementById("renderer")!;
 
+let editor: monaco.editor.IStandaloneCodeEditor;
+
 export function initEditor(editorContainer: HTMLElement) {
   monaco.languages.register({ id: "lua" });
   monaco.languages.setMonarchTokensProvider("lua", lua.language);
   monaco.languages.setLanguageConfiguration("lua", lua.conf);
 
-  const editor = monaco.editor.create(editorContainer, {
+  editor = monaco.editor.create(editorContainer, {
     value: loadCode(),
     language: "lua",
     automaticLayout: true,
@@ -102,23 +102,21 @@ export function initEditor(editorContainer: HTMLElement) {
 
   document.getElementById("save")!.addEventListener("click", saveGameLocal);
 
-  document.getElementById("load")!.addEventListener("click", loadGameLocal);
+  document.getElementById("load")!.addEventListener("click", handleLoadGame);
 
   document.getElementById("build")!.addEventListener("click", buildGame);
+}
 
-  // Setup game selector
-  let gameSelector = document.getElementById("gameSelector")!;
+function handleLoadGame() {
+  loadGameLocal().then(() => {
+    clearInfo();
 
-  crel(
-    gameSelector,
-    {
-      onchange: (e: any) => {
-        console.log(e.target.value);
-        setCurrentGameId(parseInt(e.target.value));
-      },
-    },
-    loadGameList().map((game) => crel("option", { value: game.id }, game.name))
-  );
+    editor.setValue(loadCode());
+
+    rendererElement.innerHTML = "";
+    initEditorView();
+    resizeEditor();
+  });
 }
 
 function addImage(modal: Modal) {
