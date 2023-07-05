@@ -1,7 +1,15 @@
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 import * as lua from "monaco-editor/esm/vs/basic-languages/lua/lua";
-import { initEngine, stopEngine } from "../engine/engine";
-import { addSprite, initEditorView } from "./editorView";
+import {
+  initEngine,
+  resize as resizeEngine,
+  stopEngine,
+} from "../engine/engine";
+import {
+  addSprite,
+  initEditorView,
+  resize as resizeEditor,
+} from "./editorView";
 import {
   buildGame,
   loadCode,
@@ -49,6 +57,7 @@ export function initEditor(editorContainer: HTMLElement) {
     rendererElement.innerHTML = "";
     stopEngine();
     initEngine(game, rendererElement, true);
+    resizeEngine();
   });
 
   document.getElementById("stop")!.addEventListener("click", () => {
@@ -59,6 +68,7 @@ export function initEditor(editorContainer: HTMLElement) {
     rendererElement.innerHTML = "";
 
     initEditorView();
+    resizeEditor();
   });
 
   document.getElementById("addResource")!.addEventListener("click", () => {

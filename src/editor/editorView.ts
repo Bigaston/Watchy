@@ -267,7 +267,7 @@ function initSelectionBox(spr: PIXI.Sprite, wSpr: WImage) {
   hoverSelector.addChild(sphere);
 }
 
-function resize() {
+export function resize() {
   // current screen size
   const screenWidth = rendererElement.clientWidth;
   const screenHeight = rendererElement.clientHeight;
