@@ -5,6 +5,7 @@ import { defaultGame } from "./defaultGame";
 const OFFUSCATE = true;
 
 let GAME: WGameDescription;
+let usedFileHandle: FileSystemFileHandle | undefined;
 
 export function saveCode(code: string) {
   let game = loadGame();
@@ -15,39 +16,80 @@ export function saveCode(code: string) {
 }
 
 export function loadCode() {
-  return JSON.parse(localStorage.getItem("game") || JSON.stringify(defaultGame))
+  return JSON.parse(localStorage.getItem(`game`) || JSON.stringify(defaultGame))
     .code;
 }
 
 export function saveGame(game: WGameDescription) {
   GAME = game;
-  localStorage.setItem("game", JSON.stringify(game));
+  localStorage.setItem(`game`, JSON.stringify(game));
 }
 
 export function loadGame(): WGameDescription {
   if (GAME) return GAME;
 
   return JSON.parse(
-    localStorage.getItem("game") || JSON.stringify(defaultGame)
+    localStorage.getItem(`game`) || JSON.stringify(defaultGame)
   );
 }
 
 export function destroyStorage() {
-  localStorage.setItem("game", JSON.stringify(defaultGame));
+  localStorage.setItem(`game`, JSON.stringify(defaultGame));
 
   window.location.reload();
 }
 
 export function loadGameLocal() {
-  let input = document.createElement("input");
-  input.type = "file";
-  input.accept = OFFUSCATE ? ".watchy" : ".json";
+  return new Promise<void>((resolve, reject) => {
+    if (window.showOpenFilePicker) {
+      window
+        .showOpenFilePicker({
+          types: [
+            {
+              description: "Watchy Game",
+              accept: { "text/watchy": [".watchy"] },
+            },
+          ],
+        })
+        .then((fileHandle) => {
+          if (!fileHandle.length) {
+            reject();
+            return;
+          }
 
-  input.addEventListener("change", () => {
-    if (!input.files) return;
+          usedFileHandle = fileHandle[0];
 
-    let file = input.files![0];
+          fileHandle[0].getFile().then((file) => {
+            loadContentFromFile(file).then(() => {
+              resolve();
+            });
+          });
+        });
+    } else {
+      let input = document.createElement("input");
+      input.type = "file";
+      input.accept = OFFUSCATE ? ".watchy" : ".json";
 
+      input.addEventListener("change", () => {
+        if (!input.files) {
+          reject();
+          return;
+        }
+
+        let file = input.files![0];
+
+        loadContentFromFile(file).then(() => {
+          resolve();
+        });
+      });
+
+      input.click();
+    }
+  });
+}
+
+function loadContentFromFile(file: File) {
+  return new Promise<void>((resolve, reject) => {
     let reader = new FileReader();
 
     reader.onload = () => {
@@ -62,13 +104,15 @@ export function loadGameLocal() {
       }
 
       saveGame(game);
-      window.location.reload();
+      resolve();
+    };
+
+    reader.onerror = () => {
+      reject();
     };
 
     reader.readAsText(file);
   });
-
-  input.click();
 }
 
 export function saveGameLocal() {
@@ -77,14 +121,51 @@ export function saveGameLocal() {
     ? btoa(JSON.stringify(game))
     : JSON.stringify(game);
 
-  let link = document.createElement("a");
-  link.download = OFFUSCATE
-    ? `game-${Date.now()}.watchy`
-    : `game-${Date.now()}.json`;
+  if (usedFileHandle) {
+    usedFileHandle
+      .createWritable()
+      .then((writer) => {
+        writer.write(gameString);
+        writer.close();
+      })
+      .then(() => {
+        console.log("Saved");
+      });
+  } else {
+    if (window.showSaveFilePicker !== undefined) {
+      window
+        .showSaveFilePicker({
+          types: [
+            {
+              description: "Watchy Game",
+              accept: { "text/watchy": [".watchy"] },
+            },
+          ],
+        })
+        .then((fileHandle) => {
+          usedFileHandle = fileHandle;
 
-  link.href = `data:text/text;charset=utf-8,${gameString}`;
+          fileHandle
+            .createWritable()
+            .then((writer) => {
+              writer.write(gameString);
+              writer.close();
+            })
+            .then(() => {
+              console.log("Saved");
+            });
+        });
+    } else {
+      let link = document.createElement("a");
+      link.download = OFFUSCATE
+        ? `${game.title}-${Date.now()}.watchy`
+        : `${game.title}-${Date.now()}.json`;
 
-  link.click();
+      link.href = `data:text/text;charset=utf-8,${gameString}`;
+
+      link.click();
+    }
+  }
 }
 
 export function buildGame() {

@@ -1,6 +1,7 @@
 import { Sprite } from "pixi.js";
 
 export interface WGameDescription {
+  descriptionVersion: 1;
   nextAvailableImageId: number;
   nextAvailableSoundId: number;
   images: WImageDescription[];

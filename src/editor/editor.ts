@@ -1,7 +1,11 @@
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 import * as lua from "monaco-editor/esm/vs/basic-languages/lua/lua";
 import { initEngine, stopEngine } from "../engine/engine";
-import { addSprite, initEditorView } from "./editorView";
+import {
+  addSprite,
+  initEditorView,
+  resize as resizeEditor,
+} from "./editorView";
 import {
   buildGame,
   loadCode,
@@ -20,12 +24,14 @@ import { WSoundDescriptionJSFXR } from "../types/types";
 
 const rendererElement = document.getElementById("renderer")!;
 
+let editor: monaco.editor.IStandaloneCodeEditor;
+
 export function initEditor(editorContainer: HTMLElement) {
   monaco.languages.register({ id: "lua" });
   monaco.languages.setMonarchTokensProvider("lua", lua.language);
   monaco.languages.setLanguageConfiguration("lua", lua.conf);
 
-  const editor = monaco.editor.create(editorContainer, {
+  editor = monaco.editor.create(editorContainer, {
     value: loadCode(),
     language: "lua",
     automaticLayout: true,
@@ -59,6 +65,7 @@ export function initEditor(editorContainer: HTMLElement) {
     rendererElement.innerHTML = "";
 
     initEditorView();
+    resizeEditor();
   });
 
   document.getElementById("addResource")!.addEventListener("click", () => {
@@ -90,9 +97,21 @@ export function initEditor(editorContainer: HTMLElement) {
 
   document.getElementById("save")!.addEventListener("click", saveGameLocal);
 
-  document.getElementById("load")!.addEventListener("click", loadGameLocal);
+  document.getElementById("load")!.addEventListener("click", handleLoadGame);
 
   document.getElementById("build")!.addEventListener("click", buildGame);
+}
+
+function handleLoadGame() {
+  loadGameLocal().then(() => {
+    clearInfo();
+
+    editor.setValue(loadCode());
+
+    rendererElement.innerHTML = "";
+    initEditorView();
+    resizeEditor();
+  });
 }
 
 function addImage(modal: Modal) {

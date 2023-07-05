@@ -10,22 +10,26 @@
     <script src="https://sfxr.me/sfxr.js"></script>
   </head>
   <body>
-    <div class="editor">
-      <div class="column" id="editor"></div>
-      <div class="column">
-        <div class="row" id="renderer"></div>
-        <div class="buttonContainer">
-          <button id="run" class="button-primary">▶️ Run</button>
-          <button id="stop" class="button-warning" disabled>🔴 Stop</button>
-          <button id="addResource">➕ Add Resource</button>
-          <button id="save">💾 Save</button>
-          <button id="load">📂 Load</button>
-          <button id="build">📦 Build</button>
+    <div class="watchy">
+      <div class="topbar">
+        <button id="load">📂 Load</button>
+        <button id="save">💾 Save</button>
+        <button id="addResource">➕ Add Resource</button>
+        <div class="topbar-separator"></div>
+        <button id="build">📦 Build</button>
+        <button id="run">▶️ Run</button>
+        <button id="stop" disabled>🔴 Stop</button>
+      </div>
+      <div class="editor">
+        <div class="column" id="editor"></div>
+        <div class="column">
+          <div class="row" id="renderer"></div>
+          <div class="buttonContainer"></div>
+          <div id="infoContainer"></div>
+          <p style="text-align: center">
+            Documentation available <a href="./docs/" target="_blank">HERE</a>
+          </p>
         </div>
-        <div id="infoContainer"></div>
-        <p style="text-align: center">
-          Documentation available <a href="./docs/" target="_blank">HERE</a>
-        </p>
       </div>
     </div>
     <script type="module" src="/src/main.ts"></script>
