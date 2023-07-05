@@ -3,11 +3,67 @@
   --color-error-dark: #cb4335;
 }
 
+html {
+  font-size: 62.5%;
+}
+body {
+  font-size: 1.5em; /* currently ems cause chrome bug misinterpreting rems on body element */
+  line-height: 1.6;
+  font-weight: 400;
+  font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial,
+    sans-serif;
+  color: #222;
+}
+
+.watchy {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100vh;
+  justify-content: start;
+}
+
+.topbar {
+  height: 40px;
+  background-color: black;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+}
+
+.topbar-separator {
+  flex-grow: 1;
+}
+
+.topbar button {
+  margin: 0;
+  color: white;
+  border: 1px solid white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  margin-right: 10px;
+  background-color: black;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.topbar button:disabled {
+  opacity: 0.5;
+}
+
+.topbar button:disabled:hover {
+  cursor: not-allowed;
+}
+
+.topbar button:hover:not(:disabled) {
+  cursor: pointer;
+  background-color: gray;
+}
+
 .editor {
   display: flex;
   flex-direction: row;
   width: 100%;
-  height: 100vh;
+  flex-grow: 1;
 }
 
 .column {
@@ -57,21 +113,9 @@
   color: gray;
 }
 
-html {
-  font-size: 62.5%;
-}
-body {
-  font-size: 1.5em; /* currently ems cause chrome bug misinterpreting rems on body element */
-  line-height: 1.6;
-  font-weight: 400;
-  font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
-  color: #222;
-}
-
 /* Buttons
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
-.button,
+/* .button,
 button,
 input[type="submit"],
 input[type="reset"],
@@ -165,7 +209,7 @@ input[type="button"].button-primary:focus {
   color: #fff;
   background-color: #1eaedb;
   border-color: #1eaedb;
-}
+} */
 
 /* Forms
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
