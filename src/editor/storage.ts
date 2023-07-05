@@ -121,7 +121,7 @@ export function saveGameLocal() {
     ? btoa(JSON.stringify(game))
     : JSON.stringify(game);
 
-  if (window.showOpenFilePicker !== undefined && usedFileHandle) {
+  if (usedFileHandle) {
     usedFileHandle
       .createWritable()
       .then((writer) => {
@@ -132,14 +132,39 @@ export function saveGameLocal() {
         console.log("Saved");
       });
   } else {
-    let link = document.createElement("a");
-    link.download = OFFUSCATE
-      ? `${game.title}-${Date.now()}.watchy`
-      : `${game.title}-${Date.now()}.json`;
+    if (window.showSaveFilePicker !== undefined) {
+      window
+        .showSaveFilePicker({
+          types: [
+            {
+              description: "Watchy Game",
+              accept: { "text/watchy": [".watchy"] },
+            },
+          ],
+        })
+        .then((fileHandle) => {
+          usedFileHandle = fileHandle;
 
-    link.href = `data:text/text;charset=utf-8,${gameString}`;
+          fileHandle
+            .createWritable()
+            .then((writer) => {
+              writer.write(gameString);
+              writer.close();
+            })
+            .then(() => {
+              console.log("Saved");
+            });
+        });
+    } else {
+      let link = document.createElement("a");
+      link.download = OFFUSCATE
+        ? `${game.title}-${Date.now()}.watchy`
+        : `${game.title}-${Date.now()}.json`;
 
-    link.click();
+      link.href = `data:text/text;charset=utf-8,${gameString}`;
+
+      link.click();
+    }
   }
 }
 
