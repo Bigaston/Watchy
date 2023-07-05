@@ -11,6 +11,7 @@ import {
   loadCode,
   loadGame,
   loadGameLocal,
+  saveAsGame,
   saveCode,
   saveGame,
   saveGameLocal,
@@ -100,6 +101,12 @@ export function initEditor(editorContainer: HTMLElement) {
   document.getElementById("load")!.addEventListener("click", handleLoadGame);
 
   document.getElementById("build")!.addEventListener("click", buildGame);
+
+  if (window.showSaveFilePicker !== undefined) {
+    document.getElementById("saveAs")!.addEventListener("click", saveAsGame);
+  } else {
+    document.getElementById("saveAs")!.style.display = "none";
+  }
 }
 
 function handleLoadGame() {

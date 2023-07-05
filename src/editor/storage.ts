@@ -115,11 +115,18 @@ function loadContentFromFile(file: File) {
   });
 }
 
-export function saveGameLocal() {
+function generateGameString() {
   let game = loadGame();
   let gameString = OFFUSCATE
     ? btoa(JSON.stringify(game))
     : JSON.stringify(game);
+
+  return gameString;
+}
+
+export function saveGameLocal() {
+  let game = loadGame();
+  let gameString = generateGameString();
 
   if (usedFileHandle) {
     usedFileHandle
@@ -133,28 +140,7 @@ export function saveGameLocal() {
       });
   } else {
     if (window.showSaveFilePicker !== undefined) {
-      window
-        .showSaveFilePicker({
-          types: [
-            {
-              description: "Watchy Game",
-              accept: { "text/watchy": [".watchy"] },
-            },
-          ],
-        })
-        .then((fileHandle) => {
-          usedFileHandle = fileHandle;
-
-          fileHandle
-            .createWritable()
-            .then((writer) => {
-              writer.write(gameString);
-              writer.close();
-            })
-            .then(() => {
-              console.log("Saved");
-            });
-        });
+      openSaveAsPicker(gameString);
     } else {
       let link = document.createElement("a");
       link.download = OFFUSCATE
@@ -166,6 +152,37 @@ export function saveGameLocal() {
       link.click();
     }
   }
+}
+
+export function saveAsGame() {
+  let gameString = generateGameString();
+
+  openSaveAsPicker(gameString);
+}
+
+function openSaveAsPicker(gameString: string) {
+  window
+    .showSaveFilePicker({
+      types: [
+        {
+          description: "Watchy Game",
+          accept: { "text/watchy": [".watchy"] },
+        },
+      ],
+    })
+    .then((fileHandle) => {
+      usedFileHandle = fileHandle;
+
+      fileHandle
+        .createWritable()
+        .then((writer) => {
+          writer.write(gameString);
+          writer.close();
+        })
+        .then(() => {
+          console.log("Saved");
+        });
+    });
 }
 
 export function buildGame() {
