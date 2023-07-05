@@ -1,10 +1,6 @@
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 import * as lua from "monaco-editor/esm/vs/basic-languages/lua/lua";
-import {
-  initEngine,
-  resize as resizeEngine,
-  stopEngine,
-} from "../engine/engine";
+import { initEngine, stopEngine } from "../engine/engine";
 import {
   addSprite,
   initEditorView,
@@ -59,7 +55,6 @@ export function initEditor(editorContainer: HTMLElement) {
     rendererElement.innerHTML = "";
     stopEngine();
     initEngine(game, rendererElement, true);
-    resizeEngine();
   });
 
   document.getElementById("stop")!.addEventListener("click", () => {
