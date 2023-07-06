@@ -105,6 +105,14 @@ function loadContentFromFile(file: File) {
         game = JSON.parse(gameString);
       }
 
+      if (game.descriptionVersion !== defaultGame.descriptionVersion) {
+        alert(
+          "This game was created with an older version of Watchy. Some features may not work as expected. We tried to feed the file with the default values."
+        );
+
+        game = { ...defaultGame, ...game };
+      }
+
       saveGame(game);
       resolve();
     };
