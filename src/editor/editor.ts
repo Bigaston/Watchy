@@ -107,6 +107,14 @@ export function initEditor(editorContainer: HTMLElement) {
   } else {
     document.getElementById("saveAs")!.style.display = "none";
   }
+
+  document.addEventListener("keydown", (e) => {
+    if (e.ctrlKey && e.key === "s") {
+      e.preventDefault();
+
+      saveGameLocal();
+    }
+  });
 }
 
 function handleLoadGame() {
