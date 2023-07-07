@@ -1,7 +1,7 @@
 import { Sprite } from "pixi.js";
 
 export interface WGameDescription {
-  descriptionVersion: 1;
+  descriptionVersion: 2;
   nextAvailableImageId: number;
   nextAvailableSoundId: number;
   images: WImageDescription[];
@@ -33,6 +33,7 @@ export interface WImageDescription {
   path: string;
   x: number;
   y: number;
+  angle: number;
   width: number;
   height: number;
 }

@@ -14,9 +14,11 @@ let app: PIXI.Application;
 let selectedSprite: WImage | undefined;
 let isSelectedSpriteDragged = false;
 let isSelectedResized = false;
+let isSelectorRotate = false;
 
 let mouseOffset = { x: 0, y: 0 };
 let mousePosition = { x: 0, y: 0 };
+let lastMousePosition = { x: 0, y: 0 };
 
 let hoverSelector = new PIXI.Container();
 
@@ -86,10 +88,13 @@ async function createSprite(image: WImageDescription) {
 
   let spr = new PIXI.Sprite(texture);
 
+  spr.anchor.set(0.5, 0.5);
+
   spr.x = image.x;
   spr.y = image.y;
   spr.width = image.width;
   spr.height = image.height;
+  spr.angle = image.angle;
 
   spr.tint = PALETTE.OFF;
   spr.eventMode = "static";
@@ -201,23 +206,41 @@ function ticker(_delta: number) {
     }
 
     if (isSelectedResized) {
-      selectedSprite.sprite.width = mousePosition.x - selectedSprite.sprite.x;
-      selectedSprite.sprite.height = mousePosition.y - selectedSprite.sprite.y;
+      selectedSprite.sprite.width =
+        (mousePosition.x - selectedSprite.sprite.x) * 2;
+      selectedSprite.sprite.height =
+        (mousePosition.y - selectedSprite.sprite.y) * 2;
 
       let square = hoverSelector.getChildAt(0) as PIXI.Graphics;
       square.clear();
       square.lineStyle(2, 0x000000, 1);
       square.drawRect(
-        0,
-        0,
+        -selectedSprite.sprite.width / 2,
+        -selectedSprite.sprite.height / 2,
         selectedSprite.sprite.width,
         selectedSprite.sprite.height
       );
 
       (hoverSelector.getChildAt(1) as PIXI.Graphics).x =
-        selectedSprite.sprite.width;
+        selectedSprite.sprite.width / 2;
       (hoverSelector.getChildAt(1) as PIXI.Graphics).y =
-        selectedSprite.sprite.height;
+        selectedSprite.sprite.height / 2;
+
+      (hoverSelector.getChildAt(2) as PIXI.Graphics).x = 0;
+      (hoverSelector.getChildAt(2) as PIXI.Graphics).y =
+        -20 - selectedSprite.sprite.height / 2;
+    }
+
+    if (isSelectorRotate) {
+      let mousePosDiff = {
+        x: mousePosition.x - lastMousePosition.x,
+        y: mousePosition.y - lastMousePosition.y,
+      };
+
+      let angle = (Math.atan2(mousePosDiff.y, mousePosDiff.x) * 180) / Math.PI;
+
+      selectedSprite.sprite.angle = angle;
+      hoverSelector.angle = angle;
     }
   }
 }
@@ -226,18 +249,21 @@ function initSelectionBox(spr: PIXI.Sprite, wSpr: WImage) {
   let game = loadGame();
   hoverSelector.removeChildren();
 
+  hoverSelector.pivot.set(0.5, 0.5);
+  // hoverSelector.rotation = spr.angle;
+
   let square = new PIXI.Graphics();
   square.clear();
   square.lineStyle(2, 0x000000, 1);
-  square.drawRect(0, 0, spr.width, spr.height);
+  square.drawRect(-spr.width / 2, -spr.height / 2, spr.width, spr.height);
 
   let sphere = new PIXI.Graphics();
   sphere.lineStyle(0);
   sphere.beginFill(0xff0000, 0.5);
   sphere.drawCircle(0, 0, 10);
 
-  sphere.x = spr.width;
-  sphere.y = spr.height;
+  sphere.x = spr.width / 2;
+  sphere.y = spr.height / 2;
 
   sphere.eventMode = "static";
   sphere.cursor = "nwse-resize";
@@ -247,9 +273,12 @@ function initSelectionBox(spr: PIXI.Sprite, wSpr: WImage) {
 
     mouseOffset.x = event.data.global.x - spr.width;
     mouseOffset.y = event.data.global.y - spr.height;
+
+    document.addEventListener("pointerup", endResize);
   });
 
-  sphere.on("pointerup", (_event) => {
+  function endResize() {
+    document.removeEventListener("pointerup", endResize);
     isSelectedResized = false;
 
     game.images = game.images.map((image) => {
@@ -261,10 +290,46 @@ function initSelectionBox(spr: PIXI.Sprite, wSpr: WImage) {
     });
 
     saveGame(game);
+  }
+
+  // Rotation Sphere
+  let rotationSphere = new PIXI.Graphics();
+  rotationSphere.lineStyle(0);
+  rotationSphere.beginFill(0x0000ff, 0.5);
+  rotationSphere.drawCircle(0, 0, 10);
+
+  rotationSphere.x = 0;
+  rotationSphere.y = -20 - spr.height / 2;
+
+  rotationSphere.eventMode = "static";
+  rotationSphere.cursor = "pointer";
+
+  rotationSphere.on("pointerdown", (event) => {
+    isSelectorRotate = true;
+
+    lastMousePosition.x = event.data.global.x;
+    lastMousePosition.y = event.data.global.y;
+
+    document.addEventListener("pointerup", endRotation);
   });
+
+  function endRotation() {
+    document.removeEventListener("pointerup", endRotation);
+    isSelectorRotate = false;
+
+    game.images = game.images.map((image) => {
+      if (image.id === wSpr.id) {
+        image.angle = spr.angle;
+      }
+      return image;
+    });
+
+    saveGame(game);
+  }
 
   hoverSelector.addChild(square);
   hoverSelector.addChild(sphere);
+  hoverSelector.addChild(rotationSphere);
 }
 
 export function resize() {
@@ -324,6 +389,7 @@ export function addSprite(file: File) {
       path: dataURL,
       x: 0,
       y: 0,
+      angle: 0,
       width: 100,
       height: 100,
     };
