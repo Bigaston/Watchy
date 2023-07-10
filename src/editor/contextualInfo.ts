@@ -9,8 +9,6 @@ import crel from "crel";
 
 const sfxr = (window as any).sfxr;
 
-const DEBOUNCE_TIME = 300;
-
 let infoDiv = document.getElementById("infoContainer")!;
 
 export function displaySpriteInfo(
@@ -22,32 +20,36 @@ export function displaySpriteInfo(
 ) {
   infoDiv.innerHTML = "";
 
-  let title = document.createElement("h2");
-  title.innerHTML = `Sprite Info <span class="spriteId">(id: ${sprite.id})</span>`;
+  crel(
+    infoDiv,
+    crel(
+      "h2",
+      "Sprite Info ",
+      crel("span", { class: "spriteId" }, `(id: ${sprite.id})`)
+    ),
+    crel("label", { for: "spriteName" }, "Name: "),
+    crel("input", {
+      id: "spriteName",
+      value: sprite.name,
+      onchange: (e: any) => {
+        if (e.target.value === "") {
+          e.target.classList.add("error");
+        } else {
+          e.target.classList.remove("error");
 
-  infoDiv.appendChild(title);
-
-  let input = createInput({
-    label: "Name",
-    value: sprite.name,
-    onChange: (value) => {
-      if (value === "") {
-        input.classList.add("error");
-      } else {
-        input.classList.remove("error");
-
-        onChange("name", value);
-      }
-    },
-  });
-
-  createButton({
-    label: "🚮 Delete",
-    type: "button-error",
-    onClick: () => {
-      onDelete();
-    },
-  });
+          onChange("name", e.target.value);
+        }
+      },
+    }),
+    crel("br"),
+    crel(
+      "button",
+      { class: "button-error", onclick: () => onDelete() },
+      "🚮 Delete"
+    ),
+    crel("br"),
+    crel("h3")
+  );
 }
 
 export function clearInfo() {
@@ -127,6 +129,44 @@ export function clearInfo() {
     )
   );
 
+  // Sprites Groups
+  crel(
+    infoDiv,
+    crel("h3", "Sprite Groups"),
+    crel(
+      "ul",
+      loadGame().imageGroups.map((imageGroup) =>
+        crel(
+          "li",
+          `${imageGroup.name} (id: ${imageGroup.id}): [${imageGroup.images.length} sprites]`
+        )
+      )
+    ),
+    crel(
+      "button",
+      {
+        onclick: () => {
+          let name = prompt("Group Name");
+          if (name) {
+            saveGame({
+              ...loadGame(),
+              imageGroups: [
+                ...loadGame().imageGroups,
+                {
+                  id: loadGame().nextAvailableImageGroupId++,
+                  name,
+                  images: [],
+                },
+              ],
+            });
+            clearInfo();
+          }
+        },
+      },
+      "➕ Add Group"
+    )
+  );
+
   // Sound List
   crel(
     infoDiv,
@@ -162,57 +202,4 @@ function onDeleteSound(sound: WSoundDescription) {
   });
 
   clearInfo();
-}
-
-// Helper Function
-function createInput(
-  options: {
-    type?: string;
-    label?: string;
-    value?: string;
-    onChange?: (value: string) => void;
-  } = {}
-) {
-  let input = document.createElement("input");
-  input.type = options.type ?? "text";
-
-  input.value = options.value ?? "";
-
-  if (options.label) {
-    let label = document.createElement("label");
-    label.innerText = options.label;
-    infoDiv.appendChild(label);
-  }
-
-  let timeout: number;
-  input.addEventListener("input", () => {
-    if (timeout) clearTimeout(timeout);
-
-    timeout = setTimeout(() => {
-      options.onChange?.(input.value);
-    }, DEBOUNCE_TIME);
-  });
-
-  infoDiv.appendChild(input);
-
-  return input;
-}
-
-function createButton({
-  label,
-  onClick,
-  type,
-}: {
-  label?: string;
-  onClick?: () => void;
-  type?: "button-primary" | "button-error";
-}) {
-  let button = document.createElement("button");
-  button.innerText = label ?? "";
-
-  if (onClick) button.addEventListener("click", onClick);
-
-  if (type) button.classList.add(type);
-
-  infoDiv.appendChild(button);
 }

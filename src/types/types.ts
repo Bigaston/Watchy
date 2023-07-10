@@ -4,12 +4,13 @@ export interface WGameDescription {
   descriptionVersion: 3;
   nextAvailableImageId: number;
   nextAvailableSoundId: number;
+  nextAvailableImageGroupId: number;
   images: WImageDescription[];
+  imageGroups: WImageGroup[];
   sounds: WSoundDescription[];
   code: string;
   title: string;
   background?: string;
-  groups: WGroup[];
 }
 
 export interface WSoundDescription {
@@ -51,7 +52,7 @@ export interface WImage {
   status: WImageStatus;
 }
 
-export interface WGroup {
+export interface WImageGroup {
   id: number;
   name: string;
   images: number[];
