@@ -250,7 +250,7 @@ function initSelectionBox(spr: PIXI.Sprite, wSpr: WImage) {
   hoverSelector.removeChildren();
 
   hoverSelector.pivot.set(0.5, 0.5);
-  // hoverSelector.rotation = spr.angle;
+  hoverSelector.angle = spr.angle;
 
   let square = new PIXI.Graphics();
   square.clear();
