@@ -50,6 +50,37 @@ export function displaySpriteInfo(
     crel("br"),
     crel("h3")
   );
+
+  crel(
+    infoDiv,
+    crel("h3", "Sprite Groups"),
+    loadGame()
+      .imageGroups.filter((group) => group.images.includes(sprite.id))
+      .map((group) => crel("p", group.name)),
+    crel(
+      "select",
+      {
+        id: "spriteGroupSelect",
+      },
+      loadGame()
+        .imageGroups.filter(
+          (imageGroup) => !imageGroup.images.includes(sprite.id)
+        )
+        .map((group) => crel("option", { value: group.id }, group.name))
+    ),
+    crel(
+      "button",
+      {
+        onclick: () => {
+          console.log(
+            (document.getElementById("spriteGroupSelect") as HTMLSelectElement)
+              .value
+          );
+        },
+      },
+      "➕ Add to group"
+    )
+  );
 }
 
 export function clearInfo() {
