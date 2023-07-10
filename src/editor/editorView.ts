@@ -206,10 +206,24 @@ function ticker(_delta: number) {
     }
 
     if (isSelectedResized) {
-      selectedSprite.sprite.width =
-        (mousePosition.x - selectedSprite.sprite.x) * 2;
-      selectedSprite.sprite.height =
-        (mousePosition.y - selectedSprite.sprite.y) * 2;
+      // let distanceCenterMouse = Math.sqrt(
+      //   Math.pow(mousePosition.x - selectedSprite.sprite.x, 2) +
+      //     Math.pow(mousePosition.y - selectedSprite.sprite.y, 2)
+      // );
+
+      // let angleCenterMouse = Math.atan2(
+      //   mousePosition.y - selectedSprite.sprite.y,
+      //   mousePosition.x - selectedSprite.sprite.x
+      // );
+
+      // let heightOfSprite = distanceCenterMouse * Math.sin(angleCenterMouse);
+      // let widthOfSprite = distanceCenterMouse * Math.cos(angleCenterMouse);
+
+      // selectedSprite.sprite.width = widthOfSprite * 2;
+      // selectedSprite.sprite.height = heightOfSprite * 2;
+
+      selectedSprite.sprite.width = mousePosition.x - selectedSprite.sprite.x;
+      selectedSprite.sprite.height = mousePosition.y - selectedSprite.sprite.y;
 
       let square = hoverSelector.getChildAt(0) as PIXI.Graphics;
       square.clear();
@@ -329,7 +343,7 @@ function initSelectionBox(spr: PIXI.Sprite, wSpr: WImage) {
 
   hoverSelector.addChild(square);
   hoverSelector.addChild(sphere);
-  hoverSelector.addChild(rotationSphere);
+  // hoverSelector.addChild(rotationSphere);
 }
 
 export function resize() {
@@ -387,8 +401,8 @@ export function addSprite(file: File) {
       id: game.nextAvailableImageId,
       name: file.name,
       path: dataURL,
-      x: 0,
-      y: 0,
+      x: 50,
+      y: 50,
       angle: 0,
       width: 100,
       height: 100,
