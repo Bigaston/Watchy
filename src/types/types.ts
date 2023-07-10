@@ -1,7 +1,7 @@
 import { Sprite } from "pixi.js";
 
 export interface WGameDescription {
-  descriptionVersion: 2;
+  descriptionVersion: 3;
   nextAvailableImageId: number;
   nextAvailableSoundId: number;
   images: WImageDescription[];
@@ -9,6 +9,7 @@ export interface WGameDescription {
   code: string;
   title: string;
   background?: string;
+  groups: WGroup[];
 }
 
 export interface WSoundDescription {
@@ -48,4 +49,10 @@ export interface WImage {
   name: string;
   sprite: Sprite;
   status: WImageStatus;
+}
+
+export interface WGroup {
+  id: number;
+  name: string;
+  images: number[];
 }

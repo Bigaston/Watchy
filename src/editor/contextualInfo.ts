@@ -53,77 +53,79 @@ export function displaySpriteInfo(
 export function clearInfo() {
   infoDiv.innerHTML = "";
 
-  let title = document.createElement("h2");
-  title.innerHTML = `Game Info`;
+  crel(
+    infoDiv,
+    crel("h2", "Game Info"),
+    crel("label", { for: "editorGameTitle" }, "Title: "),
+    crel("input", {
+      type: "text",
+      id: "editorGameTitle",
+      value: loadGame().title,
+      onchange: (e: any) => {
+        saveGame({ ...loadGame(), title: e.target.value });
+      },
+    }),
+    crel(
+      "button",
+      {
+        class: "button-primary",
+        onclick: () => {
+          let input = document.createElement("input");
+          input.type = "file";
+          input.accept = "image/png, image/jpg, image/jpeg";
 
-  infoDiv.appendChild(title);
+          input.addEventListener("change", () => {
+            if (!input.files) return;
 
-  createInput({
-    label: "Title",
-    value: loadGame().title,
-    onChange: (value) => {
-      saveGame({ ...loadGame(), title: value });
-    },
-  });
+            console.log(input.files[0]);
 
-  createButton({
-    label: "🖼️ Update Wallpaper",
-    type: "button-primary",
-    onClick: () => {
-      let input = document.createElement("input");
-      input.type = "file";
-      input.accept = "image/png, image/jpg, image/jpeg";
+            let reader = new FileReader();
+            reader.onload = () => {
+              saveGame({ ...loadGame(), background: reader.result as string });
 
-      input.addEventListener("change", () => {
-        if (!input.files) return;
+              updateBackground();
+            };
+            reader.readAsDataURL(input.files[0]);
+          });
 
-        console.log(input.files[0]);
-
-        let reader = new FileReader();
-        reader.onload = () => {
-          saveGame({ ...loadGame(), background: reader.result as string });
-
+          input.click();
+        },
+      },
+      "🖼️ Update Wallpaper"
+    ),
+    crel(
+      "button",
+      {
+        class: "button-error",
+        onclick: () => {
+          saveGame({ ...loadGame(), background: undefined });
           updateBackground();
-        };
-        reader.readAsDataURL(input.files[0]);
-      });
+        },
+      },
+      "🖼️🚮 Delete Background"
+    )
+  );
 
-      input.click();
-    },
-  });
-
-  createButton({
-    label: "🖼️🚮 Delete Background",
-    type: "button-error",
-    onClick: () => {
-      saveGame({ ...loadGame(), background: undefined });
-      updateBackground();
-    },
-  });
-
-  // Sprite List
-  let spritesTitle = document.createElement("h3");
-  spritesTitle.innerHTML = `Sprites`;
-
-  infoDiv.appendChild(spritesTitle);
-
-  let sprites = loadGame().images;
-
-  let spriteList = document.createElement("ul");
-  infoDiv.appendChild(spriteList);
-
-  sprites.forEach((sprite) => {
-    let spriteItem = document.createElement("li");
-    spriteItem.innerHTML = sprite.name + " (id: " + sprite.id + ")";
-
-    spriteItem.classList.add("spriteItem");
-
-    spriteItem.addEventListener("click", () => {
-      onSelectSpriteFromDescription(sprite);
-    });
-
-    spriteList.appendChild(spriteItem);
-  });
+  // Sprites
+  crel(
+    infoDiv,
+    crel("h3", "Sprites"),
+    crel(
+      "ul",
+      loadGame().images.map((image) =>
+        crel(
+          "li",
+          {
+            class: "spriteItem",
+            onclick: () => {
+              onSelectSpriteFromDescription(image);
+            },
+          },
+          image.name + " (id: " + image.id + ")"
+        )
+      )
+    )
+  );
 
   // Sound List
   crel(
