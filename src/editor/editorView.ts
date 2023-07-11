@@ -104,6 +104,7 @@ async function createSprite(image: WImageDescription) {
     name: image.name,
     sprite: spr,
     status: WImageStatus.OFF,
+    groups: [],
   };
 
   sprites.push(wImage);
@@ -160,6 +161,11 @@ function onSelectSprite(sprite: WImage) {
       sprite.sprite.removeFromParent();
       sprites.splice(sprites.indexOf(sprite), 1);
       game.images = game.images.filter((image) => image.id !== sprite.id);
+      game.imageGroups = game.imageGroups.map((group) => {
+        group.images = group.images.filter((image) => image !== sprite.id);
+        return group;
+      });
+
       saveGame(game);
 
       stopSelection();
@@ -391,6 +397,9 @@ export function addSprite(file: File) {
 
     let fillRegex = new RegExp(`fill="#.{6}"`, "g");
     xmlString = xmlString.replace(fillRegex, `fill="#ffffff"`);
+
+    let fillStyleRegex = new RegExp(`fill:#.{6}`, "g");
+    xmlString = xmlString.replace(fillStyleRegex, `fill:#ffffff`);
 
     let strokeRegex = new RegExp(`stroke="#.{6}"`, "g");
     xmlString = xmlString.replace(strokeRegex, `stroke="#000000"`);

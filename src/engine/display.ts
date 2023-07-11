@@ -4,12 +4,17 @@ import { PALETTE } from "../types/colorPalette";
 
 export const sprites: WImage[] = [];
 
+let game: WGameDescription;
+
 export function initDisplay(
   app: PIXI.Application,
   gameDescription: WGameDescription,
   functionObject: { [key: string]: undefined | Function }
 ) {
+  game = gameDescription;
+
   functionObject["setStatus"] = setEnabled;
+  functionObject["setStatusGroup"] = setEnabledGroup;
 
   // Create All Sprites
   gameDescription.images.forEach((image) => {
@@ -34,6 +39,9 @@ export function initDisplay(
       name: image.name,
       sprite: spr,
       status: WImageStatus.OFF,
+      groups: gameDescription.imageGroups
+        .filter((g) => g.images.includes(image.id))
+        .map((g) => g.id),
     });
 
     app.stage.addChild(spr);
@@ -54,4 +62,30 @@ function setEnabled(idOrName: number | string, status: boolean) {
     sprite.status = status ? WImageStatus.ON : WImageStatus.OFF;
     sprite.sprite.tint = status ? PALETTE.ON : PALETTE.OFF;
   }
+}
+
+function setEnabledGroup(idOrName: number | string, status: boolean) {
+  let goodIdOrName: number;
+
+  if (typeof idOrName === "string") {
+    let findedId = game!.imageGroups.find((g) => g.name === idOrName)?.id;
+
+    if (findedId == null) {
+      console.log("Group not found");
+      return;
+    }
+
+    goodIdOrName = findedId;
+  } else {
+    goodIdOrName = idOrName;
+  }
+
+  const spritesToDisplay = sprites.filter((s) => {
+    return s.groups.includes(idOrName as number);
+  });
+
+  spritesToDisplay.forEach((s) => {
+    s.status = status ? WImageStatus.ON : WImageStatus.OFF;
+    s.sprite.tint = status ? PALETTE.ON : PALETTE.OFF;
+  });
 }

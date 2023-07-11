@@ -50,6 +50,7 @@ export interface WImage {
   name: string;
   sprite: Sprite;
   status: WImageStatus;
+  groups: number[];
 }
 
 export interface WImageGroup {
