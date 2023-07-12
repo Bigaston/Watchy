@@ -31,6 +31,7 @@ export function initDisplay(
     spr.y = image.y;
     spr.width = image.width;
     spr.height = image.height;
+    spr.anchor.set(0.5, 0.5);
 
     spr.tint = PALETTE.OFF;
 
@@ -81,7 +82,7 @@ function setEnabledGroup(idOrName: number | string, status: boolean) {
   }
 
   const spritesToDisplay = sprites.filter((s) => {
-    return s.groups.includes(idOrName as number);
+    return s.groups.includes(goodIdOrName as number);
   });
 
   spritesToDisplay.forEach((s) => {
