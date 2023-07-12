@@ -21,7 +21,7 @@ import "../styles/editor.css";
 import { clearInfo } from "./contextualInfo";
 import { Modal } from "./modal";
 import crel from "crel";
-import { WSoundDescriptionJSFXR } from "../types/types";
+import { WSoundDescriptionJSFXR } from "../share/types";
 
 const rendererElement = document.getElementById("renderer")!;
 

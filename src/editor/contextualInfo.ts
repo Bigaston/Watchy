@@ -2,7 +2,7 @@ import {
   WImage,
   WSoundDescription,
   WSoundDescriptionJSFXR,
-} from "../types/types";
+} from "../share/types";
 import { onSelectSpriteFromDescription, updateBackground } from "./editorView";
 import { loadGame, saveGame } from "./storage";
 import crel from "crel";

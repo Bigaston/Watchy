@@ -1,13 +1,15 @@
-import { Sprite } from "pixi.js";
+import { Container, Sprite } from "pixi.js";
 
 export interface WGameDescription {
   descriptionVersion: 3;
   nextAvailableImageId: number;
   nextAvailableSoundId: number;
   nextAvailableImageGroupId: number;
+  nextAvailableNumberId: number;
   images: WImageDescription[];
   imageGroups: WImageGroup[];
   sounds: WSoundDescription[];
+  numbers: WNumberDescription[];
   code: string;
   title: string;
   background?: string;
@@ -40,17 +42,36 @@ export interface WImageDescription {
   height: number;
 }
 
+export interface WNumberDescription {
+  id: number;
+  name: string;
+  x: number;
+  y: number;
+  height: number;
+  numberDigit: number;
+}
+
 export enum WImageStatus {
   ON,
   OFF,
 }
 
-export interface WImage {
+export interface WSelectable {
   id: number;
+  type: "image" | "number";
   name: string;
-  sprite: Sprite;
+  container: Container;
+}
+
+export interface WNumber extends WSelectable {
+  type: "number";
+}
+
+export interface WImage extends WSelectable {
+  type: "image";
   status: WImageStatus;
   groups: number[];
+  container: Sprite;
 }
 
 export interface WImageGroup {

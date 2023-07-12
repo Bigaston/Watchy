@@ -1,8 +1,16 @@
 import * as PIXI from "pixi.js";
-import { WImage, WImageDescription, WImageStatus } from "../types/types";
+import {
+  WImage,
+  WImageDescription,
+  WImageStatus,
+  WNumber,
+  WNumberDescription,
+  WSelectable,
+} from "../share/types";
 import { loadGame, saveGame } from "./storage";
-import { PALETTE } from "../types/colorPalette";
+import { PALETTE } from "../share/colorPalette";
 import { clearInfo, displaySpriteInfo } from "./contextualInfo";
+import segments7 from "../share/7segment/7segment";
 
 const width = 900;
 const height = 600;
@@ -11,7 +19,7 @@ const rendererElement = document.getElementById("renderer")!;
 
 let app: PIXI.Application;
 
-let selectedSprite: WImage | undefined;
+let selectedSprite: WSelectable | undefined;
 let isSelectedSpriteDragged = false;
 let isSelectedResized = false;
 let isSelectorRotate = false;
@@ -23,6 +31,7 @@ let lastMousePosition = { x: 0, y: 0 };
 let hoverSelector = new PIXI.Container();
 
 export const sprites: WImage[] = [];
+export const numbers: WNumber[] = [];
 
 export function initEditorView() {
   let game = loadGame();
@@ -61,6 +70,7 @@ export function initEditorView() {
   // Load Game Sprite
 
   game.images.forEach(createSprite);
+  game.numbers.forEach(addNumber);
 
   // Handle Mouse Position
   (app.view as unknown as HTMLElement).addEventListener(
@@ -101,8 +111,9 @@ async function createSprite(image: WImageDescription) {
 
   let wImage = {
     id: image.id,
+    type: "image" as const,
     name: image.name,
-    sprite: spr,
+    container: spr,
     status: WImageStatus.OFF,
     groups: [],
   };
@@ -147,7 +158,7 @@ function onSelectSprite(sprite: WImage) {
 
   selectedSprite = sprite;
 
-  initSelectionBox(sprite.sprite, sprite);
+  initSelectionBox(sprite.container, sprite);
 
   displaySpriteInfo(sprite, {
     onChange: (key, value) => {
@@ -158,7 +169,7 @@ function onSelectSprite(sprite: WImage) {
       }
     },
     onDelete: () => {
-      sprite.sprite.removeFromParent();
+      sprite.container.removeFromParent();
       sprites.splice(sprites.indexOf(sprite), 1);
       game.images = game.images.filter((image) => image.id !== sprite.id);
       game.imageGroups = game.imageGroups.map((group) => {
@@ -203,12 +214,13 @@ function stopSelection() {
 
 function ticker(_delta: number) {
   if (selectedSprite) {
-    hoverSelector.x = selectedSprite.sprite.x;
-    hoverSelector.y = selectedSprite.sprite.y;
+    console.log(selectedSprite);
+    hoverSelector.x = selectedSprite.container.x;
+    hoverSelector.y = selectedSprite.container.y;
 
     if (isSelectedSpriteDragged) {
-      selectedSprite.sprite.x = mousePosition.x - mouseOffset.x;
-      selectedSprite.sprite.y = mousePosition.y - mouseOffset.y;
+      selectedSprite.container.x = mousePosition.x - mouseOffset.x;
+      selectedSprite.container.y = mousePosition.y - mouseOffset.y;
     }
 
     if (isSelectedResized) {
@@ -228,27 +240,29 @@ function ticker(_delta: number) {
       // selectedSprite.sprite.width = widthOfSprite * 2;
       // selectedSprite.sprite.height = heightOfSprite * 2;
 
-      selectedSprite.sprite.width = mousePosition.x - selectedSprite.sprite.x;
-      selectedSprite.sprite.height = mousePosition.y - selectedSprite.sprite.y;
+      selectedSprite.container.width =
+        mousePosition.x - selectedSprite.container.x;
+      selectedSprite.container.height =
+        mousePosition.y - selectedSprite.container.y;
 
       let square = hoverSelector.getChildAt(0) as PIXI.Graphics;
       square.clear();
       square.lineStyle(2, 0x000000, 1);
       square.drawRect(
-        -selectedSprite.sprite.width / 2,
-        -selectedSprite.sprite.height / 2,
-        selectedSprite.sprite.width,
-        selectedSprite.sprite.height
+        -selectedSprite.container.width / 2,
+        -selectedSprite.container.height / 2,
+        selectedSprite.container.width,
+        selectedSprite.container.height
       );
 
       (hoverSelector.getChildAt(1) as PIXI.Graphics).x =
-        selectedSprite.sprite.width / 2;
+        selectedSprite.container.width / 2;
       (hoverSelector.getChildAt(1) as PIXI.Graphics).y =
-        selectedSprite.sprite.height / 2;
+        selectedSprite.container.height / 2;
 
-      (hoverSelector.getChildAt(2) as PIXI.Graphics).x = 0;
-      (hoverSelector.getChildAt(2) as PIXI.Graphics).y =
-        -20 - selectedSprite.sprite.height / 2;
+      // (hoverSelector.getChildAt(2) as PIXI.Graphics).x = 0;
+      // (hoverSelector.getChildAt(2) as PIXI.Graphics).y =
+      //   -20 - selectedSprite.sprite.height / 2;
     }
 
     if (isSelectorRotate) {
@@ -259,7 +273,7 @@ function ticker(_delta: number) {
 
       let angle = (Math.atan2(mousePosDiff.y, mousePosDiff.x) * 180) / Math.PI;
 
-      selectedSprite.sprite.angle = angle;
+      selectedSprite.container.angle = angle;
       hoverSelector.angle = angle;
     }
   }
@@ -352,6 +366,44 @@ function initSelectionBox(spr: PIXI.Sprite, wSpr: WImage) {
   // hoverSelector.addChild(rotationSphere);
 }
 
+function initSelectionBoxNumber(container: PIXI.Container) {
+  //, wNumber: WNumber) {
+  hoverSelector.removeChildren();
+
+  hoverSelector.x = container.x;
+  hoverSelector.y = container.y;
+
+  hoverSelector.pivot.set(0.5, 0.5);
+
+  let square = new PIXI.Graphics();
+  square.clear();
+  square.lineStyle(2, 0x000000, 1);
+  square.drawRect(
+    -container.width / 2,
+    -container.height / 2,
+    container.width,
+    container.height
+  );
+
+  let sphere = new PIXI.Graphics();
+  sphere.lineStyle(0);
+  sphere.beginFill(0xff0000, 0.5);
+  sphere.drawCircle(0, 0, 10);
+
+  sphere.x = 0;
+  sphere.y = container.height / 2 + 10;
+
+  sphere.eventMode = "static";
+  sphere.cursor = "nwse-resize";
+
+  // sphere.on("pointerdown", (event) => {
+
+  // });
+
+  hoverSelector.addChild(square);
+  hoverSelector.addChild(sphere);
+}
+
 export function resize() {
   // current screen size
   const screenWidth = rendererElement.clientWidth;
@@ -438,4 +490,46 @@ function updateImage(id: number, img: Partial<WImageDescription>) {
     }
     return image;
   });
+}
+
+function addNumber(number: WNumberDescription) {
+  let numberContainer = new PIXI.Container();
+
+  numberContainer.x = number.x;
+  numberContainer.y = number.y;
+
+  for (let i = 0; i < number.numberDigit; i++) {
+    let spr = new PIXI.Sprite(PIXI.Texture.from(segments7.full));
+
+    spr.tint = PALETTE.OFF;
+
+    let width = number.height * 0.6;
+
+    spr.x = (i + 5) * width;
+    spr.y = 0;
+
+    spr.width = width;
+    spr.height = number.height;
+
+    numberContainer.addChild(spr);
+  }
+
+  numberContainer.eventMode = "static";
+  numberContainer.cursor = "pointer";
+
+  let wNumber: WNumber = {
+    id: number.id,
+    name: number.name,
+    container: numberContainer,
+    type: "number",
+  };
+
+  numbers.push(wNumber);
+
+  numberContainer.on("pointerdown", (event) => {
+    initSelectionBoxNumber(numberContainer); //, wNumber);
+    selectedSprite = wNumber;
+  });
+
+  app.stage.addChild(numberContainer);
 }

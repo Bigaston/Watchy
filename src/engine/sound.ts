@@ -5,7 +5,7 @@ import {
   WGameDescription,
   WSoundDescription,
   WSoundDescriptionJSFXR,
-} from "../types/types";
+} from "../share/types";
 
 const sfxr = (window as any).sfxr;
 

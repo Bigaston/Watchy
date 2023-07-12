@@ -1,6 +1,8 @@
 import * as PIXI from "pixi.js";
-import { WGameDescription, WImage, WImageStatus } from "../types/types";
-import { PALETTE } from "../types/colorPalette";
+import { WGameDescription, WImage, WImageStatus } from "../share/types";
+import { PALETTE } from "../share/colorPalette";
+
+// import segments7 from "../share/7segment/7segment";
 
 export const sprites: WImage[] = [];
 
@@ -38,7 +40,8 @@ export function initDisplay(
     sprites.push({
       id: image.id,
       name: image.name,
-      sprite: spr,
+      type: "image",
+      container: spr,
       status: WImageStatus.OFF,
       groups: gameDescription.imageGroups
         .filter((g) => g.images.includes(image.id))
@@ -61,7 +64,7 @@ function setEnabled(idOrName: number | string, status: boolean) {
 
   if (sprite != null) {
     sprite.status = status ? WImageStatus.ON : WImageStatus.OFF;
-    sprite.sprite.tint = status ? PALETTE.ON : PALETTE.OFF;
+    sprite.container.tint = status ? PALETTE.ON : PALETTE.OFF;
   }
 }
 
@@ -87,6 +90,6 @@ function setEnabledGroup(idOrName: number | string, status: boolean) {
 
   spritesToDisplay.forEach((s) => {
     s.status = status ? WImageStatus.ON : WImageStatus.OFF;
-    s.sprite.tint = status ? PALETTE.ON : PALETTE.OFF;
+    s.container.tint = status ? PALETTE.ON : PALETTE.OFF;
   });
 }

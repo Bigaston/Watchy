@@ -1,7 +1,7 @@
 import "./styles/styles.css";
 import "./styles/engine.css";
 import { initEngine } from "./engine/engine";
-import { WGameDescription } from "./types/types";
+import { WGameDescription } from "./share/types";
 
 let editorContainer = document.getElementById("renderer")!;
 
