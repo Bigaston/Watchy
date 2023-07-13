@@ -65,6 +65,17 @@ export interface WSelectable {
 
 export interface WNumber extends WSelectable {
   type: "number";
+  digits?: WDigit[];
+}
+
+export interface WDigit {
+  top: Sprite;
+  middle: Sprite;
+  bottom: Sprite;
+  topleft: Sprite;
+  topright: Sprite;
+  bottomleft: Sprite;
+  bottomright: Sprite;
 }
 
 export interface WImage extends WSelectable {

@@ -1,10 +1,18 @@
 import * as PIXI from "pixi.js";
-import { WGameDescription, WImage, WImageStatus } from "../share/types";
+import {
+  WDigit,
+  WGameDescription,
+  WImage,
+  WImageStatus,
+  WNumber,
+} from "../share/types";
 import { PALETTE } from "../share/colorPalette";
+import segments7 from "../share/7segment/7segment";
 
 // import segments7 from "../share/7segment/7segment";
 
 export const sprites: WImage[] = [];
+export const numbers: WNumber[] = [];
 
 let game: WGameDescription;
 
@@ -49,6 +57,71 @@ export function initDisplay(
     });
 
     app.stage.addChild(spr);
+  });
+
+  gameDescription.numbers.forEach((number) => {
+    let container = new PIXI.Container();
+    let digits: WDigit[] = [];
+
+    for (let i = 0; i < number.numberDigit; i++) {
+      let digitContainer = new PIXI.Container();
+
+      let topLeft = new PIXI.Sprite(PIXI.Texture.from(segments7.topleft));
+      let topRight = new PIXI.Sprite(PIXI.Texture.from(segments7.topright));
+      let bottomLeft = new PIXI.Sprite(PIXI.Texture.from(segments7.bottomleft));
+      let bottomRight = new PIXI.Sprite(
+        PIXI.Texture.from(segments7.bottomright)
+      );
+      let top = new PIXI.Sprite(PIXI.Texture.from(segments7.top));
+      let middle = new PIXI.Sprite(PIXI.Texture.from(segments7.middle));
+      let bottom = new PIXI.Sprite(PIXI.Texture.from(segments7.bottom));
+
+      setupDigit(topLeft);
+      setupDigit(topRight);
+      setupDigit(bottomLeft);
+      setupDigit(bottomRight);
+      setupDigit(top);
+      setupDigit(middle);
+      setupDigit(bottom);
+
+      let digit: WDigit = {
+        topleft: topLeft,
+        topright: topRight,
+        bottomleft: bottomLeft,
+        bottomright: bottomRight,
+        top: top,
+        middle: middle,
+        bottom: bottom,
+      };
+
+      digits.push(digit);
+
+      function setupDigit(digit: PIXI.Sprite) {
+        digit.height = number.height;
+        digit.width = number.height * 0.6;
+        digit.tint = PALETTE.OFF;
+
+        digitContainer.addChild(digit);
+      }
+
+      digitContainer.x = i * number.height * 0.6;
+      digitContainer.y = 0;
+
+      container.addChild(digitContainer);
+    }
+
+    container.x = number.x;
+    container.y = number.y;
+
+    numbers.push({
+      id: number.id,
+      name: number.name,
+      type: "number",
+      container: container,
+      digits: digits,
+    });
+
+    app.stage.addChild(container);
   });
 }
 

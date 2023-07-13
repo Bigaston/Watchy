@@ -550,7 +550,7 @@ export function addNumber(number: WNumberDescription) {
 
     let width = number.height * 0.6;
 
-    spr.x = i * (width + 2);
+    spr.x = i * width;
     spr.y = 0;
 
     spr.width = width;
