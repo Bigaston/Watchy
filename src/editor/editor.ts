@@ -224,7 +224,7 @@ function addText(modal: Modal) {
     x: 0,
     y: 0,
     height: 30,
-    numberDigit: 5,
+    numberDigit: 10,
   };
 
   saveGame({

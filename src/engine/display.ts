@@ -25,6 +25,7 @@ export function initDisplay(
 
   functionObject["setStatus"] = setEnabled;
   functionObject["setStatusGroup"] = setEnabledGroup;
+  functionObject["printText"] = printText;
 
   // Create All Sprites
   gameDescription.images.forEach((image) => {
@@ -165,4 +166,117 @@ function setEnabledGroup(idOrName: number | string, status: boolean) {
     s.status = status ? WImageStatus.ON : WImageStatus.OFF;
     s.container.tint = status ? PALETTE.ON : PALETTE.OFF;
   });
+}
+
+function printText(idOrName: string | number, numberToPrint: number | string) {
+  let number = numbers.find((n) => {
+    return n.id === idOrName || n.name === idOrName;
+  });
+
+  if (number == undefined) {
+    console.log("Number not found");
+    return;
+  }
+
+  let numberString = numberToPrint.toString();
+
+  if (numberString.match(/[^0-9]/g)) {
+    console.log("Number not valid");
+    return;
+  }
+
+  if (numberString.length > number.digits!.length) {
+    console.log("Number too big");
+    return;
+  }
+
+  let numberArray = numberString.split("");
+
+  numberArray.forEach((digitToPrint, index) => {
+    let digit =
+      number!.digits![index + (number!.digits!.length - numberArray.length)];
+    resetDigit(digit);
+
+    switch (digitToPrint) {
+      case "0":
+        digit.topleft.tint = PALETTE.ON;
+        digit.topright.tint = PALETTE.ON;
+        digit.bottomleft.tint = PALETTE.ON;
+        digit.bottomright.tint = PALETTE.ON;
+        digit.top.tint = PALETTE.ON;
+        digit.bottom.tint = PALETTE.ON;
+        break;
+      case "1":
+        digit.topright.tint = PALETTE.ON;
+        digit.bottomright.tint = PALETTE.ON;
+        break;
+      case "2":
+        digit.top.tint = PALETTE.ON;
+        digit.topright.tint = PALETTE.ON;
+        digit.middle.tint = PALETTE.ON;
+        digit.bottomleft.tint = PALETTE.ON;
+        digit.bottom.tint = PALETTE.ON;
+        break;
+      case "3":
+        digit.top.tint = PALETTE.ON;
+        digit.topright.tint = PALETTE.ON;
+        digit.middle.tint = PALETTE.ON;
+        digit.bottomright.tint = PALETTE.ON;
+        digit.bottom.tint = PALETTE.ON;
+        break;
+      case "4":
+        digit.topleft.tint = PALETTE.ON;
+        digit.topright.tint = PALETTE.ON;
+        digit.middle.tint = PALETTE.ON;
+        digit.bottomright.tint = PALETTE.ON;
+        break;
+      case "5":
+        digit.topleft.tint = PALETTE.ON;
+        digit.top.tint = PALETTE.ON;
+        digit.middle.tint = PALETTE.ON;
+        digit.bottomright.tint = PALETTE.ON;
+        digit.bottom.tint = PALETTE.ON;
+        break;
+      case "6":
+        digit.topleft.tint = PALETTE.ON;
+        digit.top.tint = PALETTE.ON;
+        digit.middle.tint = PALETTE.ON;
+        digit.bottomleft.tint = PALETTE.ON;
+        digit.bottomright.tint = PALETTE.ON;
+        digit.bottom.tint = PALETTE.ON;
+        break;
+      case "7":
+        digit.top.tint = PALETTE.ON;
+        digit.topright.tint = PALETTE.ON;
+        digit.bottomright.tint = PALETTE.ON;
+        break;
+      case "8":
+        digit.topleft.tint = PALETTE.ON;
+        digit.top.tint = PALETTE.ON;
+        digit.topright.tint = PALETTE.ON;
+        digit.middle.tint = PALETTE.ON;
+        digit.bottomleft.tint = PALETTE.ON;
+        digit.bottom.tint = PALETTE.ON;
+        digit.bottomright.tint = PALETTE.ON;
+        break;
+      case "9":
+        digit.topleft.tint = PALETTE.ON;
+        digit.top.tint = PALETTE.ON;
+        digit.topright.tint = PALETTE.ON;
+        digit.middle.tint = PALETTE.ON;
+        digit.bottomright.tint = PALETTE.ON;
+        digit.bottom.tint = PALETTE.ON;
+        break;
+    }
+  });
+}
+
+function resetDigit(digit: WDigit) {
+  digit.topleft.tint = PALETTE.OFF;
+  digit.topright.tint = PALETTE.OFF;
+  digit.bottomleft.tint = PALETTE.OFF;
+  digit.bottomright.tint = PALETTE.OFF;
+  digit.top.tint = PALETTE.OFF;
+  digit.middle.tint = PALETTE.OFF;
+  digit.bottom.tint = PALETTE.OFF;
 }
