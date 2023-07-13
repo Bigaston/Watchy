@@ -5,6 +5,7 @@ import {
   addSprite,
   initEditorView,
   resize as resizeEditor,
+  addNumber,
 } from "./editorView";
 import {
   buildGame,
@@ -21,7 +22,7 @@ import "../styles/editor.css";
 import { clearInfo } from "./contextualInfo";
 import { Modal } from "./modal";
 import crel from "crel";
-import { WSoundDescriptionJSFXR } from "../share/types";
+import { WNumberDescription, WSoundDescriptionJSFXR } from "../share/types";
 
 const rendererElement = document.getElementById("renderer")!;
 
@@ -91,6 +92,14 @@ export function initEditor(editorContainer: HTMLElement) {
             onclick: () => addSound(modal),
           },
           "🎵 Add Sound"
+        ),
+        crel(
+          "button",
+          {
+            class: "button-primary",
+            onclick: () => addText(modal),
+          },
+          "📝 Add Text"
         )
       )
     );
@@ -204,4 +213,25 @@ function handleAddSound(modal: Modal) {
 
   clearInfo();
   modal.close();
+}
+
+function addText(modal: Modal) {
+  modal.close();
+
+  let wNumber: WNumberDescription = {
+    id: loadGame().nextAvailableNumberId,
+    name: "Text" + loadGame().nextAvailableNumberId,
+    x: 0,
+    y: 0,
+    height: 30,
+    numberDigit: 5,
+  };
+
+  saveGame({
+    ...loadGame(),
+    nextAvailableNumberId: loadGame().nextAvailableNumberId + 1,
+    numbers: loadGame().numbers.concat(wNumber),
+  });
+
+  addNumber(wNumber);
 }

@@ -214,7 +214,6 @@ function stopSelection() {
 
 function ticker(_delta: number) {
   if (selectedSprite) {
-    console.log(selectedSprite);
     hoverSelector.x = selectedSprite.container.x;
     hoverSelector.y = selectedSprite.container.y;
 
@@ -240,29 +239,60 @@ function ticker(_delta: number) {
       // selectedSprite.sprite.width = widthOfSprite * 2;
       // selectedSprite.sprite.height = heightOfSprite * 2;
 
-      selectedSprite.container.width =
-        mousePosition.x - selectedSprite.container.x;
-      selectedSprite.container.height =
-        mousePosition.y - selectedSprite.container.y;
+      if (selectedSprite.type === "image") {
+        selectedSprite.container.width =
+          mousePosition.x - selectedSprite.container.x;
+        selectedSprite.container.height =
+          mousePosition.y - selectedSprite.container.y;
 
-      let square = hoverSelector.getChildAt(0) as PIXI.Graphics;
-      square.clear();
-      square.lineStyle(2, 0x000000, 1);
-      square.drawRect(
-        -selectedSprite.container.width / 2,
-        -selectedSprite.container.height / 2,
-        selectedSprite.container.width,
-        selectedSprite.container.height
-      );
+        let square = hoverSelector.getChildAt(0) as PIXI.Graphics;
+        square.clear();
+        square.lineStyle(2, 0x000000, 1);
+        square.drawRect(
+          -selectedSprite.container.width / 2,
+          -selectedSprite.container.height / 2,
+          selectedSprite.container.width,
+          selectedSprite.container.height
+        );
 
-      (hoverSelector.getChildAt(1) as PIXI.Graphics).x =
-        selectedSprite.container.width / 2;
-      (hoverSelector.getChildAt(1) as PIXI.Graphics).y =
-        selectedSprite.container.height / 2;
+        (hoverSelector.getChildAt(1) as PIXI.Graphics).x =
+          selectedSprite.container.width / 2;
+        (hoverSelector.getChildAt(1) as PIXI.Graphics).y =
+          selectedSprite.container.height / 2;
 
-      // (hoverSelector.getChildAt(2) as PIXI.Graphics).x = 0;
-      // (hoverSelector.getChildAt(2) as PIXI.Graphics).y =
-      //   -20 - selectedSprite.sprite.height / 2;
+        // (hoverSelector.getChildAt(2) as PIXI.Graphics).x = 0;
+        // (hoverSelector.getChildAt(2) as PIXI.Graphics).y =
+        //   -20 - selectedSprite.sprite.height / 2;
+      } else if (selectedSprite.type === "number") {
+        let digits = selectedSprite.container.children;
+
+        let digitHeight = mousePosition.y - selectedSprite.container.y;
+        let digitWidth = digitHeight * 0.6;
+
+        digits.forEach((digit, index) => {
+          (digit as PIXI.Sprite).width = digitWidth;
+          (digit as PIXI.Sprite).height = digitHeight;
+
+          digit.x = digitWidth * index;
+        });
+
+        selectedSprite.container.calculateBounds();
+
+        let square = hoverSelector.getChildAt(0) as PIXI.Graphics;
+        square.clear();
+        square.lineStyle(2, 0x000000, 1);
+        square.drawRect(
+          0,
+          0,
+          selectedSprite.container.width,
+          selectedSprite.container.height
+        );
+
+        (hoverSelector.getChildAt(1) as PIXI.Graphics).x =
+          selectedSprite.container.width / 2;
+        (hoverSelector.getChildAt(1) as PIXI.Graphics).y =
+          selectedSprite.container.height;
+      }
     }
 
     if (isSelectorRotate) {
@@ -366,39 +396,54 @@ function initSelectionBox(spr: PIXI.Sprite, wSpr: WImage) {
   // hoverSelector.addChild(rotationSphere);
 }
 
-function initSelectionBoxNumber(container: PIXI.Container) {
-  //, wNumber: WNumber) {
+function initSelectionBoxNumber(container: PIXI.Container, wNumber: WNumber) {
   hoverSelector.removeChildren();
 
   hoverSelector.x = container.x;
   hoverSelector.y = container.y;
 
-  hoverSelector.pivot.set(0.5, 0.5);
-
   let square = new PIXI.Graphics();
   square.clear();
   square.lineStyle(2, 0x000000, 1);
-  square.drawRect(
-    -container.width / 2,
-    -container.height / 2,
-    container.width,
-    container.height
-  );
+  square.drawRect(0, 0, container.width, container.height);
 
   let sphere = new PIXI.Graphics();
   sphere.lineStyle(0);
   sphere.beginFill(0xff0000, 0.5);
   sphere.drawCircle(0, 0, 10);
 
-  sphere.x = 0;
-  sphere.y = container.height / 2 + 10;
+  sphere.x = container.width / 2;
+  sphere.y = container.height;
 
   sphere.eventMode = "static";
-  sphere.cursor = "nwse-resize";
+  sphere.cursor = "ns-resize";
 
-  // sphere.on("pointerdown", (event) => {
+  sphere.on("pointerdown", (event) => {
+    isSelectedResized = true;
 
-  // });
+    mouseOffset.x = event.data.global.x - container.width;
+    mouseOffset.y = event.data.global.y - container.height;
+
+    sphere.addEventListener("pointerup", endResize);
+    sphere.addEventListener("pointerupoutside", endResize);
+  });
+
+  function endResize() {
+    sphere.removeEventListener("pointerup", endResize);
+    sphere.removeEventListener("pointerupoutside", endResize);
+
+    isSelectedResized = false;
+
+    saveGame({
+      ...loadGame(),
+      numbers: loadGame().numbers.map((number) => {
+        if (number.id === wNumber.id) {
+          number.height = container.height;
+        }
+        return number;
+      }),
+    });
+  }
 
   hoverSelector.addChild(square);
   hoverSelector.addChild(sphere);
@@ -492,7 +537,7 @@ function updateImage(id: number, img: Partial<WImageDescription>) {
   });
 }
 
-function addNumber(number: WNumberDescription) {
+export function addNumber(number: WNumberDescription) {
   let numberContainer = new PIXI.Container();
 
   numberContainer.x = number.x;
@@ -505,7 +550,7 @@ function addNumber(number: WNumberDescription) {
 
     let width = number.height * 0.6;
 
-    spr.x = (i + 5) * width;
+    spr.x = i * (width + 2);
     spr.y = 0;
 
     spr.width = width;
@@ -527,9 +572,37 @@ function addNumber(number: WNumberDescription) {
   numbers.push(wNumber);
 
   numberContainer.on("pointerdown", (event) => {
-    initSelectionBoxNumber(numberContainer); //, wNumber);
+    initSelectionBoxNumber(numberContainer, wNumber);
     selectedSprite = wNumber;
+
+    mouseOffset.x = event.data.global.x - numberContainer.x;
+    mouseOffset.y = event.data.global.y - numberContainer.y;
+
+    isSelectedSpriteDragged = true;
+
+    numberContainer.addEventListener("pointerup", endMove);
+    numberContainer.addEventListener("pointerupoutside", endMove);
   });
+
+  function endMove() {
+    isSelectedSpriteDragged = false;
+
+    numberContainer.removeEventListener("pointerup", endMove);
+    numberContainer.removeEventListener("pointerupoutside", endMove);
+
+    saveGame({
+      ...loadGame(),
+      numbers: loadGame().numbers.map((n) =>
+        n.id === number.id
+          ? {
+              ...n,
+              x: numberContainer.x,
+              y: numberContainer.y,
+            }
+          : n
+      ),
+    });
+  }
 
   app.stage.addChild(numberContainer);
 }
