@@ -9,8 +9,14 @@ import {
 } from "../share/types";
 import { loadGame, saveGame } from "./storage";
 import { PALETTE } from "../share/colorPalette";
-import { clearInfo, displaySpriteInfo } from "./contextualInfo";
 import segments7 from "../share/7segment/7segment";
+import {
+  currentScreenListener,
+  currentSpriteListener,
+  onChangeSpriteListener,
+  onDeleteSpriteListener,
+  refreshGameListener,
+} from "./preact/Main";
 
 const width = 900;
 const height = 600;
@@ -60,8 +66,6 @@ export function initEditorView() {
   background.eventMode = "static";
 
   background.on("pointerdown", (_event) => {
-    selectedSprite = undefined;
-    clearInfo();
     stopSelection();
   });
 
@@ -157,31 +161,48 @@ function onSelectSprite(sprite: WImage) {
   let game = loadGame();
 
   selectedSprite = sprite;
+  currentScreenListener.trigger("sprite");
+  currentSpriteListener.trigger(sprite);
 
-  initSelectionBox(sprite.container, sprite);
+  onDeleteSpriteListener.clearListeners();
+  onDeleteSpriteListener.addListener(onDelete);
 
-  displaySpriteInfo(sprite, {
-    onChange: (key, value) => {
-      if (key === "name") {
-        updateImage(sprite.id, { name: value });
-        sprite.name = value;
-        saveGame(game);
-      }
-    },
-    onDelete: () => {
-      sprite.container.removeFromParent();
-      sprites.splice(sprites.indexOf(sprite), 1);
-      game.images = game.images.filter((image) => image.id !== sprite.id);
-      game.imageGroups = game.imageGroups.map((group) => {
-        group.images = group.images.filter((image) => image !== sprite.id);
-        return group;
+  onChangeSpriteListener.clearListeners();
+  onChangeSpriteListener.addListener(onChange);
+
+  function onDelete() {
+    onDeleteSpriteListener.removeListener(onDelete);
+
+    sprite.container.removeFromParent();
+    sprites.splice(sprites.indexOf(sprite), 1);
+    game.images = game.images.filter((image) => image.id !== sprite.id);
+    game.imageGroups = game.imageGroups.map((group) => {
+      group.images = group.images.filter((image) => image !== sprite.id);
+      return group;
+    });
+
+    saveGame(game);
+    refreshGameListener.trigger();
+
+    stopSelection();
+  }
+
+  function onChange({ key, value }: { key: string; value: any }) {
+    if (key === "name") {
+      game.images = game.images.map((image) => {
+        if (image.id === sprite.id) {
+          image.name = value;
+        }
+        return image;
       });
 
       saveGame(game);
+    }
 
-      stopSelection();
-    },
-  });
+    refreshGameListener.trigger();
+  }
+
+  initSelectionBox(sprite.container, sprite);
 }
 
 export function onSelectSpriteFromDescription(sprite: WImageDescription) {
@@ -209,7 +230,9 @@ function stopSelection() {
   isSelectedResized = false;
 
   hoverSelector.removeChildren();
-  clearInfo();
+
+  currentScreenListener.trigger("home");
+  currentSpriteListener.trigger(null);
 }
 
 function ticker(_delta: number) {
@@ -520,21 +543,10 @@ export function addSprite(file: File) {
 
     saveGame(game);
 
-    clearInfo();
+    refreshGameListener.trigger();
     createSprite(img);
   };
   reader.readAsText(file);
-}
-
-function updateImage(id: number, img: Partial<WImageDescription>) {
-  let game = loadGame();
-
-  game.images = game.images.map((image) => {
-    if (image.id === id) {
-      image = { ...image, ...img };
-    }
-    return image;
-  });
 }
 
 export function addNumber(number: WNumberDescription) {

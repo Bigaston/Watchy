@@ -19,13 +19,12 @@ import {
 } from "./storage";
 
 import "../styles/editor.css";
-import { clearInfo } from "./contextualInfo";
 import { Modal } from "./modal";
 import crel from "crel";
 import { WNumberDescription, WSoundDescriptionJSFXR } from "../share/types";
 
-// import { render } from "preact";
-import { Main } from "./components/Main";
+import { render } from "preact";
+import { Main, refreshGameListener } from "./preact/Main";
 
 const rendererElement = document.getElementById("renderer")!;
 
@@ -50,8 +49,7 @@ export function initEditor(editorContainer: HTMLElement) {
   });
 
   initEditorView();
-  clearInfo();
-  // render(Main, document.getElementById("infoContainer")!);
+  render(Main, document.getElementById("infoContainer")!);
 
   // Lauch game
   document.getElementById("run")!.addEventListener("click", () => {
@@ -134,7 +132,7 @@ export function initEditor(editorContainer: HTMLElement) {
 
 function handleLoadGame() {
   loadGameLocal().then(() => {
-    clearInfo();
+    refreshGameListener.trigger();
 
     editor.setValue(loadCode());
 
@@ -217,7 +215,7 @@ function handleAddSound(modal: Modal) {
 
   saveGame(game);
 
-  clearInfo();
+  refreshGameListener.trigger();
   modal.close();
 }
 
