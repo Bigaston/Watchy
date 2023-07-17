@@ -51,7 +51,7 @@ export function initEditor(editorContainer: HTMLElement) {
 
   initEditorView();
   clearInfo();
-  // render(Main, document.getElementById("infoContainer")!);
+  render(Main, document.getElementById("infoContainer")!);
 
   // Lauch game
   document.getElementById("run")!.addEventListener("click", () => {
