@@ -1,9 +1,14 @@
 import { useState } from "preact/hooks";
 import { loadGame, saveGame } from "../storage";
 import { onSelectSpriteFromDescription, updateBackground } from "../editorView";
+import { WSoundDescription, WSoundDescriptionJSFXR } from "../../share/types";
+import { useAtom } from "jotai";
+import gameAtom from "./atoms/gameAtom";
+
+const sfxr = (window as any).sfxr;
 
 export function Home() {
-  let [game, setGame] = useState(loadGame());
+  let [game, setGame] = useAtom(gameAtom);
   let [title, setTitle] = useState(loadGame().title);
 
   function handleChangeTitle(event: any) {
@@ -57,6 +62,21 @@ export function Home() {
     }
   }
 
+  function playSound(sound: WSoundDescription) {
+    if (sound.type === "jsfxr") {
+      sfxr.toAudio((sound as WSoundDescriptionJSFXR).content).play();
+    }
+  }
+
+  function onDeleteSound(sound: WSoundDescription) {
+    saveGame({
+      ...loadGame(),
+      sounds: loadGame().sounds.filter((s) => s.id !== sound.id),
+    });
+
+    setGame(loadGame());
+  }
+
   return (
     <>
       <h2>Game Info</h2>
@@ -80,7 +100,7 @@ export function Home() {
       <ul>
         {game.images.map((image) => (
           <li
-            class="spriteItem"
+            className="spriteItem"
             onClick={() => onSelectSpriteFromDescription(image)}
           >
             {image.name} (id: {image.id}){" "}
@@ -98,6 +118,17 @@ export function Home() {
       </ul>
 
       <button onClick={handleAddGroup}>➕ Add Group</button>
+
+      <h3>Sounds</h3>
+      <ul>
+        {game.sounds.map((sound) => (
+          <li>
+            {sound.name} (id: {sound.id}){" "}
+            <button onClick={() => playSound(sound)}>🔊 Play</button>
+            <button onClick={() => onDeleteSound(sound)}>🚮 Delete</button>
+          </li>
+        ))}
+      </ul>
     </>
   );
 }
