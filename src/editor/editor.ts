@@ -24,7 +24,7 @@ import { Modal } from "./modal";
 import crel from "crel";
 import { WNumberDescription, WSoundDescriptionJSFXR } from "../share/types";
 
-import { render } from "preact";
+// import { render } from "preact";
 import { Main } from "./components/Main";
 
 const rendererElement = document.getElementById("renderer")!;
@@ -51,7 +51,7 @@ export function initEditor(editorContainer: HTMLElement) {
 
   initEditorView();
   clearInfo();
-  render(Main, document.getElementById("infoContainer")!);
+  // render(Main, document.getElementById("infoContainer")!);
 
   // Lauch game
   document.getElementById("run")!.addEventListener("click", () => {
