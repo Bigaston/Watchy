@@ -1,4 +1,5 @@
 import { defineConfig } from "vite";
+import preact from "@preact/preset-vite";
 
 export default ({ mode }) => {
   return defineConfig({
@@ -7,5 +8,6 @@ export default ({ mode }) => {
       exclude: ["dist_engine", "docs", "public"],
       needsInterop: ["wasmoon"],
     },
+    plugins: [preact()],
   });
 };

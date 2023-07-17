@@ -2,14 +2,12 @@ import {
   WImage,
   WSoundDescription,
   WSoundDescriptionJSFXR,
-} from "../types/types";
+} from "../share/types";
 import { onSelectSpriteFromDescription, updateBackground } from "./editorView";
 import { loadGame, saveGame } from "./storage";
 import crel from "crel";
 
 const sfxr = (window as any).sfxr;
-
-const DEBOUNCE_TIME = 300;
 
 let infoDiv = document.getElementById("infoContainer")!;
 
@@ -20,110 +18,210 @@ export function displaySpriteInfo(
     onDelete,
   }: { onChange: (key: string, value: any) => void; onDelete: () => void }
 ) {
+  // return;
   infoDiv.innerHTML = "";
 
-  let title = document.createElement("h2");
-  title.innerHTML = `Sprite Info <span class="spriteId">(id: ${sprite.id})</span>`;
+  crel(
+    infoDiv,
+    crel(
+      "h2",
+      "Sprite Info ",
+      crel("span", { class: "spriteId" }, `(id: ${sprite.id})`)
+    ),
+    crel("label", { for: "spriteName" }, "Name: "),
+    crel("input", {
+      id: "spriteName",
+      value: sprite.name,
+      onchange: (e: any) => {
+        if (e.target.value === "") {
+          e.target.classList.add("error");
+        } else {
+          e.target.classList.remove("error");
 
-  infoDiv.appendChild(title);
+          onChange("name", e.target.value);
+        }
+      },
+    }),
+    crel("br"),
+    crel(
+      "button",
+      { class: "button-error", onclick: () => onDelete() },
+      "🚮 Delete"
+    ),
+    crel("br"),
+    crel("h3")
+  );
 
-  let input = createInput({
-    label: "Name",
-    value: sprite.name,
-    onChange: (value) => {
-      if (value === "") {
-        input.classList.add("error");
-      } else {
-        input.classList.remove("error");
+  crel(
+    infoDiv,
+    crel("h3", "Sprite Groups"),
+    loadGame().imageGroups.length === 0
+      ? crel("p", "No groups yet, go to the game page to add some")
+      : [
+          loadGame()
+            .imageGroups.filter((group) => group.images.includes(sprite.id))
+            .map((group) => crel("p", group.name)),
+          crel(
+            "select",
+            {
+              id: "spriteGroupSelect",
+            },
+            loadGame()
+              .imageGroups.filter(
+                (imageGroup) => !imageGroup.images.includes(sprite.id)
+              )
+              .map((group) => crel("option", { value: group.id }, group.name))
+          ),
+          crel(
+            "button",
+            {
+              onclick: () => {
+                let group = loadGame().imageGroups.find(
+                  (group) =>
+                    group.id ===
+                    parseInt(
+                      (
+                        document.getElementById(
+                          "spriteGroupSelect"
+                        ) as HTMLSelectElement
+                      ).value
+                    )
+                );
 
-        onChange("name", value);
-      }
-    },
-  });
+                if (group) {
+                  group.images.push(sprite.id);
+                  saveGame({
+                    ...loadGame(),
+                    imageGroups: loadGame().imageGroups.map((g) =>
+                      g.id === group!.id ? group! : g
+                    ),
+                  });
 
-  createButton({
-    label: "🚮 Delete",
-    type: "button-error",
-    onClick: () => {
-      onDelete();
-    },
-  });
+                  displaySpriteInfo(sprite, { onChange, onDelete });
+                }
+              },
+            },
+            "➕ Add to group"
+          ),
+        ]
+  );
 }
 
 export function clearInfo() {
+  // return;
   infoDiv.innerHTML = "";
 
-  let title = document.createElement("h2");
-  title.innerHTML = `Game Info`;
+  crel(
+    infoDiv,
+    crel("h2", "Game Info"),
+    crel("label", { for: "editorGameTitle" }, "Title: "),
+    crel("input", {
+      type: "text",
+      id: "editorGameTitle",
+      value: loadGame().title,
+      onchange: (e: any) => {
+        saveGame({ ...loadGame(), title: e.target.value });
+      },
+    }),
+    crel(
+      "button",
+      {
+        class: "button-primary",
+        onclick: () => {
+          let input = document.createElement("input");
+          input.type = "file";
+          input.accept = "image/png, image/jpg, image/jpeg";
 
-  infoDiv.appendChild(title);
+          input.addEventListener("change", () => {
+            if (!input.files) return;
 
-  createInput({
-    label: "Title",
-    value: loadGame().title,
-    onChange: (value) => {
-      saveGame({ ...loadGame(), title: value });
-    },
-  });
+            console.log(input.files[0]);
 
-  createButton({
-    label: "🖼️ Update Wallpaper",
-    type: "button-primary",
-    onClick: () => {
-      let input = document.createElement("input");
-      input.type = "file";
-      input.accept = "image/png, image/jpg, image/jpeg";
+            let reader = new FileReader();
+            reader.onload = () => {
+              saveGame({ ...loadGame(), background: reader.result as string });
 
-      input.addEventListener("change", () => {
-        if (!input.files) return;
+              updateBackground();
+            };
+            reader.readAsDataURL(input.files[0]);
+          });
 
-        console.log(input.files[0]);
-
-        let reader = new FileReader();
-        reader.onload = () => {
-          saveGame({ ...loadGame(), background: reader.result as string });
-
+          input.click();
+        },
+      },
+      "🖼️ Update Wallpaper"
+    ),
+    crel(
+      "button",
+      {
+        class: "button-error",
+        onclick: () => {
+          saveGame({ ...loadGame(), background: undefined });
           updateBackground();
-        };
-        reader.readAsDataURL(input.files[0]);
-      });
+        },
+      },
+      "🖼️🚮 Delete Background"
+    )
+  );
 
-      input.click();
-    },
-  });
+  // Sprites
+  crel(
+    infoDiv,
+    crel("h3", "Sprites"),
+    crel(
+      "ul",
+      loadGame().images.map((image) =>
+        crel(
+          "li",
+          {
+            class: "spriteItem",
+            onclick: () => {
+              onSelectSpriteFromDescription(image);
+            },
+          },
+          image.name + " (id: " + image.id + ")"
+        )
+      )
+    )
+  );
 
-  createButton({
-    label: "🖼️🚮 Delete Background",
-    type: "button-error",
-    onClick: () => {
-      saveGame({ ...loadGame(), background: undefined });
-      updateBackground();
-    },
-  });
-
-  // Sprite List
-  let spritesTitle = document.createElement("h3");
-  spritesTitle.innerHTML = `Sprites`;
-
-  infoDiv.appendChild(spritesTitle);
-
-  let sprites = loadGame().images;
-
-  let spriteList = document.createElement("ul");
-  infoDiv.appendChild(spriteList);
-
-  sprites.forEach((sprite) => {
-    let spriteItem = document.createElement("li");
-    spriteItem.innerHTML = sprite.name + " (id: " + sprite.id + ")";
-
-    spriteItem.classList.add("spriteItem");
-
-    spriteItem.addEventListener("click", () => {
-      onSelectSpriteFromDescription(sprite);
-    });
-
-    spriteList.appendChild(spriteItem);
-  });
+  // Sprites Groups
+  crel(
+    infoDiv,
+    crel("h3", "Sprite Groups"),
+    crel(
+      "ul",
+      loadGame().imageGroups.map((imageGroup) =>
+        crel(
+          "li",
+          `${imageGroup.name} (id: ${imageGroup.id}): [${imageGroup.images.length} sprites]`
+        )
+      )
+    ),
+    crel(
+      "button",
+      {
+        onclick: () => {
+          let name = prompt("Group Name");
+          if (name) {
+            saveGame({
+              ...loadGame(),
+              imageGroups: [
+                ...loadGame().imageGroups,
+                {
+                  id: loadGame().nextAvailableImageGroupId++,
+                  name,
+                  images: [],
+                },
+              ],
+            });
+            clearInfo();
+          }
+        },
+      },
+      "➕ Add Group"
+    )
+  );
 
   // Sound List
   crel(
@@ -160,57 +258,4 @@ function onDeleteSound(sound: WSoundDescription) {
   });
 
   clearInfo();
-}
-
-// Helper Function
-function createInput(
-  options: {
-    type?: string;
-    label?: string;
-    value?: string;
-    onChange?: (value: string) => void;
-  } = {}
-) {
-  let input = document.createElement("input");
-  input.type = options.type ?? "text";
-
-  input.value = options.value ?? "";
-
-  if (options.label) {
-    let label = document.createElement("label");
-    label.innerText = options.label;
-    infoDiv.appendChild(label);
-  }
-
-  let timeout: number;
-  input.addEventListener("input", () => {
-    if (timeout) clearTimeout(timeout);
-
-    timeout = setTimeout(() => {
-      options.onChange?.(input.value);
-    }, DEBOUNCE_TIME);
-  });
-
-  infoDiv.appendChild(input);
-
-  return input;
-}
-
-function createButton({
-  label,
-  onClick,
-  type,
-}: {
-  label?: string;
-  onClick?: () => void;
-  type?: "button-primary" | "button-error";
-}) {
-  let button = document.createElement("button");
-  button.innerText = label ?? "";
-
-  if (onClick) button.addEventListener("click", onClick);
-
-  if (type) button.classList.add(type);
-
-  infoDiv.appendChild(button);
 }

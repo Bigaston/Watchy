@@ -1,4 +1,4 @@
-import { WGameDescription } from "../types/types";
+import { WGameDescription } from "../share/types";
 import { isOkText } from "../utils";
 import { defaultGame } from "./defaultGame";
 
