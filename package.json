@@ -24,6 +24,7 @@
   "dependencies": {
     "@types/wicg-file-system-access": "^2020.9.6",
     "crel": "^4.2.1",
+    "jotai": "^2.2.2",
     "monaco-editor": "^0.39.0",
     "pixi.js": "^7.2.4",
     "preact": "^10.16.0",

@@ -1,1 +1,0 @@
-export let Main = <p>Salut</p>

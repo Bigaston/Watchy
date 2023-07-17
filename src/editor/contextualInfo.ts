@@ -18,7 +18,7 @@ export function displaySpriteInfo(
     onDelete,
   }: { onChange: (key: string, value: any) => void; onDelete: () => void }
 ) {
-  // return;
+  return;
   infoDiv.innerHTML = "";
 
   crel(
@@ -108,7 +108,7 @@ export function displaySpriteInfo(
 }
 
 export function clearInfo() {
-  // return;
+  return;
   infoDiv.innerHTML = "";
 
   crel(
