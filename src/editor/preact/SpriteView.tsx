@@ -2,7 +2,7 @@ import { useState } from "preact/hooks";
 import { WImage } from "../../share/types";
 import classNames from "classnames";
 import { loadGame, saveGame } from "../storage";
-import { onChangeSpriteListener, onDeleteSpriteListener } from "./Main";
+import { onChangeSpriteListener, onDeleteSpriteListener } from "./Listeners";
 import { useAtom } from "jotai";
 import gameAtom from "./atoms/gameAtom";
 
