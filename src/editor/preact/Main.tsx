@@ -1,5 +1,4 @@
 import { useEffect, useState } from "preact/hooks";
-import { OutsideListener } from "../OutsideListener";
 import { Home } from "./Home";
 import currentScreenAtom from "./atoms/currentScreen";
 import { useAtom } from "jotai";
@@ -7,15 +6,12 @@ import { WImage } from "../../share/types";
 import { SpriteView } from "./SpriteView";
 import gameAtom from "./atoms/gameAtom";
 import { loadGame } from "../storage";
-
-export let currentScreenListener = new OutsideListener<"home" | "sprite">();
-export let currentSpriteListener = new OutsideListener<WImage | null>();
-export let refreshGameListener = new OutsideListener<void>();
-export let onDeleteSpriteListener = new OutsideListener<void>();
-export let onChangeSpriteListener = new OutsideListener<{
-  key: string;
-  value: any;
-}>();
+import {
+  currentScreenListener,
+  currentSpriteListener,
+  refreshGameListener,
+} from "./Listeners";
+import { ModalRessource } from "./components/ModalRessource";
 
 function App() {
   let [currentScreen, setCurrentScreen] = useAtom(currentScreenAtom);
@@ -32,6 +28,8 @@ function App() {
     <>
       {currentScreen === "home" && <Home />}
       {currentScreen === "sprite" && <SpriteView sprite={currentSprite!} />}
+
+      <ModalRessource />
     </>
   );
 }

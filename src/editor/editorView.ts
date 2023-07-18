@@ -16,7 +16,7 @@ import {
   onChangeSpriteListener,
   onDeleteSpriteListener,
   refreshGameListener,
-} from "./preact/Main";
+} from "./preact/Listeners";
 
 const width = 900;
 const height = 600;
