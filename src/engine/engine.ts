@@ -43,8 +43,8 @@ export async function initEngine(
 
   renderElement.appendChild(app.view as any as Node);
 
-  window.addEventListener("resize", () => resize());
-  resize(renderElement);
+  window.addEventListener("resize", resize);
+  resize();
 
   // Init Background
   let background = new PIXI.Sprite(
@@ -112,6 +112,8 @@ export function stopEngine() {
   stopDisplay();
   stopInput();
 
+  window.removeEventListener("resize", resize);
+
   renderElement.innerHTML = "";
 
   gameFunction = {
@@ -124,10 +126,10 @@ export function stopEngine() {
   hasBeenInitialized = false;
 }
 
-export function resize(element?: HTMLElement) {
+export function resize() {
   // current screen size
-  const screenWidth = (element ?? renderElement).clientWidth;
-  const screenHeight = (element ?? renderElement).clientHeight;
+  const screenWidth = renderElement.clientWidth;
+  const screenHeight = renderElement.clientHeight;
 
   // uniform scale for our game
   const scale = Math.min(screenWidth / width, screenHeight / height);

@@ -11,7 +11,7 @@ Set if the given zone is enabled or not.
 - zoneId (number/string): The ID of the zone (see [zoneId](#zoneId)).
 - isEnabled (bool) : True if the zone should be enabled, false otherwise.
 
-#### watchy.setGroupStatus(groupId, isEnabled)
+#### watchy.setStatusGroup(groupId, isEnabled)
 Set if the given group is enabled or not.
 
 ##### Parameters

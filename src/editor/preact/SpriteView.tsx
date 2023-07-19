@@ -1,10 +1,11 @@
-import { useState } from "preact/hooks";
-import { WImage } from "../../share/types";
+import { useEffect, useState } from "preact/hooks";
+import { WGameDescription, WImage } from "../../share/types";
 import classNames from "classnames";
-import { loadGame, saveGame } from "../storage";
+import { saveGame } from "../storage";
 import { onChangeSpriteListener, onDeleteSpriteListener } from "./Listeners";
 import { useAtom } from "jotai";
 import gameAtom from "./atoms/gameAtom";
+import { createSprite } from "../editorView";
 
 export function SpriteView({
   sprite,
@@ -18,6 +19,11 @@ export function SpriteView({
   let [game, setGame] = useAtom(gameAtom);
   let [spriteName, setSpriteName] = useState(sprite.name);
   let [errorSpriteName, setErrorSpriteName] = useState("");
+
+  useEffect(() => {
+    setSpriteName(sprite.name);
+    setErrorSpriteName("");
+  }, [sprite]);
 
   let [addGroupValue, setAddGroupValue] = useState("-1");
 
@@ -47,22 +53,60 @@ export function SpriteView({
 
     if (group) {
       group.images.push(sprite.id);
+
       saveGame({
         ...game,
-        imageGroups: loadGame().imageGroups.map((g) =>
+        imageGroups: game.imageGroups.map((g) =>
           g.id === group!.id ? group! : g
         ),
       });
 
       setGame({
         ...game,
-        imageGroups: loadGame().imageGroups.map((g) =>
+        imageGroups: game.imageGroups.map((g) =>
           g.id === group!.id ? group! : g
         ),
       });
 
       setAddGroupValue("-1");
     }
+  }
+
+  function handleDeleteGroup(groupId: number) {
+    let g: WGameDescription = {
+      ...game,
+      imageGroups: game.imageGroups.map((g) => {
+        if (g.id === groupId) {
+          g.images = g.images.filter((id) => id !== sprite.id);
+        }
+        return g;
+      }),
+    };
+
+    saveGame(g);
+    setGame(g);
+  }
+
+  function handleDuplicate() {
+    let spr = game.images.find((i) => i.id === sprite.id)!;
+
+    let newSpr = {
+      ...spr,
+      id: game.nextAvailableImageId,
+      name: spr.name + " (copy)",
+      x: spr.x + 10,
+      y: spr.y + 10,
+    };
+
+    let g: WGameDescription = {
+      ...game,
+      nextAvailableImageId: game.nextAvailableImageId + 1,
+      images: [...game.images, newSpr],
+    };
+
+    saveGame(g);
+    setGame(g);
+    createSprite(newSpr);
   }
 
   return (
@@ -87,6 +131,8 @@ export function SpriteView({
         🚮 Delete
       </button>
 
+      <button onClick={handleDuplicate}>📝 Duplicate</button>
+
       <br />
 
       <h3>Sprite Groups</h3>
@@ -98,7 +144,12 @@ export function SpriteView({
             {game.imageGroups
               .filter((group) => group.images.includes(sprite.id))
               .map((group) => (
-                <li key={group.id}>{group.name}</li>
+                <li key={group.id}>
+                  {group.name}{" "}
+                  <button onClick={() => handleDeleteGroup(group.id)}>
+                    🚮
+                  </button>
+                </li>
               ))}
           </ul>
           <select
