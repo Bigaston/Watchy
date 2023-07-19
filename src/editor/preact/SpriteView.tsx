@@ -1,4 +1,4 @@
-import { useState } from "preact/hooks";
+import { useEffect, useState } from "preact/hooks";
 import { WGameDescription, WImage } from "../../share/types";
 import classNames from "classnames";
 import { saveGame } from "../storage";
@@ -19,6 +19,11 @@ export function SpriteView({
   let [game, setGame] = useAtom(gameAtom);
   let [spriteName, setSpriteName] = useState(sprite.name);
   let [errorSpriteName, setErrorSpriteName] = useState("");
+
+  useEffect(() => {
+    setSpriteName(sprite.name);
+    setErrorSpriteName("");
+  }, [sprite]);
 
   let [addGroupValue, setAddGroupValue] = useState("-1");
 

@@ -572,9 +572,7 @@ export function duplicateSprite() {
   };
 
   createSprite(newSpr);
-
   saveGame(g);
-
   refreshGameListener.trigger();
 }
 
