@@ -1,7 +1,11 @@
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 import * as lua from "monaco-editor/esm/vs/basic-languages/lua/lua";
 import { initEngine, stopEngine } from "../engine/engine";
-import { initEditorView, resize as resizeEditor } from "./editorView";
+import {
+  duplicateSprite,
+  initEditorView,
+  resize as resizeEditor,
+} from "./editorView";
 import {
   buildGame,
   loadCode,
@@ -101,6 +105,12 @@ export function initEditor(editorContainer: HTMLElement) {
       e.preventDefault();
 
       saveGameLocal();
+    }
+
+    if (e.ctrlKey && e.key === "d") {
+      e.preventDefault();
+
+      duplicateSprite();
     }
   });
 }

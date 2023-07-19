@@ -1,5 +1,6 @@
 import * as PIXI from "pixi.js";
 import {
+  WGameDescription,
   WImage,
   WImageDescription,
   WImageStatus,
@@ -92,7 +93,7 @@ export function initEditorView() {
   app.stage.addChild(hoverSelector);
 }
 
-async function createSprite(image: WImageDescription) {
+export function createSprite(image: WImageDescription) {
   let texture = PIXI.Texture.from(image.path, {
     scaleMode: PIXI.SCALE_MODES.NEAREST,
     resourceOptions: {
@@ -547,6 +548,34 @@ export function addSprite(file: File) {
     createSprite(img);
   };
   reader.readAsText(file);
+}
+
+export function duplicateSprite() {
+  if (selectedSprite === undefined) return;
+
+  let game = loadGame();
+
+  let img = game.images.find((image) => image.id === selectedSprite!.id)!;
+
+  let newSpr = {
+    ...img,
+    id: game.nextAvailableImageId,
+    name: img.name + " (copy)",
+    x: img.x + 10,
+    y: img.y + 10,
+  };
+
+  let g: WGameDescription = {
+    ...game,
+    nextAvailableImageId: game.nextAvailableImageId + 1,
+    images: [...game.images, newSpr],
+  };
+
+  createSprite(newSpr);
+
+  saveGame(g);
+
+  refreshGameListener.trigger();
 }
 
 export function addNumber(number: WNumberDescription) {

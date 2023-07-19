@@ -5,6 +5,7 @@ import { saveGame } from "../storage";
 import { onChangeSpriteListener, onDeleteSpriteListener } from "./Listeners";
 import { useAtom } from "jotai";
 import gameAtom from "./atoms/gameAtom";
+import { createSprite } from "../editorView";
 
 export function SpriteView({
   sprite,
@@ -81,6 +82,28 @@ export function SpriteView({
     setGame(g);
   }
 
+  function handleDuplicate() {
+    let spr = game.images.find((i) => i.id === sprite.id)!;
+
+    let newSpr = {
+      ...spr,
+      id: game.nextAvailableImageId,
+      name: spr.name + " (copy)",
+      x: spr.x + 10,
+      y: spr.y + 10,
+    };
+
+    let g: WGameDescription = {
+      ...game,
+      nextAvailableImageId: game.nextAvailableImageId + 1,
+      images: [...game.images, newSpr],
+    };
+
+    saveGame(g);
+    setGame(g);
+    createSprite(newSpr);
+  }
+
   return (
     <>
       <h2>
@@ -102,6 +125,8 @@ export function SpriteView({
       <button className="button-error" onClick={handleDelete}>
         🚮 Delete
       </button>
+
+      <button onClick={handleDuplicate}>📝 Duplicate</button>
 
       <br />
 
