@@ -1,7 +1,7 @@
 import { useState } from "preact/hooks";
-import { WImage } from "../../share/types";
+import { WGameDescription, WImage } from "../../share/types";
 import classNames from "classnames";
-import { loadGame, saveGame } from "../storage";
+import { saveGame } from "../storage";
 import { onChangeSpriteListener, onDeleteSpriteListener } from "./Listeners";
 import { useAtom } from "jotai";
 import gameAtom from "./atoms/gameAtom";
@@ -47,22 +47,38 @@ export function SpriteView({
 
     if (group) {
       group.images.push(sprite.id);
+
       saveGame({
         ...game,
-        imageGroups: loadGame().imageGroups.map((g) =>
+        imageGroups: game.imageGroups.map((g) =>
           g.id === group!.id ? group! : g
         ),
       });
 
       setGame({
         ...game,
-        imageGroups: loadGame().imageGroups.map((g) =>
+        imageGroups: game.imageGroups.map((g) =>
           g.id === group!.id ? group! : g
         ),
       });
 
       setAddGroupValue("-1");
     }
+  }
+
+  function handleDeleteGroup(groupId: number) {
+    let g: WGameDescription = {
+      ...game,
+      imageGroups: game.imageGroups.map((g) => {
+        if (g.id === groupId) {
+          g.images = g.images.filter((id) => id !== sprite.id);
+        }
+        return g;
+      }),
+    };
+
+    saveGame(g);
+    setGame(g);
   }
 
   return (
@@ -98,7 +114,12 @@ export function SpriteView({
             {game.imageGroups
               .filter((group) => group.images.includes(sprite.id))
               .map((group) => (
-                <li key={group.id}>{group.name}</li>
+                <li key={group.id}>
+                  {group.name}{" "}
+                  <button onClick={() => handleDeleteGroup(group.id)}>
+                    🚮
+                  </button>
+                </li>
               ))}
           </ul>
           <select

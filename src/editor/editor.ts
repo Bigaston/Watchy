@@ -9,6 +9,7 @@ import {
   loadGameLocal,
   saveAsGame,
   saveCode,
+  saveGame,
   saveGameLocal,
 } from "./storage";
 
@@ -17,6 +18,7 @@ import "../styles/editor.css";
 import { render } from "preact";
 import { Main } from "./preact/Main";
 import { onAddResourceListener, refreshGameListener } from "./preact/Listeners";
+import { defaultGame } from "./defaultGame";
 
 const rendererElement = document.getElementById("renderer")!;
 
@@ -74,11 +76,25 @@ export function initEditor(editorContainer: HTMLElement) {
 
   document.getElementById("build")!.addEventListener("click", buildGame);
 
+  document.getElementById("openDoc")?.addEventListener("click", () => {
+    window.open("./docs/");
+  });
+
   if (window.showSaveFilePicker !== undefined) {
     document.getElementById("saveAs")!.addEventListener("click", saveAsGame);
   } else {
     document.getElementById("saveAs")!.style.display = "none";
   }
+
+  document.getElementById("new")!.addEventListener("click", () => {
+    if (confirm("Are you sure you want to start a new game?")) {
+      saveGame(defaultGame);
+      rendererElement.innerHTML = "";
+
+      initEditorView();
+      refreshGameListener.trigger();
+    }
+  });
 
   document.addEventListener("keydown", (e) => {
     if (e.ctrlKey && e.key === "s") {

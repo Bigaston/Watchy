@@ -12,7 +12,8 @@ export function Home() {
   let [title, setTitle] = useState(loadGame().title);
 
   function handleChangeTitle(event: any) {
-    saveGame({ ...loadGame(), title: event.target.value });
+    saveGame({ ...game, title: event.target.value });
+    setGame({ ...game, title: event.target.value });
     setTitle(event.target.value);
   }
 
@@ -28,7 +29,8 @@ export function Home() {
 
       let reader = new FileReader();
       reader.onload = () => {
-        saveGame({ ...loadGame(), background: reader.result as string });
+        saveGame({ ...game, background: reader.result as string });
+        setGame({ ...game, background: reader.result as string });
 
         updateBackground();
       };
@@ -39,26 +41,30 @@ export function Home() {
   }
 
   function handleDeleteBackground() {
-    saveGame({ ...loadGame(), background: undefined });
+    saveGame({ ...game, background: undefined });
+    setGame({ ...game, background: undefined });
     updateBackground();
   }
 
   function handleAddGroup() {
     let name = prompt("Group Name");
     if (name) {
-      saveGame({
-        ...loadGame(),
+      let g = {
+        ...game,
+        nextAvailableImageGroupId: game.nextAvailableImageGroupId + 1,
         imageGroups: [
-          ...loadGame().imageGroups,
+          ...game.imageGroups,
           {
-            id: loadGame().nextAvailableImageGroupId++,
+            id: game.nextAvailableImageGroupId,
             name,
             images: [],
           },
         ],
-      });
+      };
+      console.log(g);
 
-      setGame(loadGame());
+      saveGame(g);
+      setGame(g);
     }
   }
 

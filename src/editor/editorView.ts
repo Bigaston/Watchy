@@ -507,8 +507,8 @@ export function addSprite(file: File) {
     let xmlString = reader.result?.toString() as string;
 
     // Check if XML has height and width
-    let height = xmlString.match(/height="(\d+)(|px)"/);
-    let width = xmlString.match(/width="(\d+)(|px)"/);
+    let height = xmlString.match(/height="[0-9.]*(px|)"/);
+    let width = xmlString.match(/width="[0-9.]*(px|)"/);
 
     if (!height || !width) {
       alert("Invalid SVG file, you need to have an height and width attribute");
@@ -528,13 +528,13 @@ export function addSprite(file: File) {
 
     let img: WImageDescription = {
       id: game.nextAvailableImageId,
-      name: file.name,
+      name: file.name.replace(".svg", ""),
       path: dataURL,
       x: 50,
       y: 50,
       angle: 0,
-      width: 100,
-      height: 100,
+      width: parseInt(width[0].replace('width="', "").replace('"', "")),
+      height: parseInt(height[0].replace('height="', "").replace('"', "")),
     };
 
     game.images.push(img);
