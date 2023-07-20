@@ -37,6 +37,16 @@ export function SpriteView({
         key: "name",
         value: event.target.value,
       });
+
+      setGame({
+        ...game,
+        images: game.images.map((image) => {
+          if (image.id === sprite.id) {
+            image.name = event.target.value;
+          }
+          return image;
+        }),
+      });
     }
   }
 
