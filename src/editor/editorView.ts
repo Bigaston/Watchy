@@ -571,9 +571,10 @@ export function duplicateSprite() {
     images: [...game.images, newSpr],
   };
 
-  createSprite(newSpr);
   saveGame(g);
   refreshGameListener.trigger();
+
+  createSprite(newSpr);
 }
 
 export function addNumber(number: WNumberDescription) {
