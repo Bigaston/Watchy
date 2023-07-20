@@ -46,16 +46,11 @@ export function ModalRessource() {
   }
 
   function handleAddSound() {
-    let codeValue = (document.getElementById("soundCode") as HTMLInputElement)
-      .value;
-    let nameValue = (document.getElementById("soundName") as HTMLInputElement)
-      .value;
-
     let sound: WSoundDescriptionJSFXR = {
       type: "jsfxr",
-      content: codeValue,
+      content: soundCodeValue,
       id: game.nextAvailableSoundId,
-      name: nameValue,
+      name: labelSoundValue,
     };
 
     game.sounds.push(sound);
@@ -65,6 +60,7 @@ export function ModalRessource() {
     setGame(game);
 
     setIsOpened(false);
+    setIsModalSoundOpened(false);
   }
 
   function addText() {

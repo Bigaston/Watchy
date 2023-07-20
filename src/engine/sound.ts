@@ -55,6 +55,8 @@ function playSound(idOrName: string | number) {
   if (audio == null) return;
 
   if (audio.type === "jsfxr") {
-    sfxr.toAudio((audio as WSoundDescriptionJSFXR).content).play();
+    let au = sfxr.toAudio((audio as WSoundDescriptionJSFXR).content);
+    au.setVolume(0.1);
+    au.play();
   }
 }

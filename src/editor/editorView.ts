@@ -37,7 +37,7 @@ let lastMousePosition = { x: 0, y: 0 };
 
 let hoverSelector = new PIXI.Container();
 
-export const sprites: WImage[] = [];
+export let sprites: WImage[] = [];
 export const numbers: WNumber[] = [];
 
 export function initEditorView() {
@@ -159,8 +159,6 @@ export function createSprite(image: WImageDescription) {
 }
 
 function onSelectSprite(sprite: WImage) {
-  let game = loadGame();
-
   selectedSprite = sprite;
   currentScreenListener.trigger("sprite");
   currentSpriteListener.trigger(sprite);
@@ -173,6 +171,8 @@ function onSelectSprite(sprite: WImage) {
 
   function onDelete() {
     onDeleteSpriteListener.removeListener(onDelete);
+
+    let game = loadGame();
 
     sprite.container.removeFromParent();
     sprites.splice(sprites.indexOf(sprite), 1);
@@ -189,6 +189,8 @@ function onSelectSprite(sprite: WImage) {
   }
 
   function onChange({ key, value }: { key: string; value: any }) {
+    let game = loadGame();
+
     if (key === "name") {
       game.images = game.images.map((image) => {
         if (image.id === sprite.id) {
@@ -198,9 +200,14 @@ function onSelectSprite(sprite: WImage) {
       });
 
       saveGame(game);
-    }
 
-    refreshGameListener.trigger();
+      sprites = sprites.map((spr) => {
+        if (spr.id === sprite.id) {
+          spr.name = value;
+        }
+        return spr;
+      });
+    }
   }
 
   initSelectionBox(sprite.container, sprite);
@@ -571,9 +578,10 @@ export function duplicateSprite() {
     images: [...game.images, newSpr],
   };
 
-  createSprite(newSpr);
   saveGame(g);
   refreshGameListener.trigger();
+
+  createSprite(newSpr);
 }
 
 export function addNumber(number: WNumberDescription) {
