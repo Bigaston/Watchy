@@ -9,6 +9,8 @@ export function initSystem(
   functionObject["pause"] = pause;
   functionObject["resume"] = resume;
 
+  isPaused = false;
+
   lua.global.set("isPaused", false);
 
   function pause() {
