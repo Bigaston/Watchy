@@ -18,6 +18,11 @@ Pause the game. If the game is paused, the GAME_UPDATE function will not be call
 #### watchy.resume()
 Resume the game. If the game is paused, the GAME_UPDATE function will be called.
 
-### Global Variables
-#### isPaused
-True if the game is paused, false otherwise.
+#### watchy.isPaused()
+Return true if the game is paused, false otherwise.
+
+#### watchy.save(key, value)
+Save a value in the local storage. The value is a string
+
+#### watchy.load(key)
+Load a value from the local storage. The value is a string. If no value, return empty string.

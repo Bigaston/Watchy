@@ -3,7 +3,7 @@ import * as PIXI from "pixi.js";
 import { WGameDescription } from "../share/types";
 import { initInput, stopInput, updateGamepad } from "./input";
 import { initDisplay, stopDisplay } from "./display";
-import { initSystem, isPaused } from "./system";
+import { _isPaused, initSystem } from "./system";
 import { initSound } from "./sound";
 
 const factory = new LuaFactory();
@@ -96,7 +96,7 @@ function ticker(delta: number) {
 
   if (gameFunction.update) gameFunction.update(delta);
 
-  if (!isPaused) {
+  if (!_isPaused) {
     if (gameFunction.gameUpdate) gameFunction.gameUpdate(delta);
   }
 
