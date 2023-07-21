@@ -11,7 +11,6 @@ export function Modal({
   onClose?: () => void;
 }) {
   function onClickClose(e: any) {
-    console.log(e.target);
     if (e.target.classList.contains("modal-background")) {
       if (onClose) onClose();
     }
