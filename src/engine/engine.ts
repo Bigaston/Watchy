@@ -70,10 +70,12 @@ export async function initEngine(
   await lua.doString(gameDescription.code);
 
   // Get the three main functions we need here in TypeScript
-  gameFunction.init = lua.global.get("INIT");
-  gameFunction.update = lua.global.get("UPDATE");
-  gameFunction.gameUpdate = lua.global.get("GAME_UPDATE");
-  gameFunction.draw = lua.global.get("DRAW");
+  let watchy = lua.global.get("watchy");
+
+  gameFunction.init = watchy.init;
+  gameFunction.update = watchy.update;
+  gameFunction.gameUpdate = watchy.gameUpdate;
+  gameFunction.draw = watchy.draw;
 
   // If init is a function, call it
   if (gameFunction.init != null && typeof gameFunction.init === "function") {
