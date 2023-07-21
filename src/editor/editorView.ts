@@ -14,8 +14,11 @@ import segments7 from "../share/7segment/7segment";
 import {
   currentScreenListener,
   currentSpriteListener,
+  currentTextListener,
   onChangeSpriteListener,
+  onChangeTextListener,
   onDeleteSpriteListener,
+  onDeleteTextListener,
   refreshGameListener,
 } from "./preact/Listeners";
 
@@ -38,7 +41,7 @@ let lastMousePosition = { x: 0, y: 0 };
 let hoverSelector = new PIXI.Container();
 
 export let sprites: WImage[] = [];
-export const numbers: WNumber[] = [];
+export let numbers: WNumber[] = [];
 
 export function initEditorView() {
   let game = loadGame();
@@ -612,6 +615,7 @@ export function addNumber(number: WNumberDescription) {
   let wNumber: WNumber = {
     id: number.id,
     name: number.name,
+    numberOfDigits: number.numberDigit,
     container: numberContainer,
     type: "number",
   };
@@ -621,6 +625,14 @@ export function addNumber(number: WNumberDescription) {
   numberContainer.on("pointerdown", (event) => {
     initSelectionBoxNumber(numberContainer, wNumber);
     selectedSprite = wNumber;
+    currentScreenListener.trigger("text");
+    currentTextListener.trigger(wNumber);
+
+    onChangeTextListener.clearListeners();
+    onChangeTextListener.addListener(onChange);
+
+    onDeleteTextListener.clearListeners();
+    onDeleteTextListener.addListener(onDelete);
 
     mouseOffset.x = event.data.global.x - numberContainer.x;
     mouseOffset.y = event.data.global.y - numberContainer.y;
@@ -630,6 +642,99 @@ export function addNumber(number: WNumberDescription) {
     numberContainer.addEventListener("pointerup", endMove);
     numberContainer.addEventListener("pointerupoutside", endMove);
   });
+
+  function onChange({ key, value }: { key: string; value: any }) {
+    if (key === "name") {
+      numbers = numbers.map((n) => {
+        if (n.id === wNumber.id) {
+          n.name = value;
+        }
+        return n;
+      });
+
+      saveGame({
+        ...loadGame(),
+        numbers: loadGame().numbers.map((n) =>
+          n.id === wNumber.id
+            ? {
+                ...n,
+                name: value,
+              }
+            : n
+        ),
+      });
+    }
+
+    if (key === "numberOfDigits") {
+      console.log(value);
+
+      numbers = numbers.map((n) => {
+        if (n.id === wNumber.id) {
+          n.numberOfDigits = value;
+        }
+        return n;
+      });
+
+      saveGame({
+        ...loadGame(),
+        numbers: loadGame().numbers.map((n) =>
+          n.id === wNumber.id
+            ? {
+                ...n,
+                numberDigit: value,
+              }
+            : n
+        ),
+      });
+
+      numberContainer.removeChildren();
+
+      for (let i = 0; i < value; i++) {
+        let spr = new PIXI.Sprite(PIXI.Texture.from(segments7.full));
+
+        spr.tint = PALETTE.OFF;
+
+        let width = number.height * 0.6;
+
+        spr.x = i * width;
+        spr.y = 0;
+
+        spr.width = width;
+        spr.height = number.height;
+
+        numberContainer.addChild(spr);
+      }
+
+      numberContainer.calculateBounds();
+
+      let square = hoverSelector.getChildAt(0) as PIXI.Graphics;
+      square.clear();
+      square.lineStyle(2, 0x000000, 1);
+      square.drawRect(0, 0, wNumber.container.width, wNumber.container.height);
+
+      (hoverSelector.getChildAt(1) as PIXI.Graphics).x =
+        wNumber.container.width / 2;
+      (hoverSelector.getChildAt(1) as PIXI.Graphics).y =
+        wNumber.container.height;
+    }
+
+    refreshGameListener.trigger();
+  }
+
+  function onDelete() {
+    onDeleteTextListener.removeListener(onDelete);
+
+    let game = loadGame();
+
+    numberContainer.removeFromParent();
+    numbers.splice(numbers.indexOf(wNumber), 1);
+    game.numbers = game.numbers.filter((number) => number.id !== wNumber.id);
+
+    saveGame(game);
+    refreshGameListener.trigger();
+
+    stopSelection();
+  }
 
   function endMove() {
     isSelectedSpriteDragged = false;

@@ -1,19 +1,19 @@
-function INIT()
+function watchy.init()
   -- Called at the start of the game
    
 end
 
-function UPDATE(dt)
+function watchy.update(dt)
   -- Called each frame
 
 end
 
-function GAME_UPDATE(dt)
+function watchy.gameUpdate(dt)
   -- Called each frame is the game is not paused
 
 end
 
-function DRAW()
+function watchy.draw()
   -- Called each frame after the update functions
 
 end

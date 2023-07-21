@@ -3,7 +3,7 @@ import * as PIXI from "pixi.js";
 import { WGameDescription } from "../share/types";
 import { initInput, stopInput, updateGamepad } from "./input";
 import { initDisplay, stopDisplay } from "./display";
-import { initSystem, isPaused } from "./system";
+import { _isPaused, initSystem } from "./system";
 import { initSound } from "./sound";
 
 const factory = new LuaFactory();
@@ -70,10 +70,12 @@ export async function initEngine(
   await lua.doString(gameDescription.code);
 
   // Get the three main functions we need here in TypeScript
-  gameFunction.init = lua.global.get("INIT");
-  gameFunction.update = lua.global.get("UPDATE");
-  gameFunction.gameUpdate = lua.global.get("GAME_UPDATE");
-  gameFunction.draw = lua.global.get("DRAW");
+  let watchy = lua.global.get("watchy");
+
+  gameFunction.init = watchy.init;
+  gameFunction.update = watchy.update;
+  gameFunction.gameUpdate = watchy.gameUpdate;
+  gameFunction.draw = watchy.draw;
 
   // If init is a function, call it
   if (gameFunction.init != null && typeof gameFunction.init === "function") {
@@ -94,7 +96,7 @@ function ticker(delta: number) {
 
   if (gameFunction.update) gameFunction.update(delta);
 
-  if (!isPaused) {
+  if (!_isPaused) {
     if (gameFunction.gameUpdate) gameFunction.gameUpdate(delta);
   }
 

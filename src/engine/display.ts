@@ -120,6 +120,7 @@ export function initDisplay(
       type: "number",
       container: container,
       digits: digits,
+      numberOfDigits: number.numberDigit,
     });
 
     app.stage.addChild(container);

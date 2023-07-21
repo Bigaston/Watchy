@@ -65,6 +65,7 @@ export interface WSelectable {
 
 export interface WNumber extends WSelectable {
   type: "number";
+  numberOfDigits: number;
   digits?: WDigit[];
 }
 

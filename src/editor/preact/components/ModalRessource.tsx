@@ -13,6 +13,7 @@ import { onAddResourceListener } from "../Listeners";
 export function ModalRessource() {
   const [isOpened, setIsOpened] = useState(false);
   const [isModalSoundOpened, setIsModalSoundOpened] = useState(false);
+  const [isModalTextOpen, setIsModalTextOpen] = useState(false);
 
   useEffect(() => {
     onAddResourceListener.addListener(() => {
@@ -24,6 +25,9 @@ export function ModalRessource() {
 
   const [labelSoundValue, setLabelSoundValue] = useState("");
   const [soundCodeValue, setSoundCodeValue] = useState("");
+
+  const [labelTextValue, setLabelTextValue] = useState("");
+  const [textNumberDigit, setTextNumberDigit] = useState(5);
 
   function addImage() {
     let input = document.createElement("input");
@@ -64,13 +68,21 @@ export function ModalRessource() {
   }
 
   function addText() {
+    setIsModalTextOpen(true);
+    setIsOpened(false);
+  }
+
+  function handleAddText() {
+    if (labelTextValue === "") return;
+    if (textNumberDigit === 0) return;
+
     let wNumber: WNumberDescription = {
       id: game.nextAvailableNumberId,
-      name: "Text" + game.nextAvailableNumberId,
+      name: labelTextValue,
       x: 0,
       y: 0,
       height: 30,
-      numberDigit: 10,
+      numberDigit: textNumberDigit,
     };
 
     saveGame({
@@ -85,7 +97,7 @@ export function ModalRessource() {
     });
 
     addNumber(wNumber);
-    setIsOpened(false);
+    setIsModalTextOpen(false);
   }
 
   return (
@@ -138,6 +150,38 @@ export function ModalRessource() {
 
         <button className="button-primary" onClick={handleAddSound}>
           Add Sound
+        </button>
+      </Modal>
+
+      <Modal
+        isOpened={isModalTextOpen}
+        onClose={() => setIsModalTextOpen(false)}
+      >
+        <h2>Add Text</h2>
+
+        <label>Number name</label>
+        <input
+          value={labelTextValue}
+          onChange={(e) =>
+            setLabelTextValue((e.target as HTMLInputElement).value)
+          }
+        />
+
+        <br />
+
+        <label>Number of digits</label>
+        <input
+          type="number"
+          value={textNumberDigit}
+          onChange={(e) => {
+            if ((e.target as HTMLInputElement).value === "") return;
+
+            setTextNumberDigit(parseInt((e.target as HTMLInputElement).value));
+          }}
+        />
+
+        <button className="button-primary" onClick={handleAddText}>
+          Add Text
         </button>
       </Modal>
     </>
