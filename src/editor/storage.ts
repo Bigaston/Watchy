@@ -212,7 +212,7 @@ export function buildGame() {
       console.log(outDoc);
 
       let link = document.createElement("a");
-      link.download = `Watchy-${Date.now()}.html`;
+      link.download = `Watchy-${game.title}.html`;
 
       link.href = `data:text/html;charset=utf-8,${encodeURIComponent(outDoc)}`;
 
