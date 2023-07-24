@@ -17,7 +17,7 @@ export const numbers: WNumber[] = [];
 let game: WGameDescription;
 
 export function initDisplay(
-  app: PIXI.Application,
+  gameContainer: PIXI.Container,
   gameDescription: WGameDescription,
   functionObject: { [key: string]: undefined | Function }
 ) {
@@ -57,7 +57,7 @@ export function initDisplay(
         .map((g) => g.id),
     });
 
-    app.stage.addChild(spr);
+    gameContainer.addChild(spr);
   });
 
   gameDescription.numbers.forEach((number) => {
@@ -123,7 +123,7 @@ export function initDisplay(
       numberOfDigits: number.numberDigit,
     });
 
-    app.stage.addChild(container);
+    gameContainer.addChild(container);
   });
 }
 
