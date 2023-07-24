@@ -1,6 +1,7 @@
 import { WGameDescription } from "../share/types";
 import { isOkText } from "../utils";
 import { defaultGame } from "./defaultGame";
+import { refreshGameListener } from "./preact/Listeners";
 
 const OFFUSCATE = true;
 
@@ -9,6 +10,8 @@ let usedFileHandle: FileSystemFileHandle | undefined;
 
 export function saveGame(game: WGameDescription) {
   GAME = game;
+
+  refreshGameListener.trigger();
 
   localStorage.setItem(`game`, JSON.stringify(game));
   setHasNotBeenSaved();

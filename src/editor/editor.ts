@@ -19,7 +19,7 @@ import "../styles/editor.css";
 
 import { render } from "preact";
 import { Main } from "./preact/Main";
-import { onAddResourceListener, refreshGameListener } from "./preact/Listeners";
+import { onAddResourceListener } from "./preact/Listeners";
 import { defaultGame } from "./defaultGame";
 
 const rendererElement = document.getElementById("renderer")!;
@@ -95,7 +95,6 @@ export function initEditor(editorContainer: HTMLElement) {
       rendererElement.innerHTML = "";
 
       initEditorView();
-      refreshGameListener.trigger();
     }
   });
 
@@ -116,8 +115,6 @@ export function initEditor(editorContainer: HTMLElement) {
 
 function handleLoadGame() {
   loadGameLocal().then(() => {
-    refreshGameListener.trigger();
-
     editor.setValue(loadGame().code);
 
     rendererElement.innerHTML = "";
