@@ -1,27 +1,18 @@
 import { WGameDescription } from "../share/types";
 import { isOkText } from "../utils";
 import { defaultGame } from "./defaultGame";
+import { refreshGameListener } from "./preact/Listeners";
 
 const OFFUSCATE = true;
 
 let GAME: WGameDescription;
 let usedFileHandle: FileSystemFileHandle | undefined;
 
-export function saveCode(code: string) {
-  let game = loadGame();
-
-  game.code = code;
-
-  saveGame(game);
-}
-
-export function loadCode() {
-  return JSON.parse(localStorage.getItem(`game`) || JSON.stringify(defaultGame))
-    .code;
-}
-
 export function saveGame(game: WGameDescription) {
   GAME = game;
+
+  refreshGameListener.trigger();
+
   localStorage.setItem(`game`, JSON.stringify(game));
   setHasNotBeenSaved();
 }

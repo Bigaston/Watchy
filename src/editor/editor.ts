@@ -8,11 +8,9 @@ import {
 } from "./editorView";
 import {
   buildGame,
-  loadCode,
   loadGame,
   loadGameLocal,
   saveAsGame,
-  saveCode,
   saveGame,
   saveGameLocal,
 } from "./storage";
@@ -21,7 +19,7 @@ import "../styles/editor.css";
 
 import { render } from "preact";
 import { Main } from "./preact/Main";
-import { onAddResourceListener, refreshGameListener } from "./preact/Listeners";
+import { onAddResourceListener } from "./preact/Listeners";
 import { defaultGame } from "./defaultGame";
 
 const rendererElement = document.getElementById("renderer")!;
@@ -34,14 +32,14 @@ export function initEditor(editorContainer: HTMLElement) {
   monaco.languages.setLanguageConfiguration("lua", lua.conf);
 
   editor = monaco.editor.create(editorContainer, {
-    value: loadCode(),
+    value: loadGame().code,
     language: "lua",
     automaticLayout: true,
     theme: "vs-dark",
   });
 
   editor.onDidChangeModelContent(() => {
-    saveCode(editor.getValue());
+    saveGame({ ...loadGame(), code: editor.getValue() });
   });
 
   initEditorView();
@@ -93,10 +91,10 @@ export function initEditor(editorContainer: HTMLElement) {
   document.getElementById("new")!.addEventListener("click", () => {
     if (confirm("Are you sure you want to start a new game?")) {
       saveGame(defaultGame);
+      editor.setValue(defaultGame.code);
       rendererElement.innerHTML = "";
 
       initEditorView();
-      refreshGameListener.trigger();
     }
   });
 
@@ -117,9 +115,7 @@ export function initEditor(editorContainer: HTMLElement) {
 
 function handleLoadGame() {
   loadGameLocal().then(() => {
-    refreshGameListener.trigger();
-
-    editor.setValue(loadCode());
+    editor.setValue(loadGame().code);
 
     rendererElement.innerHTML = "";
     initEditorView();

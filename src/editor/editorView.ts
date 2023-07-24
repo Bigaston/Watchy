@@ -19,7 +19,6 @@ import {
   onChangeTextListener,
   onDeleteSpriteListener,
   onDeleteTextListener,
-  refreshGameListener,
 } from "./preact/Listeners";
 
 const width = 900;
@@ -186,7 +185,6 @@ function onSelectSprite(sprite: WImage) {
     });
 
     saveGame(game);
-    refreshGameListener.trigger();
 
     stopSelection();
   }
@@ -554,7 +552,6 @@ export function addSprite(file: File) {
 
     saveGame(game);
 
-    refreshGameListener.trigger();
     createSprite(img);
   };
   reader.readAsText(file);
@@ -582,7 +579,6 @@ export function duplicateSprite() {
   };
 
   saveGame(g);
-  refreshGameListener.trigger();
 
   createSprite(newSpr);
 }
@@ -717,8 +713,6 @@ export function addNumber(number: WNumberDescription) {
       (hoverSelector.getChildAt(1) as PIXI.Graphics).y =
         wNumber.container.height;
     }
-
-    refreshGameListener.trigger();
   }
 
   function onDelete() {
@@ -731,7 +725,6 @@ export function addNumber(number: WNumberDescription) {
     game.numbers = game.numbers.filter((number) => number.id !== wNumber.id);
 
     saveGame(game);
-    refreshGameListener.trigger();
 
     stopSelection();
   }
