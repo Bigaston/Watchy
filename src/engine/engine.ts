@@ -1,7 +1,7 @@
 import { LuaEngine, LuaFactory } from "wasmoon";
 import * as PIXI from "pixi.js";
 import { WGameDescription } from "../share/types";
-import { initInput, stopInput, updateGamepad } from "./input";
+import { initInput, stopInput, updateInput } from "./input";
 import { initDisplay, stopDisplay } from "./display";
 import { _isPaused, initSystem } from "./system";
 import { initSound } from "./sound";
@@ -124,7 +124,7 @@ export async function initEngine(
 }
 
 function ticker(delta: number) {
-  updateGamepad();
+  updateInput();
 
   if (gameFunction.update) gameFunction.update(delta);
 
