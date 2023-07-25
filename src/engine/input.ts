@@ -1,40 +1,5 @@
 type InputList = "LEFT" | "RIGHT" | "UP" | "DOWN" | "A" | "B";
-
-const inputStatus: { [key in InputList]: boolean } = {
-  LEFT: false,
-  RIGHT: false,
-  UP: false,
-  DOWN: false,
-  A: false,
-  B: false,
-};
-
-const inputStatusGamepad: { [key in InputList]: boolean } = {
-  LEFT: false,
-  RIGHT: false,
-  UP: false,
-  DOWN: false,
-  A: false,
-  B: false,
-};
-
-const inputStatusGamepadInstant: { [key in InputList]: boolean } = {
-  LEFT: false,
-  RIGHT: false,
-  UP: false,
-  DOWN: false,
-  A: false,
-  B: false,
-};
-
-const inputStatusInstant: { [key in InputList]: boolean } = {
-  LEFT: false,
-  RIGHT: false,
-  UP: false,
-  DOWN: false,
-  A: false,
-  B: false,
-};
+type InputOrigin = "gamepad" | "keyboard" | "none";
 
 const KEY_BINDING: { [key: string]: InputList } = {
   Keyboard_ArrowLeft: "LEFT",
@@ -43,18 +8,37 @@ const KEY_BINDING: { [key: string]: InputList } = {
   Keyboard_ArrowDown: "DOWN",
   Keyboard_KeyX: "A",
   Keyboard_KeyC: "B",
-  Gamepad_N_Button0: "A",
-  Gamepad_N_Button1: "B",
-  Gamepad_N_Button12: "UP",
-  Gamepad_N_Button13: "DOWN",
-  Gamepad_N_Button14: "LEFT",
-  Gamepad_N_Button15: "RIGHT",
+  Gamepad_Button0: "A",
+  Gamepad_Button1: "B",
+  Gamepad_Button12: "UP",
+  Gamepad_Button13: "DOWN",
+  Gamepad_Button14: "LEFT",
+  Gamepad_Button15: "RIGHT",
 };
 
-const hasBeenRelease: { [key: string]: boolean } = {};
-const hasBeenReleaseGamepad: { [key: string]: boolean } = {};
-
 let numberGamepadConnected = 0;
+
+const inputStatus: {
+  [key in InputList]: { status: boolean; origin: InputOrigin };
+} = {
+  LEFT: { status: false, origin: "none" },
+  RIGHT: { status: false, origin: "none" },
+  UP: { status: false, origin: "none" },
+  DOWN: { status: false, origin: "none" },
+  A: { status: false, origin: "none" },
+  B: { status: false, origin: "none" },
+};
+
+const hasAlreadyTriggerJustPressed: { [key in InputList]: boolean } = {
+  LEFT: false,
+  RIGHT: false,
+  UP: false,
+  DOWN: false,
+  A: false,
+  B: false,
+};
+
+const mustUpdateTriggerJustPressed: InputList[] = [];
 
 export function initInput(functionObject: { [key: string]: Function }) {
   document.addEventListener("keydown", keyDown);
@@ -78,6 +62,18 @@ export function stopInput() {
 }
 
 // GAMEPAD
+export function updateInput() {
+  mustUpdateTriggerJustPressed.forEach((buttonId) => {
+    hasAlreadyTriggerJustPressed[buttonId] = true;
+  });
+
+  mustUpdateTriggerJustPressed.length = 0;
+
+  updateGamepad();
+}
+
+let lastGamepadButtonStatus: boolean[] = [];
+
 export function updateGamepad() {
   if (numberGamepadConnected == 0) {
     return;
@@ -91,51 +87,21 @@ export function updateGamepad() {
   (gamepads.filter((gamepad) => gamepad != null) as Gamepad[]).forEach(
     (gamepad) => {
       gamepad.buttons.forEach((button, index) => {
-        checkGamepadButton("N", button, index);
-        checkGamepadButton("" + gamepad.index, button, index);
+        checkGamepadButton(button, index);
+        lastGamepadButtonStatus[index] = button.pressed;
       });
     }
   );
 }
 
-function checkGamepadButton(
-  gamepadIndex: string,
-  button: GamepadButton,
-  index: number
-) {
-  if (
-    Object.keys(KEY_BINDING).includes(
-      "Gamepad_" + gamepadIndex + "_Button" + index
-    )
-  ) {
-    if (button.pressed) {
-      inputStatusGamepad[
-        KEY_BINDING[
-          ("Gamepad_" + gamepadIndex + "_Button" + index) as InputList
-        ]
-      ] = true;
-
-      if (
-        hasBeenReleaseGamepad["Gamepad_" + gamepadIndex + "_Button" + index]
-      ) {
-        inputStatusGamepadInstant[
-          KEY_BINDING["Gamepad_" + gamepadIndex + "_Button" + index]
-        ] = true;
-        hasBeenReleaseGamepad["Gamepad_" + gamepadIndex + "_Button" + index] =
-          false;
+function checkGamepadButton(button: GamepadButton, index: number) {
+  if (Object.keys(KEY_BINDING).includes("Gamepad_Button" + index)) {
+    if (button.pressed != lastGamepadButtonStatus[index]) {
+      if (button.pressed) {
+        buttonDown(KEY_BINDING["Gamepad_Button" + index], "gamepad");
+      } else {
+        buttonUp(KEY_BINDING["Gamepad_Button" + index], "gamepad");
       }
-    } else {
-      inputStatusGamepad[
-        KEY_BINDING[
-          ("Gamepad_" + gamepadIndex + "_Button" + index) as InputList
-        ]
-      ] = false;
-
-      hasBeenReleaseGamepad["Gamepad_" + gamepadIndex + "_Button" + index] =
-        true;
-      inputStatusGamepadInstant[
-        KEY_BINDING["Gamepad_" + gamepadIndex + "_Button" + index]
-      ] = false;
     }
   }
 }
@@ -143,50 +109,45 @@ function checkGamepadButton(
 // KEYBOARD
 function keyDown(e: KeyboardEvent) {
   if (KEY_BINDING["Keyboard_" + e.code] != null) {
-    let inputId = "Keyboard_" + e.code;
+    let binding = KEY_BINDING["Keyboard_" + e.code];
 
-    if (
-      hasBeenRelease[KEY_BINDING[inputId]] ||
-      hasBeenRelease[KEY_BINDING[inputId]] == undefined
-    ) {
-      hasBeenRelease[KEY_BINDING[inputId]] = false;
-
-      inputStatus[KEY_BINDING[inputId]] = true;
-      inputStatusInstant[KEY_BINDING[inputId]] = true;
-    }
+    buttonDown(binding, "keyboard");
   }
 }
 
 function keyUp(e: KeyboardEvent) {
   if (KEY_BINDING["Keyboard_" + e.code] != null) {
-    let buttonId = "Keyboard_" + e.code;
+    let binding = KEY_BINDING["Keyboard_" + e.code];
 
-    inputStatus[KEY_BINDING[buttonId]] = false;
-    inputStatusInstant[KEY_BINDING[buttonId]] = false;
+    buttonUp(binding, "keyboard");
+  }
+}
 
-    hasBeenRelease[KEY_BINDING[buttonId]] = true;
+function buttonDown(buttonId: string, origin: InputOrigin) {
+  inputStatus[buttonId as InputList] = { status: true, origin };
+}
+
+function buttonUp(buttonId: string, origin: InputOrigin) {
+  if (inputStatus[buttonId as InputList].origin == origin) {
+    inputStatus[buttonId as InputList] = { status: false, origin: "none" };
+    hasAlreadyTriggerJustPressed[buttonId as InputList] = false;
   }
 }
 
 // INTERACTIV FUNCTION
 function buttonPressed(buttonId: string) {
-  return (
-    inputStatus[buttonId as InputList] ||
-    inputStatusGamepad[buttonId as InputList] ||
-    false
-  );
+  return inputStatus[buttonId as InputList].status;
 }
 
 function buttonJustPressed(buttonId: string) {
-  let status =
-    inputStatusInstant[buttonId as InputList] ||
-    inputStatusGamepadInstant[buttonId as InputList] ||
-    false;
+  if (
+    inputStatus[buttonId as InputList].status &&
+    !hasAlreadyTriggerJustPressed[buttonId as InputList]
+  ) {
+    mustUpdateTriggerJustPressed.push(buttonId as InputList);
 
-  if (status) {
-    inputStatusInstant[buttonId as InputList] = false;
-    inputStatusGamepadInstant[buttonId as InputList] = false;
+    return true;
+  } else {
+    return false;
   }
-
-  return status;
 }
