@@ -1,5 +1,7 @@
+import { Container, Sprite, Texture } from "pixi.js";
+
 type InputList = "LEFT" | "RIGHT" | "UP" | "DOWN" | "A" | "B";
-type InputOrigin = "gamepad" | "keyboard" | "none";
+type InputOrigin = "gamepad" | "keyboard" | "touch" | "none";
 
 const KEY_BINDING: { [key: string]: InputList } = {
   Keyboard_ArrowLeft: "LEFT",
@@ -40,7 +42,56 @@ const hasAlreadyTriggerJustPressed: { [key in InputList]: boolean } = {
 
 const mustUpdateTriggerJustPressed: InputList[] = [];
 
-export function initInput(functionObject: { [key: string]: Function }) {
+let touchButton = [
+  {
+    x: 1240,
+    y: 524,
+    width: 88,
+    height: 100,
+    buttonId: "A",
+  },
+  {
+    x: 1130,
+    y: 524,
+    width: 88,
+    height: 100,
+    buttonId: "B",
+  },
+  {
+    x: 27,
+    y: 522,
+    width: 58,
+    height: 59,
+    buttonId: "LEFT",
+  },
+  {
+    x: 84,
+    y: 465,
+    width: 58,
+    height: 59,
+    buttonId: "UP",
+  },
+  {
+    x: 142,
+    y: 522,
+    width: 58,
+    height: 59,
+    buttonId: "RIGHT",
+  },
+  {
+    x: 84,
+    y: 579,
+    width: 58,
+    height: 59,
+    buttonId: "DOWN",
+  },
+];
+
+export function initInput(
+  stage: Container,
+  embed: boolean,
+  functionObject: { [key: string]: Function }
+) {
   document.addEventListener("keydown", keyDown);
   document.addEventListener("keyup", keyUp);
 
@@ -51,6 +102,37 @@ export function initInput(functionObject: { [key: string]: Function }) {
   window.addEventListener("gamepaddisconnected", function (_e) {
     numberGamepadConnected--;
   });
+
+  // Touch Control
+  if (!embed) {
+    touchButton.forEach((button) => {
+      let btn = Sprite.from(Texture.EMPTY);
+
+      btn.x = button.x;
+      btn.y = button.y;
+      btn.width = button.width;
+      btn.height = button.height;
+
+      btn.eventMode = "static";
+      btn.cursor = "pointer";
+
+      btn.addEventListener("pointerdown", () => {
+        buttonDown(button.buttonId, "touch");
+
+        btn.addEventListener("pointerup", release);
+        btn.addEventListener("pointerupoutside", release);
+      });
+
+      function release() {
+        btn.removeListener("pointerup", release);
+        btn.removeListener("pointerupoutside", release);
+
+        buttonUp(button.buttonId, "touch");
+      }
+
+      stage.addChild(btn);
+    });
+  }
 
   functionObject["btnPressed"] = buttonPressed;
   functionObject["btnJustPressed"] = buttonJustPressed;
