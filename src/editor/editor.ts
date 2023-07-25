@@ -54,7 +54,7 @@ export function initEditor(editorContainer: HTMLElement) {
 
     rendererElement.innerHTML = "";
     stopEngine();
-    initEngine(game, rendererElement, true);
+    initEngine(game, rendererElement, false);
   });
 
   document.getElementById("stop")!.addEventListener("click", () => {

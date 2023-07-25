@@ -91,7 +91,7 @@ export async function initEngine(
 
   let functionObject = {};
 
-  initInput(functionObject);
+  initInput(app.stage, embed, functionObject);
   initDisplay(gameContainer, gameDescription, functionObject);
   initSystem(lua, functionObject);
   initSound(functionObject, gameDescription);
