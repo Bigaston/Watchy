@@ -5,6 +5,7 @@ import { initInput, stopInput, updateInput } from "./input";
 import { initDisplay, stopDisplay } from "./display";
 import { _isPaused, initSystem } from "./system";
 import { initSound } from "./sound";
+import { isOnMobile } from "../utils";
 
 const factory = new LuaFactory();
 
@@ -120,6 +121,9 @@ export async function initEngine(
 
   if (!embed) {
     document.title = gameDescription.title + " - Watchy";
+    if (isOnMobile()) {
+      renderElement.requestFullscreen();
+    }
   }
 }
 
