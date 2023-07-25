@@ -56,12 +56,6 @@ export function initInput(functionObject: { [key: string]: Function }) {
   functionObject["btnJustPressed"] = buttonJustPressed;
 }
 
-export function stopInput() {
-  document.removeEventListener("keydown", keyDown);
-  document.removeEventListener("keyup", keyUp);
-}
-
-// GAMEPAD
 export function updateInput() {
   mustUpdateTriggerJustPressed.forEach((buttonId) => {
     hasAlreadyTriggerJustPressed[buttonId] = true;
@@ -70,6 +64,11 @@ export function updateInput() {
   mustUpdateTriggerJustPressed.length = 0;
 
   updateGamepad();
+}
+
+export function stopInput() {
+  document.removeEventListener("keydown", keyDown);
+  document.removeEventListener("keyup", keyUp);
 }
 
 let lastGamepadButtonStatus: boolean[] = [];
