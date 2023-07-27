@@ -15,6 +15,10 @@ body {
   color: #222;
 }
 
+* {
+  box-sizing: border-box;
+}
+
 .watchy {
   display: flex;
   flex-direction: column;
@@ -24,7 +28,7 @@ body {
 }
 
 .topbar {
-  height: 40px;
+  height: 45px;
   background-color: black;
   padding: 10px 20px;
   display: flex;
@@ -90,6 +94,7 @@ input {
   flex-direction: row;
   width: 100%;
   flex-grow: 1;
+  background-color: #222;
 }
 
 .column {
@@ -106,24 +111,42 @@ input {
   background-color: black;
 }
 
-.buttonContainer {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  flex-wrap: wrap;
-}
-
-.buttonContainer button {
-  margin-left: 10px;
-  margin-right: 10px;
-}
-
 #infoContainer {
   padding: 10px 20px;
-  max-height: 40vh;
+  max-height: 42vh;
   overflow-y: scroll;
+  color: white;
+}
+
+#infoContainer button {
+  margin: 0;
+  color: white;
+  border: 1px solid white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  margin-right: 10px;
+  background-color: #222;
+  transition: background-color 0.2s ease-in-out;
+  margin-top: 10px;
+}
+
+#infoContainer button:disabled {
+  opacity: 0.5;
+}
+
+#infoContainer button:disabled:hover {
+  cursor: not-allowed;
+}
+
+#infoContainer button:hover:not(:disabled) {
+  cursor: pointer;
+  background-color: gray;
+}
+
+#infoContainer input {
+  background-color: #222;
+  color: white;
+  margin-left: 5px;
 }
 
 .spriteItem:hover {
