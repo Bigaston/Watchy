@@ -19,6 +19,7 @@ import {
   onChangeTextListener,
   onDeleteSpriteListener,
   onDeleteTextListener,
+  refreshGameListener,
 } from "./preact/Listeners";
 
 const width = 900;
@@ -109,6 +110,80 @@ export function initEditorView() {
     if (event.key === "r") {
       setMode("resize");
     }
+
+    if (event.key === "ArrowUp") {
+      if (selectedSprite) {
+        selectedSprite.container.y -= 1;
+
+        game.images = game.images.map((image) => {
+          if (image.id === selectedSprite!.id) {
+            image.x = selectedSprite!.container.x;
+            image.y = selectedSprite!.container.y;
+          }
+          return image;
+        });
+
+        saveGame(game);
+
+        refreshGameListener.trigger();
+      }
+    }
+
+    if (event.key === "ArrowDown") {
+      if (selectedSprite) {
+        selectedSprite.container.y += 1;
+
+        game.images = game.images.map((image) => {
+          if (image.id === selectedSprite!.id) {
+            image.x = selectedSprite!.container.x;
+            image.y = selectedSprite!.container.y;
+          }
+          return image;
+        });
+
+        saveGame(game);
+
+        refreshGameListener.trigger();
+      }
+    }
+
+    if (event.key === "ArrowLeft") {
+      if (selectedSprite) {
+        selectedSprite.container.x -= 1;
+
+        game.images = game.images.map((image) => {
+          if (image.id === selectedSprite!.id) {
+            image.x = selectedSprite!.container.x;
+            image.y = selectedSprite!.container.y;
+          }
+          return image;
+        });
+
+        saveGame(game);
+
+        refreshGameListener.trigger();
+      }
+    }
+
+    if (event.key === "ArrowRight") {
+      if (selectedSprite) {
+        selectedSprite.container.x += 1;
+
+        game.images = game.images.map((image) => {
+          if (image.id === selectedSprite!.id) {
+            image.x = selectedSprite!.container.x;
+            image.y = selectedSprite!.container.y;
+          }
+          return image;
+        });
+
+        saveGame(game);
+
+        refreshGameListener.trigger();
+      }
+    }
+
+    console.log(event);
   });
 
   document.addEventListener("keyup", (event) => {
@@ -202,6 +277,8 @@ export function createSprite(image: WImageDescription) {
     });
 
     saveGame(game);
+
+    refreshGameListener.trigger();
 
     spr.cursor = "pointer";
   });
