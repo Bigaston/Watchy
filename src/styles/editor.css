@@ -63,6 +63,16 @@ input {
   width: 80%;
 }
 
+select {
+  background-color: #222;
+  color: white;
+  margin: 0;
+  border: 1px solid gray;
+  padding: 5px 10px;
+  border-radius: 5px;
+  margin-right: 5px;
+}
+
 .topbar {
   height: 45px;
   background-color: black;
@@ -129,6 +139,15 @@ input {
 
 #infoContainer button {
   margin-top: 10px;
+}
+
+.selectGroup {
+  display: flex;
+  align-items: center;
+}
+
+#infoContainer .selectGroup button {
+  margin: 0;
 }
 
 .spriteItem:hover {

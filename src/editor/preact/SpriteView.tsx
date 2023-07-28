@@ -162,25 +162,28 @@ export function SpriteView({
                 </li>
               ))}
           </ul>
-          <select
-            value={addGroupValue}
-            onChange={(e) =>
-              setAddGroupValue((e.target as HTMLSelectElement).value)
-            }
-          >
-            <option value="-1">Select a group...</option>
-            {game.imageGroups
-              .filter((imageGroup) => !imageGroup.images.includes(sprite.id))
-              .map((group) => (
-                <option key={group.id} value={group.id}>
-                  {group.name}
-                </option>
-              ))}
-          </select>
 
-          <button onClick={handleAddGroup} disabled={addGroupValue === "-1"}>
-            ➕ Add to group
-          </button>
+          <div class="selectGroup">
+            <select
+              value={addGroupValue}
+              onChange={(e) =>
+                setAddGroupValue((e.target as HTMLSelectElement).value)
+              }
+            >
+              <option value="-1">Select a group...</option>
+              {game.imageGroups
+                .filter((imageGroup) => !imageGroup.images.includes(sprite.id))
+                .map((group) => (
+                  <option key={group.id} value={group.id}>
+                    {group.name}
+                  </option>
+                ))}
+            </select>
+
+            <button onClick={handleAddGroup} disabled={addGroupValue === "-1"}>
+              ➕ Add to group
+            </button>
+          </div>
         </>
       )}
     </>
