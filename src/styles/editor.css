@@ -27,6 +27,52 @@ body {
   justify-content: start;
 }
 
+button {
+  margin: 0;
+  color: white;
+  border: 1px solid white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  margin-right: 10px;
+  background-color: #222;
+  transition: background-color 0.2s ease-in-out;
+}
+
+button:disabled {
+  opacity: 0.5;
+}
+
+button:disabled:hover {
+  cursor: not-allowed;
+}
+
+button:hover:not(:disabled) {
+  cursor: pointer;
+  background-color: gray;
+}
+
+input {
+  background-color: #222;
+  color: white;
+  margin-left: 5px;
+  margin: 0;
+  border: 1px solid gray;
+  padding: 5px 10px;
+  border-radius: 5px;
+  margin-right: 10px;
+  width: 80%;
+}
+
+select {
+  background-color: #222;
+  color: white;
+  margin: 0;
+  border: 1px solid gray;
+  padding: 5px 10px;
+  border-radius: 5px;
+  margin-right: 5px;
+}
+
 .topbar {
   height: 45px;
   background-color: black;
@@ -39,54 +85,15 @@ body {
   flex-grow: 1;
 }
 
-.topbar select {
-  margin: 0;
-  color: white;
-  border: 1px solid white;
-  padding: 5px 10px;
-  border-radius: 5px;
-  margin-right: 10px;
-  background-color: black;
-  transition: background-color 0.2s ease-in-out;
-}
-
 #gameTitle {
   color: white;
   font-weight: bold;
 }
 
 .topbar button {
-  margin: 0;
-  color: white;
   border: 1px solid white;
-  padding: 5px 10px;
-  border-radius: 5px;
-  margin-right: 10px;
   background-color: black;
   transition: background-color 0.2s ease-in-out;
-}
-
-.topbar button:disabled {
-  opacity: 0.5;
-}
-
-.topbar button:disabled:hover {
-  cursor: not-allowed;
-}
-
-.topbar button:hover:not(:disabled) {
-  cursor: pointer;
-  background-color: gray;
-}
-
-input {
-  margin: 0;
-  border: 1px solid gray;
-  padding: 5px 10px;
-  border-radius: 5px;
-  margin-right: 10px;
-  color: black;
-  width: 80%;
 }
 
 .editor {
@@ -107,6 +114,18 @@ input {
   height: 50%;
 }
 
+#tools {
+  height: 40px;
+  background-color: #222;
+  display: flex;
+  align-items: center;
+  padding-left: 10px;
+}
+
+#tools button.active {
+  border: 1px solid blue;
+}
+
 #renderer {
   background-color: black;
 }
@@ -119,34 +138,16 @@ input {
 }
 
 #infoContainer button {
-  margin: 0;
-  color: white;
-  border: 1px solid white;
-  padding: 5px 10px;
-  border-radius: 5px;
-  margin-right: 10px;
-  background-color: #222;
-  transition: background-color 0.2s ease-in-out;
   margin-top: 10px;
 }
 
-#infoContainer button:disabled {
-  opacity: 0.5;
+.selectGroup {
+  display: flex;
+  align-items: center;
 }
 
-#infoContainer button:disabled:hover {
-  cursor: not-allowed;
-}
-
-#infoContainer button:hover:not(:disabled) {
-  cursor: pointer;
-  background-color: gray;
-}
-
-#infoContainer input {
-  background-color: #222;
-  color: white;
-  margin-left: 5px;
+#infoContainer .selectGroup button {
+  margin: 0;
 }
 
 .spriteItem:hover {

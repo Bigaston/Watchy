@@ -19,6 +19,7 @@ import {
   onChangeTextListener,
   onDeleteSpriteListener,
   onDeleteTextListener,
+  refreshGameListener,
 } from "./preact/Listeners";
 
 const width = 900;
@@ -38,6 +39,9 @@ let mousePosition = { x: 0, y: 0 };
 let lastMousePosition = { x: 0, y: 0 };
 
 let hoverSelector = new PIXI.Container();
+
+let isShiftDown = false;
+let mode: "select" | "resize" = "select";
 
 export let sprites: WImage[] = [];
 export let numbers: WNumber[] = [];
@@ -93,6 +97,128 @@ export function initEditorView() {
   );
 
   app.stage.addChild(hoverSelector);
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Shift") {
+      isShiftDown = true;
+    }
+
+    if (event.key === "s") {
+      setMode("select");
+    }
+
+    if (event.key === "r") {
+      setMode("resize");
+    }
+
+    if (event.key === "ArrowUp") {
+      if (selectedSprite) {
+        selectedSprite.container.y -= 1;
+
+        game.images = game.images.map((image) => {
+          if (image.id === selectedSprite!.id) {
+            image.x = selectedSprite!.container.x;
+            image.y = selectedSprite!.container.y;
+          }
+          return image;
+        });
+
+        saveGame(game);
+
+        refreshGameListener.trigger();
+      }
+    }
+
+    if (event.key === "ArrowDown") {
+      if (selectedSprite) {
+        selectedSprite.container.y += 1;
+
+        game.images = game.images.map((image) => {
+          if (image.id === selectedSprite!.id) {
+            image.x = selectedSprite!.container.x;
+            image.y = selectedSprite!.container.y;
+          }
+          return image;
+        });
+
+        saveGame(game);
+
+        refreshGameListener.trigger();
+      }
+    }
+
+    if (event.key === "ArrowLeft") {
+      if (selectedSprite) {
+        selectedSprite.container.x -= 1;
+
+        game.images = game.images.map((image) => {
+          if (image.id === selectedSprite!.id) {
+            image.x = selectedSprite!.container.x;
+            image.y = selectedSprite!.container.y;
+          }
+          return image;
+        });
+
+        saveGame(game);
+
+        refreshGameListener.trigger();
+      }
+    }
+
+    if (event.key === "ArrowRight") {
+      if (selectedSprite) {
+        selectedSprite.container.x += 1;
+
+        game.images = game.images.map((image) => {
+          if (image.id === selectedSprite!.id) {
+            image.x = selectedSprite!.container.x;
+            image.y = selectedSprite!.container.y;
+          }
+          return image;
+        });
+
+        saveGame(game);
+
+        refreshGameListener.trigger();
+      }
+    }
+
+    console.log(event);
+  });
+
+  document.addEventListener("keyup", (event) => {
+    if (event.key === "Shift") {
+      isShiftDown = false;
+    }
+  });
+
+  document.getElementById("modeSelect")!.addEventListener("click", () => {
+    setMode("select");
+  });
+
+  document.getElementById("modeResize")!.addEventListener("click", () => {
+    setMode("resize");
+  });
+}
+
+function setMode(newMode: "select" | "resize") {
+  mode = newMode;
+
+  if (mode === "select") {
+    if (hoverSelector.children.length > 0) {
+      hoverSelector.getChildAt(1).visible = false;
+    }
+
+    document.getElementById("modeSelect")!.classList.add("active");
+    document.getElementById("modeResize")!.classList.remove("active");
+  } else if (mode === "resize") {
+    if (hoverSelector.children.length > 0) {
+      hoverSelector.getChildAt(1).visible = true;
+    }
+
+    document.getElementById("modeSelect")!.classList.remove("active");
+    document.getElementById("modeResize")!.classList.add("active");
+  }
 }
 
 export function createSprite(image: WImageDescription) {
@@ -151,6 +277,8 @@ export function createSprite(image: WImageDescription) {
     });
 
     saveGame(game);
+
+    refreshGameListener.trigger();
 
     spr.cursor = "pointer";
   });
@@ -249,12 +377,12 @@ function ticker(_delta: number) {
     hoverSelector.x = selectedSprite.container.x;
     hoverSelector.y = selectedSprite.container.y;
 
-    if (isSelectedSpriteDragged) {
+    if (isSelectedSpriteDragged && mode === "select") {
       selectedSprite.container.x = mousePosition.x - mouseOffset.x;
       selectedSprite.container.y = mousePosition.y - mouseOffset.y;
     }
 
-    if (isSelectedResized) {
+    if (isSelectedResized && mode === "resize") {
       // let distanceCenterMouse = Math.sqrt(
       //   Math.pow(mousePosition.x - selectedSprite.sprite.x, 2) +
       //     Math.pow(mousePosition.y - selectedSprite.sprite.y, 2)
@@ -272,10 +400,14 @@ function ticker(_delta: number) {
       // selectedSprite.sprite.height = heightOfSprite * 2;
 
       if (selectedSprite.type === "image") {
+        let ratio =
+          selectedSprite.container.width / selectedSprite.container.height;
+
         selectedSprite.container.width =
           mousePosition.x - selectedSprite.container.x;
-        selectedSprite.container.height =
-          mousePosition.y - selectedSprite.container.y;
+        selectedSprite.container.height = isShiftDown
+          ? mousePosition.y - selectedSprite.container.y
+          : selectedSprite.container.width / ratio;
 
         let square = hoverSelector.getChildAt(0) as PIXI.Graphics;
         square.clear();
@@ -364,6 +496,8 @@ function initSelectionBox(spr: PIXI.Sprite, wSpr: WImage) {
   sphere.eventMode = "static";
   sphere.cursor = "nwse-resize";
 
+  sphere.visible = mode === "resize";
+
   sphere.on("pointerdown", (event) => {
     isSelectedResized = true;
 
@@ -389,39 +523,39 @@ function initSelectionBox(spr: PIXI.Sprite, wSpr: WImage) {
   }
 
   // Rotation Sphere
-  let rotationSphere = new PIXI.Graphics();
-  rotationSphere.lineStyle(0);
-  rotationSphere.beginFill(0x0000ff, 0.5);
-  rotationSphere.drawCircle(0, 0, 10);
+  // let rotationSphere = new PIXI.Graphics();
+  // rotationSphere.lineStyle(0);
+  // rotationSphere.beginFill(0x0000ff, 0.5);
+  // rotationSphere.drawCircle(0, 0, 10);
 
-  rotationSphere.x = 0;
-  rotationSphere.y = -20 - spr.height / 2;
+  // rotationSphere.x = 0;
+  // rotationSphere.y = -20 - spr.height / 2;
 
-  rotationSphere.eventMode = "static";
-  rotationSphere.cursor = "pointer";
+  // rotationSphere.eventMode = "static";
+  // rotationSphere.cursor = "pointer";
 
-  rotationSphere.on("pointerdown", (event) => {
-    isSelectorRotate = true;
+  // rotationSphere.on("pointerdown", (event) => {
+  //   isSelectorRotate = true;
 
-    lastMousePosition.x = event.data.global.x;
-    lastMousePosition.y = event.data.global.y;
+  //   lastMousePosition.x = event.data.global.x;
+  //   lastMousePosition.y = event.data.global.y;
 
-    document.addEventListener("pointerup", endRotation);
-  });
+  //   document.addEventListener("pointerup", endRotation);
+  // });
 
-  function endRotation() {
-    document.removeEventListener("pointerup", endRotation);
-    isSelectorRotate = false;
+  // function endRotation() {
+  //   document.removeEventListener("pointerup", endRotation);
+  //   isSelectorRotate = false;
 
-    game.images = game.images.map((image) => {
-      if (image.id === wSpr.id) {
-        image.angle = spr.angle;
-      }
-      return image;
-    });
+  //   game.images = game.images.map((image) => {
+  //     if (image.id === wSpr.id) {
+  //       image.angle = spr.angle;
+  //     }
+  //     return image;
+  //   });
 
-    saveGame(game);
-  }
+  //   saveGame(game);
+  // }
 
   hoverSelector.addChild(square);
   hoverSelector.addChild(sphere);
@@ -449,6 +583,8 @@ function initSelectionBoxNumber(container: PIXI.Container, wNumber: WNumber) {
 
   sphere.eventMode = "static";
   sphere.cursor = "ns-resize";
+
+  sphere.visible = mode === "resize";
 
   sphere.on("pointerdown", (event) => {
     isSelectedResized = true;
