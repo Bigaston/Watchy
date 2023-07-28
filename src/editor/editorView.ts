@@ -39,6 +39,8 @@ let lastMousePosition = { x: 0, y: 0 };
 
 let hoverSelector = new PIXI.Container();
 
+let isShiftDown = false;
+
 export let sprites: WImage[] = [];
 export let numbers: WNumber[] = [];
 
@@ -93,6 +95,18 @@ export function initEditorView() {
   );
 
   app.stage.addChild(hoverSelector);
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Shift") {
+      isShiftDown = true;
+    }
+  });
+
+  document.addEventListener("keyup", (event) => {
+    if (event.key === "Shift") {
+      isShiftDown = false;
+    }
+  });
 }
 
 export function createSprite(image: WImageDescription) {
@@ -272,10 +286,14 @@ function ticker(_delta: number) {
       // selectedSprite.sprite.height = heightOfSprite * 2;
 
       if (selectedSprite.type === "image") {
+        let ratio =
+          selectedSprite.container.width / selectedSprite.container.height;
+
         selectedSprite.container.width =
           mousePosition.x - selectedSprite.container.x;
-        selectedSprite.container.height =
-          mousePosition.y - selectedSprite.container.y;
+        selectedSprite.container.height = isShiftDown
+          ? mousePosition.y - selectedSprite.container.y
+          : selectedSprite.container.width / ratio;
 
         let square = hoverSelector.getChildAt(0) as PIXI.Graphics;
         square.clear();
