@@ -13,4 +13,9 @@ export let defaultGame: WGameDescription = {
   sounds: [],
   code: defaultCode,
   title: "My Watchy Game",
+  palette: {
+    background: 0xedb4a1,
+    off: 0xdb9797,
+    on: 0x2c2137,
+  },
 };

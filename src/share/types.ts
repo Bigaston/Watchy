@@ -13,6 +13,11 @@ export interface WGameDescription {
   code: string;
   title: string;
   background?: string;
+  palette: {
+    background: number;
+    off: number;
+    on: number;
+  };
 }
 
 export interface WSoundDescription {

@@ -9,7 +9,6 @@ import {
   WSelectable,
 } from "../share/types";
 import { loadGame, saveGame } from "./storage";
-import { PALETTE } from "../share/colorPalette";
 import segments7 from "../share/7segment/7segment";
 import {
   currentScreenListener,
@@ -19,6 +18,7 @@ import {
   onChangeTextListener,
   onDeleteSpriteListener,
   onDeleteTextListener,
+  onPaletteChangeListener,
   refreshGameListener,
 } from "./preact/Listeners";
 
@@ -52,9 +52,27 @@ export function initEditorView() {
   app = new PIXI.Application({
     width: width,
     height: height,
-    background: 0xedb4a1,
+    background: game.palette.background,
     resolution: window.devicePixelRatio || 1,
     autoDensity: true,
+  });
+
+  onPaletteChangeListener.addListener(({ key, color }) => {
+    if (key === "background") {
+      app.renderer.background.color = color;
+    }
+
+    if (key === "off") {
+      sprites.forEach((sprite) => {
+        sprite.container.tint = color;
+      });
+
+      numbers.forEach((number) => {
+        number.container.children.forEach((segment) => {
+          (segment as PIXI.Sprite).tint = color;
+        });
+      });
+    }
   });
 
   rendererElement.appendChild(app.view as any as Node);
@@ -201,6 +219,10 @@ export function initEditorView() {
   });
 }
 
+export function stopEditorView() {
+  onPaletteChangeListener.clearListeners();
+}
+
 function setMode(newMode: "select" | "resize") {
   mode = newMode;
 
@@ -222,6 +244,8 @@ function setMode(newMode: "select" | "resize") {
 }
 
 export function createSprite(image: WImageDescription) {
+  let game = loadGame();
+
   let texture = PIXI.Texture.from(image.path, {
     scaleMode: PIXI.SCALE_MODES.NEAREST,
     resourceOptions: {
@@ -239,7 +263,7 @@ export function createSprite(image: WImageDescription) {
   spr.height = image.height;
   spr.angle = image.angle;
 
-  spr.tint = PALETTE.OFF;
+  spr.tint = game.palette.off;
   spr.eventMode = "static";
 
   let wImage = {
@@ -262,8 +286,6 @@ export function createSprite(image: WImageDescription) {
 
     spr.cursor = "move";
   });
-
-  let game = loadGame();
 
   spr.on("pointerup", (_event) => {
     isSelectedSpriteDragged = false;
@@ -720,6 +742,8 @@ export function duplicateSprite() {
 }
 
 export function addNumber(number: WNumberDescription) {
+  let game = loadGame();
+
   let numberContainer = new PIXI.Container();
 
   numberContainer.x = number.x;
@@ -728,8 +752,7 @@ export function addNumber(number: WNumberDescription) {
   for (let i = 0; i < number.numberDigit; i++) {
     let spr = new PIXI.Sprite(PIXI.Texture.from(segments7.full));
 
-    spr.tint = PALETTE.OFF;
-
+    spr.tint = game.palette.off;
     let width = number.height * 0.6;
 
     spr.x = i * width;
@@ -824,7 +847,7 @@ export function addNumber(number: WNumberDescription) {
       for (let i = 0; i < value; i++) {
         let spr = new PIXI.Sprite(PIXI.Texture.from(segments7.full));
 
-        spr.tint = PALETTE.OFF;
+        spr.tint = game.palette.off;
 
         let width = number.height * 0.6;
 
