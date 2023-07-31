@@ -29,3 +29,11 @@ export function isOnMobile() {
   })(navigator.userAgent || navigator.vendor);
   return check;
 }
+
+export function stringToColour(str: string) {
+  return parseInt(str.slice(1), 16);
+}
+
+export function colourToString(color: number) {
+  return "#" + color.toString(16).padStart(6, "0");
+}

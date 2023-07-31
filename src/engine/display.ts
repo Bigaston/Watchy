@@ -6,7 +6,6 @@ import {
   WImageStatus,
   WNumber,
 } from "../share/types";
-import { PALETTE } from "../share/colorPalette";
 import segments7 from "../share/7segment/7segment";
 
 // import segments7 from "../share/7segment/7segment";
@@ -44,7 +43,7 @@ export function initDisplay(
     spr.height = image.height;
     spr.anchor.set(0.5, 0.5);
 
-    spr.tint = PALETTE.OFF;
+    spr.tint = game.palette.off;
 
     sprites.push({
       id: image.id,
@@ -100,7 +99,7 @@ export function initDisplay(
       function setupDigit(digit: PIXI.Sprite) {
         digit.height = number.height;
         digit.width = number.height * 0.6;
-        digit.tint = PALETTE.OFF;
+        digit.tint = game.palette.off;
 
         digitContainer.addChild(digit);
       }
@@ -139,7 +138,7 @@ function setEnabled(idOrName: number | string, status: boolean) {
 
   if (sprite != null) {
     sprite.status = status ? WImageStatus.ON : WImageStatus.OFF;
-    sprite.container.tint = status ? PALETTE.ON : PALETTE.OFF;
+    sprite.container.tint = status ? game.palette.on : game.palette.off;
   }
 }
 
@@ -165,7 +164,7 @@ function setEnabledGroup(idOrName: number | string, status: boolean) {
 
   spritesToDisplay.forEach((s) => {
     s.status = status ? WImageStatus.ON : WImageStatus.OFF;
-    s.container.tint = status ? PALETTE.ON : PALETTE.OFF;
+    s.container.tint = status ? game.palette.on : game.palette.off;
   });
 }
 
@@ -200,84 +199,84 @@ function printText(idOrName: string | number, numberToPrint: number | string) {
 
     switch (digitToPrint) {
       case "0":
-        digit.topleft.tint = PALETTE.ON;
-        digit.topright.tint = PALETTE.ON;
-        digit.bottomleft.tint = PALETTE.ON;
-        digit.bottomright.tint = PALETTE.ON;
-        digit.top.tint = PALETTE.ON;
-        digit.bottom.tint = PALETTE.ON;
+        digit.topleft.tint = game.palette.on;
+        digit.topright.tint = game.palette.on;
+        digit.bottomleft.tint = game.palette.on;
+        digit.bottomright.tint = game.palette.on;
+        digit.top.tint = game.palette.on;
+        digit.bottom.tint = game.palette.on;
         break;
       case "1":
-        digit.topright.tint = PALETTE.ON;
-        digit.bottomright.tint = PALETTE.ON;
+        digit.topright.tint = game.palette.on;
+        digit.bottomright.tint = game.palette.on;
         break;
       case "2":
-        digit.top.tint = PALETTE.ON;
-        digit.topright.tint = PALETTE.ON;
-        digit.middle.tint = PALETTE.ON;
-        digit.bottomleft.tint = PALETTE.ON;
-        digit.bottom.tint = PALETTE.ON;
+        digit.top.tint = game.palette.on;
+        digit.topright.tint = game.palette.on;
+        digit.middle.tint = game.palette.on;
+        digit.bottomleft.tint = game.palette.on;
+        digit.bottom.tint = game.palette.on;
         break;
       case "3":
-        digit.top.tint = PALETTE.ON;
-        digit.topright.tint = PALETTE.ON;
-        digit.middle.tint = PALETTE.ON;
-        digit.bottomright.tint = PALETTE.ON;
-        digit.bottom.tint = PALETTE.ON;
+        digit.top.tint = game.palette.on;
+        digit.topright.tint = game.palette.on;
+        digit.middle.tint = game.palette.on;
+        digit.bottomright.tint = game.palette.on;
+        digit.bottom.tint = game.palette.on;
         break;
       case "4":
-        digit.topleft.tint = PALETTE.ON;
-        digit.topright.tint = PALETTE.ON;
-        digit.middle.tint = PALETTE.ON;
-        digit.bottomright.tint = PALETTE.ON;
+        digit.topleft.tint = game.palette.on;
+        digit.topright.tint = game.palette.on;
+        digit.middle.tint = game.palette.on;
+        digit.bottomright.tint = game.palette.on;
         break;
       case "5":
-        digit.topleft.tint = PALETTE.ON;
-        digit.top.tint = PALETTE.ON;
-        digit.middle.tint = PALETTE.ON;
-        digit.bottomright.tint = PALETTE.ON;
-        digit.bottom.tint = PALETTE.ON;
+        digit.topleft.tint = game.palette.on;
+        digit.top.tint = game.palette.on;
+        digit.middle.tint = game.palette.on;
+        digit.bottomright.tint = game.palette.on;
+        digit.bottom.tint = game.palette.on;
         break;
       case "6":
-        digit.topleft.tint = PALETTE.ON;
-        digit.top.tint = PALETTE.ON;
-        digit.middle.tint = PALETTE.ON;
-        digit.bottomleft.tint = PALETTE.ON;
-        digit.bottomright.tint = PALETTE.ON;
-        digit.bottom.tint = PALETTE.ON;
+        digit.topleft.tint = game.palette.on;
+        digit.top.tint = game.palette.on;
+        digit.middle.tint = game.palette.on;
+        digit.bottomleft.tint = game.palette.on;
+        digit.bottomright.tint = game.palette.on;
+        digit.bottom.tint = game.palette.on;
         break;
       case "7":
-        digit.top.tint = PALETTE.ON;
-        digit.topright.tint = PALETTE.ON;
-        digit.bottomright.tint = PALETTE.ON;
+        digit.top.tint = game.palette.on;
+        digit.topright.tint = game.palette.on;
+        digit.bottomright.tint = game.palette.on;
         break;
       case "8":
-        digit.topleft.tint = PALETTE.ON;
-        digit.top.tint = PALETTE.ON;
-        digit.topright.tint = PALETTE.ON;
-        digit.middle.tint = PALETTE.ON;
-        digit.bottomleft.tint = PALETTE.ON;
-        digit.bottom.tint = PALETTE.ON;
-        digit.bottomright.tint = PALETTE.ON;
+        digit.topleft.tint = game.palette.on;
+        digit.top.tint = game.palette.on;
+        digit.topright.tint = game.palette.on;
+        digit.middle.tint = game.palette.on;
+        digit.bottomleft.tint = game.palette.on;
+        digit.bottom.tint = game.palette.on;
+        digit.bottomright.tint = game.palette.on;
         break;
       case "9":
-        digit.topleft.tint = PALETTE.ON;
-        digit.top.tint = PALETTE.ON;
-        digit.topright.tint = PALETTE.ON;
-        digit.middle.tint = PALETTE.ON;
-        digit.bottomright.tint = PALETTE.ON;
-        digit.bottom.tint = PALETTE.ON;
+        digit.topleft.tint = game.palette.on;
+        digit.top.tint = game.palette.on;
+        digit.topright.tint = game.palette.on;
+        digit.middle.tint = game.palette.on;
+        digit.bottomright.tint = game.palette.on;
+        digit.bottom.tint = game.palette.on;
         break;
     }
   });
 }
 
 function resetDigit(digit: WDigit) {
-  digit.topleft.tint = PALETTE.OFF;
-  digit.topright.tint = PALETTE.OFF;
-  digit.bottomleft.tint = PALETTE.OFF;
-  digit.bottomright.tint = PALETTE.OFF;
-  digit.top.tint = PALETTE.OFF;
-  digit.middle.tint = PALETTE.OFF;
-  digit.bottom.tint = PALETTE.OFF;
+  digit.topleft.tint = game.palette.off;
+  digit.topright.tint = game.palette.off;
+  digit.bottomleft.tint = game.palette.off;
+  digit.bottomright.tint = game.palette.off;
+  digit.top.tint = game.palette.off;
+  digit.middle.tint = game.palette.off;
+  digit.bottom.tint = game.palette.off;
 }

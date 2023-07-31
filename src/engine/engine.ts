@@ -48,7 +48,7 @@ export async function initEngine(
   app = new PIXI.Application({
     width: width,
     height: height,
-    background: 0xedb4a1,
+    background: gameDescription.palette.background,
     resolution: window.devicePixelRatio || 1,
     autoDensity: true,
   });

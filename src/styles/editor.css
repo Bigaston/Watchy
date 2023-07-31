@@ -158,3 +158,16 @@ select {
   font-style: italic;
   color: gray;
 }
+
+.paletteDiv {
+  display: flex;
+}
+
+.paletteDiv input {
+  width: 30px;
+  padding: 0;
+}
+
+.paletteDiv > button {
+  margin: 0 !important;
+}

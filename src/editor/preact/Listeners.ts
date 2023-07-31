@@ -20,3 +20,8 @@ export let onChangeTextListener = new OutsideListener<{
   key: string;
   value: any;
 }>();
+
+export let onPaletteChangeListener = new OutsideListener<{
+  key: string;
+  color: number;
+}>();

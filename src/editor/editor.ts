@@ -5,6 +5,7 @@ import {
   duplicateSprite,
   initEditorView,
   resize as resizeEditor,
+  stopEditorView,
 } from "./editorView";
 import {
   buildGame,
@@ -53,6 +54,7 @@ export function initEditor(editorContainer: HTMLElement) {
     (document.getElementById("stop")! as HTMLButtonElement).disabled = false;
 
     rendererElement.innerHTML = "";
+    stopEditorView();
     stopEngine();
     initEngine(game, rendererElement, true);
   });
