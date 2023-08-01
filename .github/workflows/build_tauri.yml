@@ -62,6 +62,7 @@ jobs:
           asset_path: ./src-tauri/target/release/watchy.exe
           asset_name: watchy_standalone.exe
           asset_content_type: application/x-msdownload
+      - run: echo ${{ steps.tauri.outputs.artifactPaths }}
       - name: Publish Windows Executable to Itch.io
         uses: KikimoraGames/itch-publish@v0.0.3
         if: matrix.platform == 'windows-latest'
@@ -71,3 +72,21 @@ jobs:
           itchUsername: ${{env.ITCH_USERNAME}}
           itchGameId: ${{ env.ITCH_GAME_ID }}
           buildChannel: windows
+      - name: Publish Linux AppImage to Itch.io
+        uses: KikimoraGames/itch-publish@v0.0.3
+        if: matrix.platform == 'ubuntu-20.04'
+        with:
+          butlerApiKey: ${{secrets.BUTLER_API_KEY}}
+          gameData: ./src-tauri/target/release/bundle/appimage/
+          itchUsername: ${{env.ITCH_USERNAME}}
+          itchGameId: ${{ env.ITCH_GAME_ID }}
+          buildChannel: linux
+      - name: Publish MacOS APP to Itch.io
+        uses: KikimoraGames/itch-publish@v0.0.3
+        if: matrix.platform == 'macos-latest'
+        with:
+          butlerApiKey: ${{secrets.BUTLER_API_KEY}}
+          gameData: ./src-tauri/target/release/bundle/macos/watchy.app
+          itchUsername: ${{env.ITCH_USERNAME}}
+          itchGameId: ${{ env.ITCH_GAME_ID }}
+          buildChannel: macos
