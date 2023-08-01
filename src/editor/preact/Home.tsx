@@ -1,12 +1,13 @@
 import { useState } from "preact/hooks";
 import { loadGame, saveGame } from "../storage";
 import { onSelectSpriteFromDescription, updateBackground } from "../editorView";
-import { WSoundDescription, WSoundDescriptionJSFXR } from "../../share/types";
+import { WSoundDescription, WSoundDescriptionAudio, WSoundDescriptionJSFXR } from "../../share/types";
 import { useAtom } from "jotai";
 import gameAtom from "./atoms/gameAtom";
 import { colourToString, stringToColour } from "../../utils";
 import { onPaletteChangeListener } from "./Listeners";
 import { PALETTE } from "../../share/colorPalette";
+import {Howl} from 'howler';
 
 const sfxr = (window as any).sfxr;
 
@@ -80,6 +81,12 @@ export function Home() {
   function playSound(sound: WSoundDescription) {
     if (sound.type === "jsfxr") {
       sfxr.toAudio((sound as WSoundDescriptionJSFXR).content).play();
+    } else {
+      let howl = new Howl({
+        src: [(sound as WSoundDescriptionAudio).content],
+      })
+
+      howl.play();
     }
   }
 

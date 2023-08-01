@@ -18,7 +18,6 @@ export function Modal({
 
   return isOpened ? (
     <>
-      <p>Bruh</p>
       <div className="modal-background" onClick={onClickClose}>
         <div className="modal">{children}</div>
       </div>
