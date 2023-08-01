@@ -6,16 +6,20 @@
   "scripts": {
     "dev": "vite",
     "build": "node ./build.cjs",
+    "build:tauri": "cross-env URL_BASE='' node ./build.cjs",
     "editor:build": "tsc && vite build",
+    "editor:build-tauri": "tsc && vite build --mode tauri",
     "preview": "vite preview",
     "doc:build": "eleventy --config .eleventy.cjs",
     "doc:build:prod": "cross-env URL_BASE_DOC=/Watchy/docs eleventy --config .eleventy.cjs",
     "doc:serve": "eleventy --config .eleventy.cjs --serve",
-    "engine:build": "tsc && vite build --config ./viteEngine.config.js"
+    "engine:build": "tsc && vite build --config ./viteEngine.config.js",
+    "tauri": "tauri"
   },
   "devDependencies": {
     "@11ty/eleventy": "^2.0.1",
     "@preact/preset-vite": "^2.5.0",
+    "@tauri-apps/cli": "^1.4.0",
     "@types/howler": "^2.2.7",
     "@types/wicg-file-system-access": "^2020.9.6",
     "cross-env": "^7.0.3",
