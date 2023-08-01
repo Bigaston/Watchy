@@ -90,6 +90,26 @@ export function Home() {
     }
   }
 
+  function onEditSoundName(sound: WSoundDescription) {
+    let name = prompt("Sound Name", sound.name);
+
+    if (name) {
+      saveGame({
+        ...game,
+        sounds: game.sounds.map((s) =>
+          s.id === sound.id ? { ...s, name: name as string } : s
+        ),
+      });
+
+      setGame(g => ({
+        ...g,
+        sounds: g.sounds.map((s) =>
+          s.id === sound.id ? { ...s, name: name as string } : s
+        ),
+      }));
+    }
+  }
+
   function onDeleteSound(sound: WSoundDescription) {
     saveGame({
       ...loadGame(),
@@ -290,6 +310,7 @@ export function Home() {
           <li>
             {sound.name} (id: {sound.id}){" "}
             <button onClick={() => playSound(sound)}>🔊 Play</button>
+            <button onClick={() => onEditSoundName(sound)}>✏️ EditName</button>
             <button onClick={() => onDeleteSound(sound)}>🚮 Delete</button>
           </li>
         ))}
