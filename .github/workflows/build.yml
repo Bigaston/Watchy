@@ -88,5 +88,5 @@ jobs:
         with:
           upload_url: ${{ steps.tauri.outputs.releaseUploadUrl }}
           asset_path: ./src-tauri/target/release/watchy.exe
-          asset_name: Watchy (Windows Standalone).exe
+          asset_name: watchy_standalone.exe
           asset_content_type: application/x-msdownload
