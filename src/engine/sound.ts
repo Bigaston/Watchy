@@ -4,8 +4,10 @@
 import {
   WGameDescription,
   WSoundDescription,
+  WSoundDescriptionAudio,
   WSoundDescriptionJSFXR,
 } from "../share/types";
+import { Howl } from "howler";
 
 const sfxr = (window as any).sfxr;
 
@@ -58,5 +60,12 @@ function playSound(idOrName: string | number) {
     let au = sfxr.toAudio((audio as WSoundDescriptionJSFXR).content);
     au.setVolume(0.1);
     au.play();
+  } else if (audio.type === "audio") {
+    const howl = new Howl({
+      src: [(audio as WSoundDescriptionAudio).content],
+      volume: 0.1,
+    });
+
+    howl.play();
   }
 }

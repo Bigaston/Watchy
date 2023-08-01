@@ -131,7 +131,7 @@ select {
 }
 
 #infoContainer {
-  padding: 10px 20px;
+  padding: 10px 20px 20px 20px;
   max-height: 42vh;
   overflow-y: scroll;
   color: white;

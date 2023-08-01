@@ -2,6 +2,8 @@ const { execSync, exec } = require("child_process");
 const path = require("path");
 const fs = require("fs");
 
+console.log(process.env.URL_BASE);
+
 execSync("npm run engine:build", { stdio: "inherit" });
 fs.cpSync(
   path.join(__dirname, "./dist_engine/engine.html"),
@@ -9,7 +11,11 @@ fs.cpSync(
 );
 fs.rmSync(path.join(__dirname, "./dist_engine"), { recursive: true });
 
-execSync("npm run editor:build", { stdio: "inherit" });
+if (process.env.URL_BASE !== undefined) {
+  execSync("npm run editor:build-tauri", { stdio: "inherit" });
+} else {
+  execSync("npm run editor:build", { stdio: "inherit" });
+}
 execSync("npm run doc:build:prod", { stdio: "inherit" });
 
 fs.cpSync(
