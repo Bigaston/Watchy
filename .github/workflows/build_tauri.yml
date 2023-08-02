@@ -2,6 +2,10 @@
 name: Build the game for Tauri
 
 on: 
+  push:
+    branches: "main"
+    tags:
+      - 'v*'
   workflow_dispatch:
 
 concurrency:
@@ -19,7 +23,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: ["ubuntu-20.04", "windows-latest"] #[macos-latest, ubuntu-20.04, windows-latest]
+        platform: [macos-latest, ubuntu-20.04, windows-latest]
 
     runs-on: ${{ matrix.platform }}
     steps:
@@ -86,7 +90,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        platform: ["ubuntu-20.04", "windows-latest"] #[macos-latest, ubuntu-20.04, windows-latest]
+        platform: [macos-latest, ubuntu-20.04, windows-latest]
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v2
