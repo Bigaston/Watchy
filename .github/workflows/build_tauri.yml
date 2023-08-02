@@ -3,7 +3,7 @@ name: Build the game for Tauri
 
 on: 
   push:
-    branches: "main"
+    branches-ignore: develop
     tags:
       - 'v*'
   workflow_dispatch:
