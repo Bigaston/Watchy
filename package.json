@@ -9,7 +9,7 @@
     "editor:build": "tsc && vite build",
     "preview": "vite preview",
     "doc:build": "eleventy --config .eleventy.cjs",
-    "doc:build:prod": "cross-env URL_BASE_DOC=/Watchy/docs eleventy --config .eleventy.cjs",
+    "doc:build:prod": "cross-env URL_BASE_DOC=/docs eleventy --config .eleventy.cjs",
     "doc:serve": "eleventy --config .eleventy.cjs --serve",
     "engine:build": "tsc && vite build --config ./viteEngine.config.js",
     "tauri": "tauri"
