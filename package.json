@@ -5,11 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "node ./cli/build.cjs",
+    "build": "node ./build.cjs",
     "editor:build": "tsc && vite build",
     "preview": "vite preview",
     "doc:build": "eleventy --config .eleventy.cjs",
-    "doc:build:prod": "cross-env URL_BASE_DOC=/docs eleventy --config .eleventy.cjs",
+    "doc:build:prod": "eleventy --config .eleventy.cjs --pathprefix=/docs/",
     "doc:serve": "eleventy --config .eleventy.cjs --serve",
     "engine:build": "tsc && vite build --config ./viteEngine.config.js",
     "tauri": "tauri"
@@ -20,7 +20,6 @@
     "@tauri-apps/cli": "^1.4.0",
     "@types/howler": "^2.2.7",
     "@types/wicg-file-system-access": "^2020.9.6",
-    "cross-env": "^7.0.3",
     "typescript": "^5.0.2",
     "vite": "^4.3.9",
     "vite-plugin-singlefile": "^0.13.5"
