@@ -54,7 +54,7 @@ jobs:
           result-encoding: string
           script: |
             console.log(${{steps.tauri.outputs.artifactPaths}})
-            const artifactPaths = ${{steps.tauri.outputs.artifactPaths}}
+            const artifactPaths = '${{steps.tauri.outputs.artifactPaths}}'
             let artifacts = artifactPaths.replace("[", "").replace("]", "").split(",")
 
             switch(${{matrix.platform}}) {
@@ -65,7 +65,7 @@ jobs:
                 return artifacts[1]
                 break;
               case "windows-latest":
-                return ./src-tauri/target/release/watchy.exe
+                return './src-tauri/target/release/watchy.exe'
                 break;
             }
       - uses: actions/upload-artifact@v2
@@ -82,4 +82,3 @@ jobs:
           asset_path: ./src-tauri/target/release/watchy.exe
           asset_name: watchy_standalone.exe
           asset_content_type: application/x-msdownload
-      - run: echo ${{ steps.tauri.outputs.artifactPaths }}
