@@ -6,9 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "node ./build.cjs",
-    "build:tauri": "cross-env URL_BASE='' node ./build.cjs",
     "editor:build": "tsc && vite build",
-    "editor:build-tauri": "tsc && vite build --mode tauri",
     "preview": "vite preview",
     "doc:build": "eleventy --config .eleventy.cjs",
     "doc:build:prod": "cross-env URL_BASE_DOC=/Watchy/docs eleventy --config .eleventy.cjs",
