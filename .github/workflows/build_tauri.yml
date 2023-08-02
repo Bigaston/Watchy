@@ -53,17 +53,17 @@ jobs:
         with:
           result-encoding: string
           script: |
-            const artifactPaths = ${{steps.tauri.outputs.artifactPaths}}
+            const artifactPaths = ${{steps.tauri.outputs.artifactPaths}};
 
             switch("${{matrix.platform}}") {
               case "macos-latest":
-                return artifactPaths[1]
+                return artifactPaths[1];
                 break;
               case "ubuntu-20.04":
-                return artifactPaths[1]
+                return artifactPaths[1];
                 break;
               case "windows-latest":
-                return './src-tauri/target/release/watchy.exe'
+                return './src-tauri/target/release/watchy.exe';
                 break;
             }
       - uses: actions/upload-artifact@v2
