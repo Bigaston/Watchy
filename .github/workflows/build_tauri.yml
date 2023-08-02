@@ -13,7 +13,7 @@ env:
   ITCH_GAME_ID: watchy
 
 jobs:
-  publishTauri:
+  buildTauri:
     permissions:
       contents: write
     strategy:
@@ -80,3 +80,22 @@ jobs:
           asset_path: ./src-tauri/target/release/watchy.exe
           asset_name: watchy_standalone.exe
           asset_content_type: application/x-msdownload
+
+  uploadItchio:
+    needs: buildTauri
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        platform: [macos-latest, ubuntu-20.04, windows-latest]
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{matrix.platform}}-build
+      - uses: KikimoraGames/itch-publish@v0.0.3
+        with:
+          butlerApiKey: ${{secrets.BUTLER_API_KEY}}
+          gameData: ${{ matrix.platform }}
+          itchUsername: ${{env.ITCH_USERNAME}}
+          itchGameId: ${{ env.ITCH_GAME_ID }}
+          buildChannel: ${{ matrix.platform }}
