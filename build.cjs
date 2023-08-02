@@ -11,11 +11,7 @@ fs.cpSync(
 );
 fs.rmSync(path.join(__dirname, "./dist_engine"), { recursive: true });
 
-if (process.env.URL_BASE !== undefined) {
-  execSync("npm run editor:build-tauri", { stdio: "inherit" });
-} else {
-  execSync("npm run editor:build", { stdio: "inherit" });
-}
+execSync("npm run editor:build", { stdio: "inherit" });
 execSync("npm run doc:build:prod", { stdio: "inherit" });
 
 fs.cpSync(
