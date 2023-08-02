@@ -93,11 +93,12 @@ jobs:
         id: downloadArtifact
         with:
           name: ${{matrix.platform}}-build
-      - run: ls -l
+      - run: echo "FILE=$(ls)" >> "$GITHUB_OUTPUT"
+        id: file
       - uses: KikimoraGames/itch-publish@v0.0.3
         with:
           butlerApiKey: ${{secrets.BUTLER_API_KEY}}
-          gameData: ./${{matrix.platform}}-build
+          gameData: ./${{steps.file.outputs.FILE}}
           itchUsername: ${{env.ITCH_USERNAME}}
           itchGameId: ${{ env.ITCH_GAME_ID }}
           buildChannel: ${{ matrix.platform }}
