@@ -53,16 +53,14 @@ jobs:
         with:
           result-encoding: string
           script: |
-            console.log(${{steps.tauri.outputs.artifactPaths}})
-            const artifactPaths = '${{steps.tauri.outputs.artifactPaths}}'
-            let artifacts = artifactPaths.replace("[", "").replace("]", "").split(",")
+            const artifactPaths = ${{steps.tauri.outputs.artifactPaths}}
 
-            switch(${{matrix.platform}}) {
+            switch("${{matrix.platform}}") {
               case "macos-latest":
-                return artifacts[1]
+                return artifactPaths[1]
                 break;
               case "ubuntu-20.04":
-                return artifacts[1]
+                return artifactPaths[1]
                 break;
               case "windows-latest":
                 return './src-tauri/target/release/watchy.exe'
