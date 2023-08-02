@@ -19,7 +19,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [macos-latest, ubuntu-20.04, windows-latest]
+        platform: ["ubuntu-20.04", "windows-latest"] #[macos-latest, ubuntu-20.04, windows-latest]
 
     runs-on: ${{ matrix.platform }}
     steps:
@@ -71,22 +71,31 @@ jobs:
           name: ${{matrix.platform}}-build
           path: ${{ steps.findArtifact.outputs.result }}
       - name: Publish Just Executable
-        uses: actions/upload-release-asset@v1.0.1
+        uses: actions/github-script@v6
         if: matrix.platform == 'windows-latest'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.tauri.outputs.releaseUploadUrl }}
-          asset_path: ./src-tauri/target/release/watchy.exe
-          asset_name: watchy_standalone.exe
-          asset_content_type: application/x-msdownload
+          script: |
+            github.rest.repos.uploadReleaseAsset({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: '${{ steps.tauri.outputs.releaseId }}'',
+              name: 'watchy_standalone.exe',
+              data: require('fs').readFileSync('./src-tauri/target/release/watchy.exe'),
+              origin: ${{ steps.tauri.outputs.releaseUploadUrl }}}
+            });
+          # upload_url: ${{ steps.tauri.outputs.releaseUploadUrl }}
+          # asset_path: ./src-tauri/target/release/watchy.exe
+          # asset_name: watchy_standalone.exe
+          # asset_content_type: application/x-msdownload
 
   uploadItchio:
     needs: buildTauri
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        platform: [macos-latest, ubuntu-20.04, windows-latest]
+        platform: ["ubuntu-20.04", "windows-latest"] #[macos-latest, ubuntu-20.04, windows-latest]
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v2
