@@ -90,12 +90,13 @@ jobs:
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v2
+        id: downloadArtifact
         with:
           name: ${{matrix.platform}}-build
       - uses: KikimoraGames/itch-publish@v0.0.3
         with:
           butlerApiKey: ${{secrets.BUTLER_API_KEY}}
-          gameData: ${{ matrix.platform }}-build
+          gameData: ${{ steps.downloadArtifact.outputs.DownloadPath }}/${{matrix.platform}}-build
           itchUsername: ${{env.ITCH_USERNAME}}
           itchGameId: ${{ env.ITCH_GAME_ID }}
           buildChannel: ${{ matrix.platform }}
