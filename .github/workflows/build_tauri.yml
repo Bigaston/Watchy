@@ -70,16 +70,16 @@ jobs:
         with:
           name: ${{matrix.platform}}-build
           path: ${{ steps.findArtifact.outputs.result }}
-      - name: Publish Just Executable
-        uses: actions/upload-release-asset@v1.0.1
-        if: matrix.platform == 'windows-latest'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.tauri.outputs.releaseUploadUrl }}
-          asset_path: ./src-tauri/target/release/watchy.exe
-          asset_name: watchy_standalone.exe
-          asset_content_type: application/x-msdownload
+      # - name: Publish Just Executable
+      #   uses: actions/upload-release-asset@v1.0.1
+      #   if: matrix.platform == 'windows-latest'
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     upload_url: ${{ steps.tauri.outputs.releaseUploadUrl }}
+      #     asset_path: ./src-tauri/target/release/watchy.exe
+      #     asset_name: watchy_standalone.exe
+      #     asset_content_type: application/x-msdownload
 
   uploadItchio:
     needs: buildTauri
