@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "node ./build.cjs",
+    "build": "node ./cli/build.cjs",
     "editor:build": "tsc && vite build",
     "preview": "vite preview",
     "doc:build": "eleventy --config .eleventy.cjs",
