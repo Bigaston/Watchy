@@ -2,10 +2,6 @@
 name: Build the game for Tauri
 
 on: 
-  push:
-    branches-ignore: develop
-    tags:
-      - 'v*'
   workflow_dispatch:
 
 concurrency:
