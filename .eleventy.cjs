@@ -4,8 +4,13 @@ module.exports = function (eleventyConfig) {
   // Return your Object options:
   eleventyConfig.addPassthroughCopy("docs/public");
 
+  // Configure eleventy to use njk for html templates
+
+
   return {
-    pathPrefix: "myprefix",
+    markdownTemplateEngine: 'njk',
+    htmlTemplateEngine: 'njk',
+    dataTemplateEngine: 'njk',
     dir: {
       input: "docs",
       output: "docs/_site",
