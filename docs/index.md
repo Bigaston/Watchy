@@ -2,6 +2,8 @@
 title: Index
 ---
 
+<img id="watchy_logo" src="{{'/public/logo.png' | url}}" alt="Watchy Logo" />
+
 The documentation of Watchy
 
 All the function are available under the watchy.* namespace.
